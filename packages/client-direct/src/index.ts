@@ -25,6 +25,9 @@ import { settings } from "@elizaos/core";
 import { createApiRouter } from "./api.ts";
 import * as fs from "fs";
 import * as path from "path";
+// @ts-ignore
+import { Routes } from "./routes.ts";
+import { AgentConfig } from "../../../agent/src/index";
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -79,6 +82,14 @@ export class DirectClient {
     private server: any; // Store server instance
     public startAgent: Function; // Store startAgent functor
 
+    registerCallbackFn: (config: AgentConfig, memory: Memory) => Promise<void>;
+
+    public registerCallback(
+        callback: (config: AgentConfig, memory: Memory) => Promise<void>
+    ) {
+        this.registerCallbackFn = callback;
+    }
+
     constructor() {
         elizaLogger.log("DirectClient constructor");
         this.app = express();
@@ -87,6 +98,9 @@ export class DirectClient {
 
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: true }));
+
+        const routes = new Routes(this, this.registerCallbackFn);
+        routes.setupRoutes(this.app);
 
         // Serve both uploads and generated images
         this.app.use(

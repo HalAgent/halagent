@@ -1,0 +1,8 @@
+.agent-stage-avatarwrap {
+  width: 44px;
+  height: 44px;
+  background-image: url('../../../assets/images/border-bg/avatar-wrap.svg');
+  background-size: 44px 44px;
+  background-position: center;
+  background-repeat: no-repeat;
+}

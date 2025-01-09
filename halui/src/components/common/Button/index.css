@@ -1,0 +1,27 @@
+.btn {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 12px 16px;
+  overflow: hidden;
+}
+
+.btn:focus {
+  transform: scale(0.99);
+}
+
+.btn-orange-bg {
+  background-image: url('../../../assets/images/border-bg/btn-orange-bg.svg');
+}
+
+.btn-green-bg {
+  background-image: url('../../../assets/images/border-bg/btn-green-bg.svg');
+}
+
+.btn-purple-bg {
+  background-image: url('../../../assets/images/border-bg/btn-purple-bg.svg');
+}
+
+.btn-black-bg {
+  background-image: url('../../../assets/images/border-bg/btn-black-bg.svg');
+}

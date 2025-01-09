@@ -1,0 +1,20 @@
+.egg-wrap {
+  background-image: url('../../../../assets/images/eggs/egg-wrap.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.egg-wrap-selected {
+  background-image: url('../../../../assets/images/eggs/egg-select-wrap.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.egg-selected {
+  background-image: url('../../../../assets/images/eggs/select.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}

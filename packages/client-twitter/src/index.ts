@@ -9,6 +9,7 @@ import { TwitterInteractionClient } from "./interactions.ts";
 import { TwitterPostClient } from "./post.ts";
 import { TwitterSearchClient } from "./search.ts";
 import { TwitterSpaceClient } from "./spaces.ts";
+import { TwitterWatchClient } from "./watcher.ts";
 
 /**
  * A manager that orchestrates all specialized Twitter logic:
@@ -22,6 +23,7 @@ class TwitterManager {
     client: ClientBase;
     post: TwitterPostClient;
     search: TwitterSearchClient;
+    watcher: TwitterWatchClient;
     interaction: TwitterInteractionClient;
     space?: TwitterSpaceClient;
 
@@ -49,6 +51,7 @@ class TwitterManager {
         if (twitterConfig.TWITTER_SPACES_ENABLE) {
             this.space = new TwitterSpaceClient(this.client, runtime);
         }
+        this.watcher = new TwitterWatchClient(this.client, runtime);
     }
 }
 
@@ -64,20 +67,21 @@ export const TwitterClientInterface: Client = {
         await manager.client.init();
 
         // Start the posting loop
-        await manager.post.start();
+        //await manager.post.start();
 
         // Start the search logic if it exists
-        if (manager.search) {
-            await manager.search.start();
-        }
+        //if (manager.search) {
+        //    await manager.search.start();
+        //}
 
         // Start interactions (mentions, replies)
-        await manager.interaction.start();
+        //await manager.interaction.start();
+        await manager.watcher.start();
 
         // If Spaces are enabled, start the periodic check
-        if (manager.space) {
-            manager.space.startPeriodicSpaceCheck();
-        }
+        //if (manager.space) {
+        //    manager.space.startPeriodicSpaceCheck();
+        //}
 
         return manager;
     },

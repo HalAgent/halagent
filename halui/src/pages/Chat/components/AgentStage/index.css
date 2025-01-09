@@ -1,0 +1,30 @@
+.agent-stage-bg {
+  position: absolute;
+  bottom: -30px;
+  left: 0;
+  width: 100%;
+  height: 198px;
+  background-image: url('../../../../assets/images/chat/bg.png');
+  background-size: 425px 198px;
+  background-position: bottom;
+  background-repeat: repeat-x;
+}
+
+.dialog-wrap {
+  width: 220px;
+  height: 80px;
+  background-image: url('../../../../assets/images/border-bg/dialog.svg');
+  background-size: 220px 80px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* 超过2行... */
+.dialog-wrap p {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  margin-left: 16px;
+}

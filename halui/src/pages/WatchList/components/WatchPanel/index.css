@@ -1,0 +1,8 @@
+.textarea-border {
+  /* background-image: url('@/assets/images/border-bg/texarea.svg');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat; */
+  border: 2px solid #000;
+  border-radius: 10px;
+}

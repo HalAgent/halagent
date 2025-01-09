@@ -1,0 +1,7 @@
+.pixModal-bg {
+  background-image: url('@/assets/images/border-bg/pop.svg');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  width: 100%;
+  min-height: 300px;
+}

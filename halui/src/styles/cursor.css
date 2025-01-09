@@ -1,0 +1,32 @@
+body {
+  cursor: url('../assets/cursors/Normal.cur'), auto;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+input {
+  cursor: url('../assets/cursors/Text_Select.cur'), text;
+}
+
+textarea {
+  cursor: url('../assets/cursors/Text_Select.cur'), text;
+}
+
+.link-cursor {
+  cursor: url('../assets/cursors/Link_Select.cur'), pointer;
+}
+
+a,
+button:hover,
+button:active,
+button:focus {
+  cursor: url('../assets/cursors/Link_Select.cur'), pointer;
+}
+
+button:disabled {
+  cursor: url('../assets/cursors/Unavralible.cur'), not-allowed;
+}

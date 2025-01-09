@@ -1,0 +1,107 @@
+/* font */
+@font-face {
+  font-family: 'Press Start 2P';
+  src: url('@/assets/fonts/Press Start 2P.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Inknut Antiqua';
+  src: url('@/assets/fonts/InknutAntiqua-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+:root {
+  --window-width: 100vw;
+  font-family: 'Press Start 2P', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark;
+  background-color: transparent;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* scrollbar-width */
+* {
+  -ms-overflow-style: none;
+  /* IE & Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+/* webkit */
+*::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Opera */
+}
+
+body {
+  margin: 0;
+  min-width: 450px;
+}
+
+/* clear */
+a {
+  @apply text-blue-500 decoration-none;
+}
+
+a:hover {
+  @apply text-blue-600 decoration-none;
+}
+
+/* clear button style */
+button {
+  @apply bg-transparent;
+  @apply border-none;
+  @apply outline-none;
+  @apply cursor-pointer;
+  font-family: 'Press Start 2P', system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+button:hover {
+  @apply border-none;
+  @apply outline-none;
+  @apply cursor-pointer;
+}
+
+button:focus,
+button:focus-visible {
+  @apply outline-none;
+  @apply border-none;
+}
+
+/* clear ul li */
+ul,
+li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+}
+
+/* clear input style */
+input {
+  border: none;
+  outline: none;
+  color: inherit;
+  font-family: inherit;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #000000;
+    background-color: #ffffff;
+  }
+
+  a:hover {
+    @apply text-blue-400;
+  }
+
+  button {
+    @apply bg-gray-100;
+  }
+}

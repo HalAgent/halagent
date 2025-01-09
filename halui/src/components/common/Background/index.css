@@ -1,0 +1,17 @@
+.bg-mountain {
+  background-image: url('@/assets/images/background/mountain.svg');
+  background-size: 450px 84px;
+  background-position: left;
+  background-repeat: repeat-x;
+  width: 100%;
+  height: 84px;
+}
+
+.bg-ground {
+  background-image: url('@/assets/images/background/ground.svg');
+  background-size: contain;
+  background-position: left;
+  background-repeat: repeat-x;
+  width: 100%;
+  height: 84px;
+}

@@ -1,0 +1,44 @@
+@import './styles/cursor.css';
+@import './styles/custom.css';
+
+/* font */
+.press-start-2p {
+  font-family: 'Press Start 2P';
+}
+
+/* content */
+.inknut-antiqua {
+  font-family: 'Inknut Antiqua';
+}
+
+/* custom */
+.pix-input {
+  background-image: url('./assets/images/border-bg/input.svg');
+  background-size: 100% 48px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.green-bg {
+  background-image: url('./assets/images/border-bg/green-bg.svg');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #2ec26d;
+}
+
+.gray-bg {
+  background-image: url('./assets/images/border-bg/gray-bg.svg');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #c6c4c4;
+}
+
+.black-bg {
+  background-image: url('./assets/images/border-bg/black-bg.svg');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #ffffff;
+}
