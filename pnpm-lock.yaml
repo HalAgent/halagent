@@ -165,6 +165,9 @@ importers:
       '@elizaos/plugin-cronoszkevm':
         specifier: workspace:*
         version: link:../packages/plugin-cronoszkevm
+      '@elizaos/plugin-data-enrich':
+        specifier: workspace:*
+        version: link:../packages/plugin-data-enrich
       '@elizaos/plugin-echochambers':
         specifier: workspace:*
         version: link:../packages/plugin-echochambers
@@ -549,6 +552,9 @@ importers:
       '@elizaos/core':
         specifier: workspace:*
         version: link:../core
+      '@elizaos/plugin-data-enrich':
+        specifier: workspace:*
+        version: link:../plugin-data-enrich
       '@elizaos/plugin-image-generation':
         specifier: workspace:*
         version: link:../plugin-image-generation
@@ -766,6 +772,9 @@ importers:
       '@elizaos/core':
         specifier: workspace:*
         version: link:../core
+      '@elizaos/plugin-data-enrich':
+        specifier: workspace:*
+        version: link:../plugin-data-enrich
       agent-twitter-client:
         specifier: 0.0.18
         version: 0.0.18(bufferutil@4.0.9)(utf-8-validate@5.0.10)

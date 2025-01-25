@@ -1,5 +1,5 @@
 {
-    "name": "@ai16z/plugin-data-enrich",
+    "name": "@elizaos/plugin-data-enrich",
     "version": "0.1.0",
     "main": "dist/index.js",
     "type": "module",

@@ -31,7 +31,7 @@ import {
 import { RedisClient } from "@elizaos/adapter-redis";
 import { zgPlugin } from "@elizaos/plugin-0g";
 import { bootstrapPlugin } from "@elizaos/plugin-bootstrap";
-import { dataEnrichPlugin } from "@ai16z/plugin-data-enrich";
+import { dataEnrichPlugin } from "@elizaos/plugin-data-enrich";
 import createGoatPlugin from "@elizaos/plugin-goat";
 // import { intifacePlugin } from "@elizaos/plugin-intiface";
 import { DirectClient } from "@elizaos/client-direct";
@@ -71,6 +71,28 @@ import path from "path";
 import { fileURLToPath } from "url";
 import yargs from "yargs";
 import net from "net";
+
+export interface AgentConfig {
+    prompt: string;
+    name: string;
+    clients: string[];
+    modelProvider: string;
+    bio: string[];
+    lore?: string[];
+    knowledge?: string[];
+    topics?: string[];
+    style?: {
+        all: string[];
+        chat: string[];
+        post: string[];
+    };
+    adjectives?: string[];
+    x: {
+        username: string;
+        email: string;
+        password: string;
+    };
+}
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory

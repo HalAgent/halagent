@@ -12,7 +12,7 @@ import {
     IAgentRuntime,
     ModelClass,
     settings,
-} from "@elizaos/eliza";
+} from "@elizaos/core";
 import { ClientBase } from "./base";
 import { TwitterApi } from 'twitter-api-v2';
 

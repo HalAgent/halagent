@@ -1,9 +1,10 @@
 import express from "express";
 import { DirectClient } from "./index";
 import { Scraper } from "agent-twitter-client";
-import { generateText, ModelClass, stringToUuid } from "@elizaos/eliza";
-import { Memory, settings } from "@elizaos/eliza";
+import { generateText, ModelClass, stringToUuid } from "@elizaos/core";
+import { Memory, settings } from "@elizaos/core";
 import { AgentConfig } from "../../../agent/src";
+
 import {
     QUOTES_LIST,
     STYLE_LIST,
@@ -372,14 +373,14 @@ export class Routes {
                 clientId: settings.TWITTER_CLIENT_ID,
                 clientSecret: settings.TWITTER_CLIENT_SECRET,
             });
-            
+
             const { url, state, codeVerifier } = client.generateOAuth2AuthLink(
                 `${settings.MY_APP_URL}/${req.params.agentId}/twitter_oauth_callback`,
                 {
                   scope: ['tweet.read', 'tweet.write', 'users.read', 'offline.access'],
                 }
             );
-            
+
             // Save state & codeVerifier
             const runtime = await this.authUtils.getRuntime(req.params.agentId);
             await runtime.cacheManager.set("oauth_verifier", JSON.stringify({
@@ -399,7 +400,7 @@ export class Routes {
             //    }),
             //    ttl: 3600 // 1hour
             //});
-            
+
             return { url, state };
         });
     }
@@ -416,7 +417,7 @@ export class Routes {
             }
 
             const runtime = await this.authUtils.getRuntime(req.params.agentId);
-            
+
             const verifierData = await runtime.cacheManager.get("oauth_verifier");
 
             if (!verifierData) {
@@ -532,10 +533,10 @@ export class Routes {
                                     }
                                 }
                             </script>
-                            <button style="text-align: center; width: 40%; height: 40px; font-size: 20px; background-color: #9F91ED; color: #ffffff; margin: 20px; border: none; border-radius: 10px;" 
+                            <button style="text-align: center; width: 40%; height: 40px; font-size: 20px; background-color: #9F91ED; color: #ffffff; margin: 20px; border: none; border-radius: 10px;"
                                 onclick="closeWindow()">
                                 Click to Close</button>
-                            <br>        
+                            <br>
                         </div>
                         <div class="container">
                             <img style="max-width: 40%; width: 40%; height: auto;" src="data:image/svg+xml;base64,">
@@ -813,7 +814,7 @@ export class Routes {
                     tokenAmount,
                 });
 
-                // 
+                //
                 const connection = new Connection(
                     clusterApiUrl("mainnet-beta"),
                     "confirmed"
