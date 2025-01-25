@@ -137,23 +137,23 @@ class AuthUtils {
     async verifyTwitterCredentials(
         credentials: TwitterCredentials
     ): Promise<any> {
-        const scraper = new Scraper();
-        try {
-            await scraper.login(
-                credentials.username,
-                credentials.password,
-                credentials.email
-            );
+        // const scraper = new Scraper();
+        // try {
+        //     await scraper.login(
+        //         credentials.username,
+        //         credentials.password,
+        //         credentials.email
+        //     );
 
-            if (!(await scraper.isLoggedIn())) {
-                throw new ApiError(401, "Twitter login failed");
-            }
+        //     if (!(await scraper.isLoggedIn())) {
+        //         throw new ApiError(401, "Twitter login failed");
+        //     }
 
-            const profile = await scraper.getProfile(credentials.username);
-            return { ...profile };
-        } finally {
-            await scraper.logout();
-        }
+        //     const profile = await scraper.getProfile(credentials.username);
+        //     return { ...profile };
+        // } finally {
+        //     await scraper.logout();
+        // }
     }
 
     async getRuntime(agentId: string) {
