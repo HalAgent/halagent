@@ -5,7 +5,7 @@
     "type": "module",
     "types": "dist/index.d.ts",
     "dependencies": {
-        "@ai16z/eliza": "workspace:*",
+        "@elizaos/core": "workspace:*",
         "node-cache": "5.1.2",
         "tsup": "^8.3.5"
     },
