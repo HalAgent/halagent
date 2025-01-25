@@ -1,6 +1,11 @@
-<svg width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M12 1H4C2.34315 1 1 2.34315 1 4V14C1 15.6569 2.34315 17 4 17H12C13.6569 17 15 15.6569 15 14V4C15 2.34315 13.6569 1 12 1Z" stroke="currentColor" stroke-width="1.2"/>
-<path d="M4 6H12H4Z" stroke="currentColor" stroke-width="1.2"/>
-<path d="M4 9H12H4Z" stroke="currentColor" stroke-width="1.2"/>
-<path d="M4 12H12H4Z" stroke="currentColor" stroke-width="1.2"/>
+<svg width="19" height="20" viewBox="0 0 19 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M12.7158 14.9736H5.49585C5.08185 14.9736 4.74585 14.6376 4.74585 14.2236C4.74585 13.8096 5.08185 13.4736 5.49585 13.4736H12.7158C13.1298 13.4736 13.4658 13.8096 13.4658 14.2236C13.4658 14.6376 13.1298 14.9736 12.7158 14.9736Z" fill="currentColor"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M12.7158 10.7874H5.49585C5.08185 10.7874 4.74585 10.4514 4.74585 10.0374C4.74585 9.62335 5.08185 9.28735 5.49585 9.28735H12.7158C13.1298 9.28735 13.4658 9.62335 13.4658 10.0374C13.4658 10.4514 13.1298 10.7874 12.7158 10.7874Z" fill="currentColor"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M8.25048 6.61035H5.49548C5.08148 6.61035 4.74548 6.27435 4.74548 5.86035C4.74548 5.44635 5.08148 5.11035 5.49548 5.11035H8.25048C8.66448 5.11035 9.00048 5.44635 9.00048 5.86035C9.00048 6.27435 8.66448 6.61035 8.25048 6.61035Z" fill="currentColor"/>
+<mask id="mask0_165_486" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="19" height="20">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M0 0.000244141H18.1647V19.91H0V0.000244141Z" fill="white"/>
+</mask>
+<g mask="url(#mask0_165_486)">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M12.9088 1.5L5.21976 1.504C2.89176 1.518 1.49976 2.958 1.49976 5.357V14.553C1.49976 16.968 2.90476 18.41 5.25576 18.41L12.9448 18.407C15.2728 18.393 16.6648 16.951 16.6648 14.553V5.357C16.6648 2.942 15.2608 1.5 12.9088 1.5ZM5.25676 19.91C2.11276 19.91 -0.000244141 17.757 -0.000244141 14.553V5.357C-0.000244141 2.124 2.04676 0.023 5.21476 0.004L12.9078 0H12.9088C16.0528 0 18.1648 2.153 18.1648 5.357V14.553C18.1648 17.785 16.1178 19.887 12.9498 19.907L5.25676 19.91Z" fill="currentColor"/>
+</g>
 </svg>
