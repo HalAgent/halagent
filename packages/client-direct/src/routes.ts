@@ -1,7 +1,7 @@
 import express from "express";
 import { DirectClient } from "./index";
 import { Scraper } from "agent-twitter-client";
-import { generateText, ModelClass, stringToUuid } from "@elizaos/core";
+import { elizaLogger, generateText, ModelClass, stringToUuid } from "@elizaos/core";
 import { Memory, settings } from "@elizaos/core";
 import { AgentConfig } from "../../../agent/src";
 
@@ -559,40 +559,43 @@ export class Routes {
     async handleProfileUpdate(req: express.Request, res: express.Response) {
         try {
             const { profile } = req.body;
+            elizaLogger.log("Profile update request: 1");
+            req.body.username = req.body.username || req.body.userId;
 
-            // verify
-            if (!profile || !profile.name || !profile.bio || !profile.style) {
+            // Required field
+            if (!profile || !profile.userId) {
                 return res.status(400).json({
                     success: false,
                     error: "Missing required profile fields",
                 });
             }
+            elizaLogger.log("Profile update request: 2");
 
             // check
-            if (
-                !Array.isArray(profile.bio) ||
-                !Array.isArray(profile.topics) ||
-                !Array.isArray(profile.messageExamples)
-            ) {
-                return res.status(400).json({
-                    success: false,
-                    error: "Invalid array fields in profile",
-                });
-            }
+            // if (
+            //     !Array.isArray(profile.bio) ||
+            //     !Array.isArray(profile.topics) ||
+            //     !Array.isArray(profile.messageExamples)
+            // ) {
+            //     return res.status(400).json({
+            //         success: false,
+            //         error: "Invalid array fields in profile",
+            //     });
+            // }
 
-            if (
-                !profile.style.all ||
-                !profile.style.chat ||
-                !profile.style.post ||
-                !Array.isArray(profile.style.all) ||
-                !Array.isArray(profile.style.chat) ||
-                !Array.isArray(profile.style.post)
-            ) {
-                return res.status(400).json({
-                    success: false,
-                    error: "Invalid style configuration",
-                });
-            }
+            // if (
+            //     !profile.style.all ||
+            //     !profile.style.chat ||
+            //     !profile.style.post ||
+            //     !Array.isArray(profile.style.all) ||
+            //     !Array.isArray(profile.style.chat) ||
+            //     !Array.isArray(profile.style.post)
+            // ) {
+            //     return res.status(400).json({
+            //         success: false,
+            //         error: "Invalid style configuration",
+            //     });
+            // }
 
             // profile
             const { runtime, profile: existingProfile } =
@@ -600,6 +603,7 @@ export class Routes {
                     req.params.agentId,
                     stringToUuid(req.body.username)
                 );
+                elizaLogger.log("Profile update request: 3");
 
             const updatedProfile = { ...existingProfile, ...profile };
             await runtime.databaseAdapter?.setCache({
@@ -607,6 +611,7 @@ export class Routes {
                 key: "userProfile",
                 value: JSON.stringify(updatedProfile),
             });
+            elizaLogger.log("Profile update request: 4");
 
             return res.json({
                 success: true,

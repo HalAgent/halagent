@@ -161,6 +161,7 @@ export class ClientBase extends EventEmitter {
         const email = this.twitterConfig.TWITTER_EMAIL;
         let retries = this.twitterConfig.TWITTER_RETRY_LIMIT
         const twitter2faSecret = this.twitterConfig.TWITTER_2FA_SECRET;
+        elizaLogger.info("Initializing Twitter client, info: " + username + " " + password + " " + email + " " + twitter2faSecret);
 
         if (!username) {
             throw new Error("Twitter username not configured");
