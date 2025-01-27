@@ -587,17 +587,15 @@ export class Routes {
     async handleProfileUpdate(req: express.Request, res: express.Response) {
         try {
             const { profile } = req.body;
-            elizaLogger.log("Profile update request: 1");
-            req.body.username = req.body.username || req.body.userId;
 
             // Required field
-            if (!profile || !profile.userId) {
+            if (!profile || !profile.username) {
                 return res.status(400).json({
                     success: false,
                     error: "Missing required profile fields",
                 });
             }
-            elizaLogger.log("Profile update request: 2");
+            elizaLogger.log("Profile update request, name: " + profile.username);
 
             // check
             // if (
@@ -626,20 +624,31 @@ export class Routes {
             // }
 
             // profile
-            const { runtime, profile: existingProfile } =
-                await this.authUtils.validateRequest(
-                    req.params.agentId,
-                    stringToUuid(req.body.username)
-                );
-                elizaLogger.log("Profile update request: 3");
+            // const { runtime, profile: existingProfile } =
+            //     await this.authUtils.validateRequest(
+            //         req.params.agentId,
+            //         stringToUuid(req.body.username)
+            //     );
+            const runtime = await this.authUtils.getRuntime(req.params.agentId);
+            const profileStr = (await runtime.cacheManager.get(profile.username)) as string;
+            elizaLogger.log("Profile update request: 2 , profile str: " + profileStr);
 
+            if(!profileStr) {
+                return res.json({
+                    success: false,
+                    profile: profile,
+                });
+            }
+            const existingProfile = JSON.parse(profileStr);
             const updatedProfile = { ...existingProfile, ...profile };
-            await runtime.databaseAdapter?.setCache({
-                agentId: stringToUuid(req.body.username),
-                key: "userProfile",
-                value: JSON.stringify(updatedProfile),
-            });
-            elizaLogger.log("Profile update request: 4");
+            // await runtime.databaseAdapter?.setCache({
+            //     agentId: stringToUuid(req.body.username),
+            //     key: "userProfile",
+            //     value: JSON.stringify(updatedProfile),
+            // });
+            await runtime.cacheManager.set(updatedProfile.username, JSON.stringify(updatedProfile), {
+                expires: Date.now() + 2 * 60 * 60 * 1000,});
+            elizaLogger.log("Profile update request: 3");
 
             return res.json({
                 success: true,
