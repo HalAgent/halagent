@@ -29,6 +29,7 @@ interface TwitterCredentials {
 
 interface UserProfile {
     username: string;
+    userId?: string;
     email: string;
     avatar?: string;
     bio?: string | string[];
@@ -244,6 +245,7 @@ class AuthUtils {
     createDefaultProfile(username: string, email: string): UserProfile {
         return {
             username,
+            userId:"position_placeholder",
             email,
             level: 1,
             experience: 0,
@@ -631,7 +633,7 @@ export class Routes {
             //     );
             const runtime = await this.authUtils.getRuntime(req.params.agentId);
             const profileStr = (await runtime.cacheManager.get(profile.username)) as string;
-            elizaLogger.log("Profile update request: 2 , profile str: " + profileStr);
+            elizaLogger.log("Profile update request: 2 , before profilestr: " + profileStr);
 
             if(!profileStr) {
                 return res.json({
@@ -640,7 +642,8 @@ export class Routes {
                 });
             }
             const existingProfile = JSON.parse(profileStr);
-            const updatedProfile = { ...existingProfile, ...profile };
+            // const updatedProfile = { ...existingProfile, ...profile };
+            const updatedProfile = { ...existingProfile, agentCfg: profile.agentCfg };
             // await runtime.databaseAdapter?.setCache({
             //     agentId: stringToUuid(req.body.username),
             //     key: "userProfile",
@@ -648,7 +651,7 @@ export class Routes {
             // });
             await runtime.cacheManager.set(updatedProfile.username, JSON.stringify(updatedProfile), {
                 expires: Date.now() + 2 * 60 * 60 * 1000,});
-            elizaLogger.log("Profile update request: 3");
+            elizaLogger.log("Profile update request: 3 , after profilestr: " + JSON.stringify(updatedProfile));
 
             return res.json({
                 success: true,
