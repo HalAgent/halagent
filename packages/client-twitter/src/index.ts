@@ -8,7 +8,7 @@ import { validateTwitterConfig, TwitterConfig } from "./environment.ts";
 import { TwitterInteractionClient } from "./interactions.ts";
 import { TwitterPostClient } from "./post.ts";
 import { TwitterSearchClient } from "./search.ts";
-import { TwitterSpaceClient } from "./spaces.ts";
+// import { TwitterSpaceClient } from "./spaces.ts";
 import { TwitterWatchClient } from "./watcher.ts";
 
 /**
@@ -25,7 +25,7 @@ class TwitterManager {
     search: TwitterSearchClient;
     watcher: TwitterWatchClient;
     interaction: TwitterInteractionClient;
-    space?: TwitterSpaceClient;
+    space?: null;
 
     constructor(runtime: IAgentRuntime, twitterConfig: TwitterConfig) {
         // Pass twitterConfig to the base client
@@ -48,9 +48,9 @@ class TwitterManager {
         this.interaction = new TwitterInteractionClient(this.client, runtime);
 
         // Optional Spaces logic (enabled if TWITTER_SPACES_ENABLE is true)
-        if (twitterConfig.TWITTER_SPACES_ENABLE) {
-            this.space = new TwitterSpaceClient(this.client, runtime);
-        }
+        // if (twitterConfig.TWITTER_SPACES_ENABLE) {
+        //     this.space = new TwitterSpaceClient(this.client, runtime);
+        // }
         this.watcher = new TwitterWatchClient(this.client, runtime);
     }
 }
