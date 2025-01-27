@@ -298,6 +298,13 @@ export class Routes {
         this.authUtils = new AuthUtils(client);
     }
 
+    private generateGuestName(): string {
+        const timestamp = Date.now();
+        const randomNum = Math.floor(Math.random() * 10000);
+        return 'Guest-' + timestamp + randomNum;
+    }
+    private ALL_USER_IDS: string = "USER_PROFILE_ALL_IDS_";
+
     setupRoutes(app: express.Application): void {
         app.post("/:agentId/login", this.handleLogin.bind(this));
         app.get("/:agentId/twitter_oauth_init", this.handleTwitterOauthInit.bind(this));
@@ -369,6 +376,7 @@ export class Routes {
 
     async handleTwitterOauthInit(req: express.Request, res: express.Response) {
         return this.authUtils.withErrorHandling(req, res, async () => {
+            elizaLogger.info("handleTwitterOauthInit 1");
             const client = new TwitterApi({
                 clientId: settings.TWITTER_CLIENT_ID,
                 clientSecret: settings.TWITTER_CLIENT_SECRET,
@@ -400,8 +408,16 @@ export class Routes {
             //    }),
             //    ttl: 3600 // 1hour
             //});
+            const guest_name = this.generateGuestName();
+            const userProfile = this.authUtils.createDefaultProfile(
+                guest_name,
+                ""
+            );
+            await runtime.cacheManager.set("userProfile", JSON.stringify(userProfile), {
+                expires: Date.now() + 2 * 60 * 60 * 1000,
+            });
 
-            return { url, state };
+            return { url, state, guest_name};
         });
     }
 
@@ -417,8 +433,10 @@ export class Routes {
             }
 
             const runtime = await this.authUtils.getRuntime(req.params.agentId);
+            elizaLogger.info("handleTwitterOauthInit 5");
 
             const verifierData = await runtime.cacheManager.get("oauth_verifier");
+            elizaLogger.info("handleTwitterOauthInit 6");
 
             if (!verifierData) {
                 // error
@@ -453,23 +471,33 @@ export class Routes {
                 // Save twitter profile
                 // TODO: encrypt token
                 const userId = req.params.agentId;
-                const userProfile = this.authUtils.createDefaultProfile(
-                    "",
-                    ""
-                );
-                userProfile.tweetProfile = {
-                    code,
-                    codeVerifier,
-                    accessToken,
-                    refreshToken,
-                    expiresIn
-                };
-                console.log("userProfile is", userProfile);
-                console.log("userId is", userId);
-                await runtime.cacheManager.set("userProfile", JSON.stringify(userProfile), {
-                    expires: Date.now() + 2 * 60 * 60 * 1000,
-                });
-                console.log("userProfile set");
+                // const userProfile = this.authUtils.createDefaultProfile(
+                //     "",
+                //     ""
+                // );
+                const cached = await runtime.cacheManager.get("userProfile");
+                elizaLogger.info("handleTwitterOauthInit 7");
+
+                if (cached) {
+                    const userProfile = JSON.parse(cached);
+                    userProfile.tweetProfile = {
+                       code,
+                       codeVerifier,
+                       accessToken,
+                       refreshToken,
+                       expiresIn
+                   };
+                   console.log("userProfile is", userProfile);
+                   console.log("userId is", userId);
+                   await runtime.cacheManager.set(userProfile.username, JSON.stringify(userProfile), {
+                       expires: Date.now() + 2 * 60 * 60 * 1000,});
+                   let idsStr = (await runtime.cacheManager.get(this.ALL_USER_IDS)) as string;
+                   let ids = idsStr ? new Set(JSON.parse(idsStr)) : new Set();
+                   ids.add(userProfile.username);
+                   await runtime.cacheManager.set(this.ALL_USER_IDS,  JSON.stringify(Array.from(ids)), {
+                    expires: Date.now() + 2 * 60 * 60 * 1000,});
+                   console.log("userProfile set");
+                }
                 /*await this.authUtils.saveUserData(
                     userId,
                     runtime,
