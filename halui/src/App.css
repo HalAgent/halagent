@@ -2,12 +2,12 @@
 @import './styles/custom.css';
 @import './styles/animate.css';
 
-/* 正文字体 */
+/* Body */
 .averia-serif-libre {
   font-family: 'Averia Serif Libre';
 }
 
-/* 自定义样式 */
+/* Customed */
 .pix-input {
   background-image: url('./assets/images/border-bg/input.svg');
   background-size: 100% 48px;
