@@ -1,4 +1,4 @@
-import { IAgentRuntime, Memory, Provider, State } from "@elizaos/eliza";
+import { IAgentRuntime, Memory, Provider, State } from "@elizaos/core";
 import { Scraper } from "agent-twitter-client";
 
 // Pre Defined Twitter KOL
@@ -86,31 +86,31 @@ export class twitterDataProvider {
     async fetchTwitterProfile(username: string): Promise<string> {
         try {
             // Create a new instance of the Scraper
-            const scraper = new Scraper();
+            // const scraper = new Scraper();
 
-            // Check if login was successful
-            if (!await scraper.isLoggedIn()) {
-                // Log in to Twitter using the configured environment variables
-                await scraper.login(
-                    process.env.TWITTER_USERNAME,
-                    process.env.TWITTER_PASSWORD,
-                    process.env.TWITTER_EMAIL,
-                    process.env.TWITTER_2FA_SECRET || undefined
-                );
+            // // Check if login was successful
+            // if (!await scraper.isLoggedIn()) {
+            //     // Log in to Twitter using the configured environment variables
+            //     await scraper.login(
+            //         process.env.TWITTER_USERNAME,
+            //         process.env.TWITTER_PASSWORD,
+            //         process.env.TWITTER_EMAIL,
+            //         process.env.TWITTER_2FA_SECRET || undefined
+            //     );
 
-                console.log("Logged in successfully!");
-            }
+            //     console.log("Logged in successfully!");
+            // }
 
-            // Check if login was successful
-            if (await scraper.isLoggedIn()) {
-                const profile = await scraper.getProfile(username);
-                // Log out from Twitter
-                await scraper.logout();
-                console.log("Logged out successfully!");
-                return `The twitter fans of ${username} is ${profile.followersCount}`;
-            } else {
-                console.log("Login failed. Please check your credentials.");
-            }
+            // // Check if login was successful
+            // if (await scraper.isLoggedIn()) {
+            //     const profile = await scraper.getProfile(username);
+            //     // Log out from Twitter
+            //     await scraper.logout();
+            //     console.log("Logged out successfully!");
+            //     return `The twitter fans of ${username} is ${profile.followersCount}`;
+            // } else {
+            //     console.log("Login failed. Please check your credentials.");
+            // }
         } catch (error) {
             console.error("An error occurred:", error);
         }

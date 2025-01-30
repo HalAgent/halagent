@@ -1,9 +1,10 @@
 import express from "express";
 import { DirectClient } from "./index";
 import { Scraper } from "agent-twitter-client";
-import { generateText, ModelClass, stringToUuid } from "@elizaos/eliza";
-import { Memory, settings } from "@elizaos/eliza";
+import { elizaLogger, generateText, ModelClass, stringToUuid } from "@elizaos/core";
+import { Memory, settings } from "@elizaos/core";
 import { AgentConfig } from "../../../agent/src";
+
 import {
     QUOTES_LIST,
     STYLE_LIST,
@@ -28,6 +29,7 @@ interface TwitterCredentials {
 
 interface UserProfile {
     username: string;
+    userId?: string;
     email: string;
     avatar?: string;
     bio?: string | string[];
@@ -136,23 +138,23 @@ class AuthUtils {
     async verifyTwitterCredentials(
         credentials: TwitterCredentials
     ): Promise<any> {
-        const scraper = new Scraper();
-        try {
-            await scraper.login(
-                credentials.username,
-                credentials.password,
-                credentials.email
-            );
+        // const scraper = new Scraper();
+        // try {
+        //     await scraper.login(
+        //         credentials.username,
+        //         credentials.password,
+        //         credentials.email
+        //     );
 
-            if (!(await scraper.isLoggedIn())) {
-                throw new ApiError(401, "Twitter login failed");
-            }
+        //     if (!(await scraper.isLoggedIn())) {
+        //         throw new ApiError(401, "Twitter login failed");
+        //     }
 
-            const profile = await scraper.getProfile(credentials.username);
-            return { ...profile };
-        } finally {
-            await scraper.logout();
-        }
+        //     const profile = await scraper.getProfile(credentials.username);
+        //     return { ...profile };
+        // } finally {
+        //     await scraper.logout();
+        // }
     }
 
     async getRuntime(agentId: string) {
@@ -243,6 +245,7 @@ class AuthUtils {
     createDefaultProfile(username: string, email: string): UserProfile {
         return {
             username,
+            userId:"position_placeholder",
             email,
             level: 1,
             experience: 0,
@@ -296,6 +299,13 @@ export class Routes {
     ) {
         this.authUtils = new AuthUtils(client);
     }
+
+    private generateGuestName(): string {
+        const timestamp = Date.now();
+        const randomNum = Math.floor(Math.random() * 10000);
+        return 'Guest-' + timestamp + randomNum;
+    }
+    private ALL_USER_IDS: string = "USER_PROFILE_ALL_IDS_";
 
     setupRoutes(app: express.Application): void {
         app.post("/:agentId/login", this.handleLogin.bind(this));
@@ -368,18 +378,19 @@ export class Routes {
 
     async handleTwitterOauthInit(req: express.Request, res: express.Response) {
         return this.authUtils.withErrorHandling(req, res, async () => {
+            elizaLogger.info("handleTwitterOauthInit 1");
             const client = new TwitterApi({
                 clientId: settings.TWITTER_CLIENT_ID,
                 clientSecret: settings.TWITTER_CLIENT_SECRET,
             });
-            
+
             const { url, state, codeVerifier } = client.generateOAuth2AuthLink(
                 `${settings.MY_APP_URL}/${req.params.agentId}/twitter_oauth_callback`,
                 {
                   scope: ['tweet.read', 'tweet.write', 'users.read', 'offline.access'],
                 }
             );
-            
+
             // Save state & codeVerifier
             const runtime = await this.authUtils.getRuntime(req.params.agentId);
             await runtime.cacheManager.set("oauth_verifier", JSON.stringify({
@@ -399,8 +410,16 @@ export class Routes {
             //    }),
             //    ttl: 3600 // 1hour
             //});
-            
-            return { url, state };
+            const guest_name = this.generateGuestName();
+            const userProfile = this.authUtils.createDefaultProfile(
+                guest_name,
+                ""
+            );
+            await runtime.cacheManager.set("userProfile", JSON.stringify(userProfile), {
+                expires: Date.now() + 2 * 60 * 60 * 1000,
+            });
+
+            return { url, state, guest_name};
         });
     }
 
@@ -416,8 +435,10 @@ export class Routes {
             }
 
             const runtime = await this.authUtils.getRuntime(req.params.agentId);
-            
+            elizaLogger.info("handleTwitterOauthInit 5");
+
             const verifierData = await runtime.cacheManager.get("oauth_verifier");
+            elizaLogger.info("handleTwitterOauthInit 6");
 
             if (!verifierData) {
                 // error
@@ -452,23 +473,33 @@ export class Routes {
                 // Save twitter profile
                 // TODO: encrypt token
                 const userId = req.params.agentId;
-                const userProfile = this.authUtils.createDefaultProfile(
-                    "",
-                    ""
-                );
-                userProfile.tweetProfile = {
-                    code,
-                    codeVerifier,
-                    accessToken,
-                    refreshToken,
-                    expiresIn
-                };
-                console.log("userProfile is", userProfile);
-                console.log("userId is", userId);
-                await runtime.cacheManager.set("userProfile", JSON.stringify(userProfile), {
-                    expires: Date.now() + 2 * 60 * 60 * 1000,
-                });
-                console.log("userProfile set");
+                // const userProfile = this.authUtils.createDefaultProfile(
+                //     "",
+                //     ""
+                // );
+                const cached = await runtime.cacheManager.get("userProfile");
+                elizaLogger.info("handleTwitterOauthInit 7");
+
+                if (cached) {
+                    const userProfile = JSON.parse(cached);
+                    userProfile.tweetProfile = {
+                       code,
+                       codeVerifier,
+                       accessToken,
+                       refreshToken,
+                       expiresIn
+                   };
+                   console.log("userProfile is", userProfile);
+                   console.log("userId is", userId);
+                   await runtime.cacheManager.set(userProfile.username, JSON.stringify(userProfile), {
+                       expires: Date.now() + 2 * 60 * 60 * 1000,});
+                   let idsStr = (await runtime.cacheManager.get(this.ALL_USER_IDS)) as string;
+                   let ids = idsStr ? new Set(JSON.parse(idsStr)) : new Set();
+                   ids.add(userProfile.username);
+                   await runtime.cacheManager.set(this.ALL_USER_IDS,  JSON.stringify(Array.from(ids)), {
+                    expires: Date.now() + 2 * 60 * 60 * 1000,});
+                   console.log("userProfile set");
+                }
                 /*await this.authUtils.saveUserData(
                     userId,
                     runtime,
@@ -532,10 +563,10 @@ export class Routes {
                                     }
                                 }
                             </script>
-                            <button style="text-align: center; width: 40%; height: 40px; font-size: 20px; background-color: #9F91ED; color: #ffffff; margin: 20px; border: none; border-radius: 10px;" 
+                            <button style="text-align: center; width: 40%; height: 40px; font-size: 20px; background-color: #9F91ED; color: #ffffff; margin: 20px; border: none; border-radius: 10px;"
                                 onclick="closeWindow()">
                                 Click to Close</button>
-                            <br>        
+                            <br>
                         </div>
                         <div class="container">
                             <img style="max-width: 40%; width: 40%; height: auto;" src="data:image/svg+xml;base64,">
@@ -559,53 +590,68 @@ export class Routes {
         try {
             const { profile } = req.body;
 
-            // verify
-            if (!profile || !profile.name || !profile.bio || !profile.style) {
+            // Required field
+            if (!profile || !profile.username) {
                 return res.status(400).json({
                     success: false,
                     error: "Missing required profile fields",
                 });
             }
+            elizaLogger.log("Profile update request, name: " + profile.username);
 
             // check
-            if (
-                !Array.isArray(profile.bio) ||
-                !Array.isArray(profile.topics) ||
-                !Array.isArray(profile.messageExamples)
-            ) {
-                return res.status(400).json({
-                    success: false,
-                    error: "Invalid array fields in profile",
-                });
-            }
+            // if (
+            //     !Array.isArray(profile.bio) ||
+            //     !Array.isArray(profile.topics) ||
+            //     !Array.isArray(profile.messageExamples)
+            // ) {
+            //     return res.status(400).json({
+            //         success: false,
+            //         error: "Invalid array fields in profile",
+            //     });
+            // }
 
-            if (
-                !profile.style.all ||
-                !profile.style.chat ||
-                !profile.style.post ||
-                !Array.isArray(profile.style.all) ||
-                !Array.isArray(profile.style.chat) ||
-                !Array.isArray(profile.style.post)
-            ) {
-                return res.status(400).json({
-                    success: false,
-                    error: "Invalid style configuration",
-                });
-            }
+            // if (
+            //     !profile.style.all ||
+            //     !profile.style.chat ||
+            //     !profile.style.post ||
+            //     !Array.isArray(profile.style.all) ||
+            //     !Array.isArray(profile.style.chat) ||
+            //     !Array.isArray(profile.style.post)
+            // ) {
+            //     return res.status(400).json({
+            //         success: false,
+            //         error: "Invalid style configuration",
+            //     });
+            // }
 
             // profile
-            const { runtime, profile: existingProfile } =
-                await this.authUtils.validateRequest(
-                    req.params.agentId,
-                    stringToUuid(req.body.username)
-                );
+            // const { runtime, profile: existingProfile } =
+            //     await this.authUtils.validateRequest(
+            //         req.params.agentId,
+            //         stringToUuid(req.body.username)
+            //     );
+            const runtime = await this.authUtils.getRuntime(req.params.agentId);
+            const profileStr = (await runtime.cacheManager.get(profile.username)) as string;
+            elizaLogger.log("Profile update request: 2 , before profilestr: " + profileStr);
 
-            const updatedProfile = { ...existingProfile, ...profile };
-            await runtime.databaseAdapter?.setCache({
-                agentId: stringToUuid(req.body.username),
-                key: "userProfile",
-                value: JSON.stringify(updatedProfile),
-            });
+            if(!profileStr) {
+                return res.json({
+                    success: false,
+                    profile: profile,
+                });
+            }
+            const existingProfile = JSON.parse(profileStr);
+            // const updatedProfile = { ...existingProfile, ...profile };
+            const updatedProfile = { ...existingProfile, agentCfg: profile.agentCfg };
+            // await runtime.databaseAdapter?.setCache({
+            //     agentId: stringToUuid(req.body.username),
+            //     key: "userProfile",
+            //     value: JSON.stringify(updatedProfile),
+            // });
+            await runtime.cacheManager.set(updatedProfile.username, JSON.stringify(updatedProfile), {
+                expires: Date.now() + 2 * 60 * 60 * 1000,});
+            elizaLogger.log("Profile update request: 3 , after profilestr: " + JSON.stringify(updatedProfile));
 
             return res.json({
                 success: true,
@@ -813,7 +859,7 @@ export class Routes {
                     tokenAmount,
                 });
 
-                // 
+                //
                 const connection = new Connection(
                     clusterApiUrl("mainnet-beta"),
                     "confirmed"
