@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { UserProfile, TwitterProfile } from '@/types/auth';
+import { UserProfile } from '@/types/auth';
 
 interface UserState {
   userProfile: UserProfile | null;
@@ -43,9 +43,11 @@ export const useUserStore = create<UserState>()(
 
       updateProfile: profile => {
         const currentProfile = get().userProfile;
-        if (!currentProfile) return;
-
-        set({ userProfile: { ...currentProfile, ...profile } });
+        if (!currentProfile) {
+            set({ userProfile: profile as UserProfile })
+        }else{
+            set({ userProfile: { ...currentProfile, ...profile } });
+        }
       },
 
       getUserId: () => get().userProfile?.userId || null,

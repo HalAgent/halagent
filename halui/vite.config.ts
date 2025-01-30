@@ -17,7 +17,7 @@ export default defineConfig({
           rewrite: path => path.replace(/^\/dev/, ''),
         },
         '/api': {
-          target: 'https://halagent.org/api',
+          target: 'https://host.halagent.org/api',
           secure: false,
           ws: true,
           changeOrigin: true,

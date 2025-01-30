@@ -3,14 +3,12 @@ import {
   LoginResponse,
   ApiResponse,
   ProfileUpdateResponse,
-  UserProfile,
   ProfileQueryResponse,
   AgentConfig,
   //AgentConfig,
 } from '../types/auth';
 import { useUserStore } from '@/stores/useUserStore';
 import api from '@/services/axios';
-import { UserProfile } from '@/types/auth';
 
 export const authService = {
   /**
@@ -87,10 +85,13 @@ export const authService = {
    * @returns Updated profile
    * @throws Update Exception
    */
-  async updateProfile(userId: string, profile: UserProfile): Promise<ProfileUpdateResponse> {
+  async updateProfile( profile: {
+    email: string;
+    username: string;
+    password: string;
+  }): Promise<ProfileUpdateResponse> {
     try {
       const response = await api.post(`/profile_upd`, {
-        userId,
         profile,
       });
       if (response.data) {
@@ -105,14 +106,14 @@ export const authService = {
 
   /**
    * Read the user profile
-   * @param userId UserID
+   * @param username username
    * @returns UserProfile
    * @throws Geting Exception
    */
-  async getProfile(userId: string): Promise<ProfileQueryResponse> {
+  async getProfile(username: string): Promise<ProfileQueryResponse> {
     try {
-      const response = await api.post<ProfileQueryResponse>(`/profile`, {
-        userId,
+      const response = await api.post<ProfileQueryResponse>(`/profile_upd`, {
+        username,
       });
       if (response?.data && response?.data?.profile) {
         useUserStore.getState().setUserProfile(response?.data?.profile);
@@ -187,14 +188,13 @@ export const authService = {
    * Logout
    * Logout for the userId and clear data
    */
-  logout(userId: string) {
-    useUserStore.getState().logout(userId);
+  logout() {
+    useUserStore.getState().logout();
   },
 
   twitterOAuth: {
     async getAuthUrl() {
-      const userId = useUserStore.getState().getUserId();
-      const response = await api.get('/twitter_oauth_init?userId=' + userId);
+      const response = await api.get('/twitter_oauth_init');
       const result = response.data;
       return result.data;
     },
@@ -231,7 +231,7 @@ export const authService = {
         const handler = async (event: MessageEvent) => {
           // Message origin
           //if (event.origin !== window.location.origin) return;
-          const allowedOrigins = ['https://web3agent.site', 'http://localhost:3000'];
+          const allowedOrigins = ['https://host.halagent.org', 'http://localhost:3000'];
 
           if (!allowedOrigins.includes(event.origin)) {
             console.warn('Received message from unauthorized origin:', event.origin);
