@@ -1,0 +1,200 @@
+.hosting {
+  position: relative;
+  margin: 0 auto;
+  font-family: 'Geologica';
+  overflow-x: hidden;
+  .hosting-bg {
+    position: absolute;
+    top: -44px;
+    width: 100%;
+    z-index: -1;
+    img {
+      height: 394;
+      width: 100%;
+      object-fit: cover;
+    }
+  }
+  .hosting-content {
+    .hosting-content-info {
+      padding-top: 10px;
+      padding-left: 16px;
+      display: flex;
+      width: 202px;
+      color: #fff;
+      .hosting-content-info-left {
+        margin-right: 14px;
+        width: 44px;
+        height: 44px;
+      }
+      .hosting-content-info-right {
+        flex: 1;
+        .hosting-content-info-right-name {
+          font-size: 16px;
+          line-height: 20px;
+        }
+        .hosting-content-info-right-lv {
+          display: flex;
+          align-items: center;
+          margin-top: 5px;
+          .hosting-content-info-right-lv-text {
+            font-size: 12px;
+            margin-right: 4px;
+          }
+          .hosting-content-info-right-lv-step {
+            margin-left: 3px;
+            flex: 1;
+            height: 6px;
+            background: #d0d6e0;
+            border-radius: 4px;
+            overflow: hidden;
+            .hosting-content-info-right-lv-step-main {
+              height: 100%;
+              background: #39ce78;
+            }
+          }
+        }
+      }
+    }
+    .hosting-content-host {
+      position: absolute;
+      right: 126px;
+      margin-top: 37px;
+      z-index: 3;
+      .hosting-content-host-text {
+        border: 2px solid #fff;
+        height: 68px;
+        width: 152px;
+        line-height: 15px;
+        box-sizing: border-box;
+        padding: 12px 7px 12px 11px;
+        border-radius: 10px;
+        color: #fff;
+        font-size: 10px;
+        word-break: break-word;
+        overflow: hidden;
+      }
+      .hosting-content-host-text-sj {
+        position: absolute;
+        right: -12px;
+        bottom: 20px;
+        width: 12px;
+      }
+      .hosting-content-host-icon {
+        position: absolute;
+        width: 124px;
+        top: 0px;
+        right: -120px;
+      }
+    }
+    .hosting-content-popup {
+      z-index: 2;
+      position: relative;
+      margin-top: 142px;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 196px);
+      .hosting-content-popup-line {
+        position: absolute;
+        left: 50%;
+        top: 2px;
+        margin-left: -16px;
+        width: 32px;
+        height: 4px;
+        border-radius: 2px;
+        background: #fff;
+        z-index: 2;
+      }
+      .hosting-content-popup-icon {
+        width: 100%;
+        object-fit: cover;
+      }
+      .hosting-content-popup-main {
+        width: 100%;
+        box-sizing: border-box;
+        flex: 1;
+        background: #fff;
+        margin-top: -2px;
+        padding: 18px 16px;
+        .hosting-content-popup-main-title {
+          box-sizing: border-box;
+          padding: 0 8px;
+          display: flex;
+          align-items: center;
+          .hosting-content-popup-main-title-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            box-shadow: 2.66px 2.66px 2.66px rgba(0, 0, 0, 0.25);
+            transition: transform 0.2s ease;
+            &:active {
+              transform: scale(1.1);
+            }
+            img {
+              width: 24px;
+            }
+          }
+          .hosting-content-popup-main-title-text {
+            margin-left: 10px;
+            width: 164px;
+            transition: transform 0.2s ease;
+            &:active {
+              transform: scale(1.1);
+            }
+          }
+        }
+        .hosting-content-popup-main-form {
+          box-sizing: border-box;
+          width: 100%;
+          margin-top: 18px;
+          padding: 18px;
+          box-shadow: 0px 2px 14px rgba(0, 0, 0, 0.1);
+          border-radius: 20px;
+          .hosting-content-popup-main-form-label {
+            font-size: 14px;
+          }
+          .hosting-content-popup-main-form-select {
+            box-sizing: border-box;
+            height: 42px;
+            border-radius: 10px;
+            border: 1px solid #d0d6e0;
+            background: none;
+            outline: none;
+            font: inherit;
+            color: inherit;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+        }
+      }
+
+      .hosting-content-popup-main-footer {
+        position: absolute;
+        bottom: 43px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        .hosting-content-popup-main-footer-item {
+          display: flex;
+          align-items: center;
+          margin-right: 20px;
+          &:last-of-type {
+            margin-right: 0;
+          }
+          .hosting-content-popup-main-footer-item-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+          }
+          .hosting-content-popup-main-footer-item-text {
+            font-size: 11px;
+            font-family: 'Geologica';
+          }
+        }
+      }
+    }
+  }
+}

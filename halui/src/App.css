@@ -1,17 +1,13 @@
 @import './styles/cursor.css';
 @import './styles/custom.css';
+@import './styles/animate.css';
 
-/* font */
-.press-start-2p {
-  font-family: 'Press Start 2P';
+/* Body */
+.averia-serif-libre {
+  font-family: 'Averia Serif Libre';
 }
 
-/* content */
-.inknut-antiqua {
-  font-family: 'Inknut Antiqua';
-}
-
-/* custom */
+/* Customed */
 .pix-input {
   background-image: url('./assets/images/border-bg/input.svg');
   background-size: 100% 48px;
@@ -41,4 +37,17 @@
   background-position: center;
   background-repeat: no-repeat;
   color: #ffffff;
+}
+
+.btn-scale {
+  transition: all 0.1s;
+}
+
+.btn-scale:hover {
+  transform: scale(1.05);
+}
+
+.pc-bg {
+  background-image: url('./assets/images/background/pc-bg.png');
+  background-size:cover;
 }

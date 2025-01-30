@@ -1,26 +1,16 @@
-import React from 'react';
-import { HashRouter as Router } from 'react-router-dom';
-import AppRoutes from './router';
-import { useWindowResize } from './hooks/useWindowResize';
-import { LoadingProvider } from './context/LoadingContext';
 import './App.css';
-import './mock'; // mock
+import Hosting from './views/Hosting';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import 'virtual:uno.css';
 
-const App: React.FC = () => {
-  const { width } = useWindowResize(500); //200ms
-
-  // reset window size
-  React.useEffect(() => {
-    document.documentElement.style.setProperty('--window-width', `${width}px`);
-  }, [width]);
-
+function App() {
   return (
-    <LoadingProvider>
-      <Router>
-        <AppRoutes />
-      </Router>
-    </LoadingProvider>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Hosting />} />
+      </Routes>
+    </Router>
   );
-};
+}
 
 export default App;
