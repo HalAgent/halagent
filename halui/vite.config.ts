@@ -10,14 +10,14 @@ export default defineConfig({
     host: '0.0.0.0',
     proxy: {
         '/dev': {
-          target: 'https://web3agent.site/dev',
+          target: 'https://halagent.org/dev',
           secure: false,
           ws: true,
           changeOrigin: true,
           rewrite: path => path.replace(/^\/dev/, ''),
         },
         '/api': {
-          target: 'https://web3agent.site/api',
+          target: 'https://halagent.org/api',
           secure: false,
           ws: true,
           changeOrigin: true,
