@@ -10,7 +10,6 @@ import {
 } from '../types/auth';
 import { useUserStore } from '@/stores/useUserStore';
 import api from '@/services/axios';
-import { UserProfile } from '@/types/auth';
 
 export const authService = {
   /**
@@ -187,8 +186,8 @@ export const authService = {
    * Logout
    * Logout for the userId and clear data
    */
-  logout(userId: string) {
-    useUserStore.getState().logout(userId);
+  logout() {
+    useUserStore.getState().logout();
   },
 
   twitterOAuth: {

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { UserProfile, TwitterProfile } from '@/types/auth';
+import { UserProfile } from '@/types/auth';
 
 interface UserState {
   userProfile: UserProfile | null;

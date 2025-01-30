@@ -117,7 +117,7 @@ const Hosting = () => {
         authService.twitterOAuth.createAuthWindow(url);
         // 4. Wait for auth result
         await authService.twitterOAuth.listenForAuthMessage();
-        await authService.getProfile(response.data?.profile?.userId);
+        await authService.getProfile(response.data?.profile?.userId as string);
       } catch (err) {
         console.error('Twitter auth error:', err);
       }
