@@ -10,6 +10,7 @@ import {
 } from '../types/auth';
 import { useUserStore } from '@/stores/useUserStore';
 import api from '@/services/axios';
+import { UserProfile } from '@/types/auth';
 
 export const authService = {
   /**
@@ -114,7 +115,7 @@ export const authService = {
         userId,
       });
       if (response?.data && response?.data?.profile) {
-        useUserStore.getState().updateProfile(response?.data?.profile);
+        useUserStore.getState().setUserProfile(response?.data?.profile);
       }
       return response.data;
     } catch (error) {
@@ -199,9 +200,12 @@ export const authService = {
     },
 
     async handleRevoke() {
-      const userId = useUserStore.getState().getUserId();
-      const response = await api.get('/twitter_oauth_revoke?userId=' + userId);
-      useUserStore.getState().setTwitterProfile(null);
+      const userProfile = useUserStore.getState()
+      const response = await api.get('/twitter_oauth_revoke?userId=' + userProfile.userProfile?.userId);
+      userProfile.updateProfile({
+        ...userProfile.userProfile,
+        tweetProfile: undefined
+      });
       console.warn('Twitter revoke success', useUserStore.getState());
       const result = response.data;
       return result.data;
@@ -219,7 +223,7 @@ export const authService = {
     },
 
     createAuthWindow(url: string) {
-      return window.open(url, 'twitter-auth', 'width=600,height=600,status=yes,scrollbars=yes');
+      return window.open(url, 'twitter-auth', 'width=600,height=600,status=yes,scrollbars=y es');
     },
 
     listenForAuthMessage() {

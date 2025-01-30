@@ -5,6 +5,7 @@ import sj from '@/assets/images/hosting/sj.png';
 import host from '@/assets/images/hosting/host.gif';
 import popup from '@/assets/images/hosting/popup.png';
 import TitleText from '@/assets/images/hosting/title-text.png';
+import xsj from '@/assets/icons/xsj.png';
 
 import Twitter from '@/assets/icons/Twitter.png';
 import Website from '@/assets/icons/Website.png';
@@ -47,6 +48,7 @@ const Hosting = () => {
   const [message, setMessage] = useState(MessageList[0]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+  const UserProfile = useUserStore()
 
   const closeModal = (e?: React.MouseEvent) => {
     e?.preventDefault();
@@ -70,12 +72,42 @@ const Hosting = () => {
     }
   };
 
+  function simpleHash(input: string) {
+    let hash = 0;
+    if (input.length === 0) return hash;
+
+    for (let i = 0; i < input.length; i++) {
+      let char = input.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash |= 0;
+    }
+
+    return hash.toString();
+  }
+
+
+  function generateGuestName() {
+    const timestamp = Date.now();
+    const randomNum = Math.floor(Math.random() * 10000);
+    return 'Guest-' + timestamp + randomNum;
+  }
+
+  function generateGuestPassword(name: string) {
+    return simpleHash(name).toString();
+  }
+
+
   const handleTwitterAuth = () => {
     if (enabled) return;
     setTimeout(async () => {
-      if (!useUserStore.getState().getUserId()) {
-        setIsModalOpen(true);
-      }
+     // Guest
+     const username = generateGuestName();
+     const password = generateGuestPassword(username);
+     const email = '';
+     const credentials = { username, password, email };
+     const response = await authService.guestLogin(credentials);
+    console.log('guest auth, res: ' , response);
+
       try {
         // 1. Get URL
         const { url, state } = await authService.twitterOAuth.getAuthUrl();
@@ -85,13 +117,7 @@ const Hosting = () => {
         authService.twitterOAuth.createAuthWindow(url);
         // 4. Wait for auth result
         await authService.twitterOAuth.listenForAuthMessage();
-        const userId = useUserStore.getState().getUserId();
-        if (userId) {
-          setEnabled(true);
-          await authService.getProfile(userId);
-        } else {
-          setEnabled(false);
-        }
+        await authService.getProfile(response.data?.profile?.userId);
       } catch (err) {
         console.error('Twitter auth error:', err);
       }
@@ -107,12 +133,6 @@ const Hosting = () => {
     }
   };
   useEffect(() => {
-    const twitterProfile = useUserStore.getState().twitterProfile;
-
-    if (twitterProfile) {
-      setEnabled(true);
-    }
-
     const timer = setInterval(() => {
       setMessage(MessageList[Math.floor(Math.random() * MessageList.length)]);
     }, 5000);
@@ -121,6 +141,16 @@ const Hosting = () => {
       clearInterval(timer);
     };
   }, []);
+
+  useEffect(() => {
+    console.warn('UserProfile', UserProfile);
+
+    if (UserProfile.userProfile?.tweetProfile?.username) {
+        setEnabled(true);
+    }else{
+        setEnabled(false);
+    }
+  },[UserProfile])
 
   return (
     <div className={isMobile ? '' : 'pc-bg'} >
@@ -191,8 +221,9 @@ const Hosting = () => {
                 <div className="hosting-content-popup-main-form-label">Post Interval</div>
                 <div className="hosting-content-popup-main-form-select mt-[12px]">
                   <Menu>
-                    <MenuButton className="h-[100%] w-[94%] bg-[#fff] text-left GeologicaRegular color-[#111] text-[14px]">
+                    <MenuButton className="flex justify-between flex-items-center h-[100%] w-[94%] bg-[#fff] text-left GeologicaRegular color-[#111] text-[14px]">
                       {intervalValue}
+                    <img src={xsj}  className="w-[16px] h-[16px] ml-[10px]" />
                     </MenuButton>
 
                     <MenuItems
@@ -218,8 +249,9 @@ const Hosting = () => {
                 <div className="hosting-content-popup-main-form-label mt-[18px]">Character</div>
                 <div className="hosting-content-popup-main-form-select mt-[12px]">
                   <Menu>
-                    <MenuButton className="h-[100%] w-[94%] bg-[#fff] text-left GeologicaRegular  color-[#111] text-[14px]">
+                    <MenuButton className="flex justify-between flex-items-center h-[100%] w-[94%] bg-[#fff] text-left GeologicaRegular  color-[#111] text-[14px]">
                       {character ? character : <span className="color-[#B9B9B9] Geologica">Choose your favorite niche</span>}
+                    <img src={xsj}  className="w-[16px] h-[16px] ml-[10px]" />
                     </MenuButton>
 
                     <MenuItems
