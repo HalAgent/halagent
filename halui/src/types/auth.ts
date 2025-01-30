@@ -38,6 +38,8 @@ export interface UserProfile {
   userId: string;
   gmail?: string;
   gender?: string
+  password:string
+  username: string;
   agentname: string;
   bio?: string | string[];
   walletAddress?: string;

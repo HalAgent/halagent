@@ -72,52 +72,25 @@ const Hosting = () => {
     }
   };
 
-  function simpleHash(input: string) {
-    let hash = 0;
-    if (input.length === 0) return hash;
-
-    for (let i = 0; i < input.length; i++) {
-      let char = input.charCodeAt(i);
-      hash = (hash << 5) - hash + char;
-      hash |= 0;
-    }
-
-    return hash.toString();
-  }
-
-
-  function generateGuestName() {
-    const timestamp = Date.now();
-    const randomNum = Math.floor(Math.random() * 10000);
-    return 'Guest-' + timestamp + randomNum;
-  }
-
-  function generateGuestPassword(name: string) {
-    return simpleHash(name).toString();
-  }
-
 
   const handleTwitterAuth = () => {
     if (enabled) return;
     setTimeout(async () => {
-     // Guest
-     const username = generateGuestName();
-     const password = generateGuestPassword(username);
-     const email = '';
-     const credentials = { username, password, email };
-     const response = await authService.guestLogin(credentials);
-    console.log('guest auth, res: ' , response);
-
       try {
         // 1. Get URL
-        const { url, state } = await authService.twitterOAuth.getAuthUrl();
+        const {guest_name, url, state } = await authService.twitterOAuth.getAuthUrl();
         // 2. Store state
         sessionStorage.setItem('twitter_oauth_state', state);
         // 3. Open auth window
         authService.twitterOAuth.createAuthWindow(url);
         // 4. Wait for auth result
         await authService.twitterOAuth.listenForAuthMessage();
-        await authService.getProfile(response.data?.profile?.userId as string);
+        await authService.updateProfile({
+            email: '111',
+            password: '111',
+            username: guest_name as string,
+          }
+        );
       } catch (err) {
         console.error('Twitter auth error:', err);
       }
@@ -126,8 +99,10 @@ const Hosting = () => {
   const handleTwitterAuthRevoke = async (e?: React.MouseEvent) => {
     e?.preventDefault();
     try {
-      await authService.twitterOAuth.handleRevoke();
-      setEnabled(false);
+        UserProfile.updateProfile({
+            ...UserProfile.userProfile,
+            tweetProfile: undefined
+          });
     } catch (err) {
       console.error('Twitter revoke error:', err);
     }
@@ -144,8 +119,7 @@ const Hosting = () => {
 
   useEffect(() => {
     console.warn('UserProfile', UserProfile);
-
-    if (UserProfile.userProfile?.tweetProfile?.username) {
+    if (UserProfile.userProfile?.tweetProfile?.accessToken) {
         setEnabled(true);
     }else{
         setEnabled(false);

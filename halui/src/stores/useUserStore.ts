@@ -43,9 +43,11 @@ export const useUserStore = create<UserState>()(
 
       updateProfile: profile => {
         const currentProfile = get().userProfile;
-        if (!currentProfile) return;
-
-        set({ userProfile: { ...currentProfile, ...profile } });
+        if (!currentProfile) {
+            set({ userProfile: profile as UserProfile })
+        }else{
+            set({ userProfile: { ...currentProfile, ...profile } });
+        }
       },
 
       getUserId: () => get().userProfile?.userId || null,
