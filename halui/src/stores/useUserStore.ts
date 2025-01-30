@@ -1,63 +1,66 @@
 import { create } from 'zustand';
-import { UserProfile, TwitterProfile } from '@/types/auth';
+import { persist } from 'zustand/middleware';
+import { UserProfile } from '@/types/auth';
 
 interface UserState {
-  // state
   userProfile: UserProfile | null;
-  twitterProfile: TwitterProfile | null; // Twitter
   isAuthenticated: boolean;
 
-  // Operation
-  setUserProfile: (profile: UserProfile | null) => void; //set profile
-  setTwitterProfile: (profile: TwitterProfile | null) => void; // set Twitter
-  login: (userProfile: UserProfile, twitterProfile: TwitterProfile) => void; // login
-  logout: () => void; // logout
-  updateProfile: (profile: UserProfile) => void; // user profile
+  setUserProfile: (profile: UserProfile | null) => void;
+  login: (userProfile: UserProfile) => void;
+  logout: () => void;
+  updateProfile: (profile: Partial<UserProfile>) => void;
 
-  // getter
-  getUserId: () => string | null; // get userID
+  getUserId: () => string | null;
+  getXUsername: () => string | null;
+  getXAccessToken: () => string | null;
+  getWatchlist: () => string[];
 }
 
-export const useUserStore = create<UserState>((set, get) => ({
-  // init state
-  userProfile: null,
-  twitterProfile: null,
-  isAuthenticated: false,
-
-  setUserProfile: profile => set({ userProfile: profile }),
-
-  setTwitterProfile: profile => set({ twitterProfile: profile }),
-
-  login: (userProfile, twitterProfile) => {
-    set({
-      userProfile,
-      twitterProfile,
-      isAuthenticated: true,
-    });
-
-    // local
-    localStorage.setItem('userProfile', JSON.stringify(userProfile));
-    localStorage.setItem('twitterProfile', JSON.stringify(twitterProfile));
-    localStorage.setItem('userId', userProfile.username);
-  },
-
-  logout: () => {
-    set({
+export const useUserStore = create<UserState>()(
+  persist(
+    (set, get) => ({
+      // Initial state
       userProfile: null,
-      twitterProfile: null,
       isAuthenticated: false,
-    });
 
-    // clear
-    localStorage.removeItem('userProfile');
-    localStorage.removeItem('twitterProfile');
-    localStorage.removeItem('userId');
-  },
+      setUserProfile: profile => set({ userProfile: profile }),
 
-  updateProfile: profile => {
-    set({ userProfile: profile });
-    localStorage.setItem('userProfile', JSON.stringify(profile));
-  },
 
-  getUserId: () => get().userProfile?.username || null,
-}));
+      login: userProfile => {
+        set({
+          userProfile,
+          isAuthenticated: true,
+        });
+      },
+
+      logout: () => {
+        set({
+          userProfile: null,
+          isAuthenticated: false,
+        });
+      },
+
+      updateProfile: profile => {
+        const currentProfile = get().userProfile;
+        if (!currentProfile) {
+            set({ userProfile: profile as UserProfile })
+        }else{
+            set({ userProfile: { ...currentProfile, ...profile } });
+        }
+      },
+
+      getUserId: () => get().userProfile?.userId || null,
+      getXUsername: () => get().userProfile?.tweetProfile?.username || null,
+      getXAccessToken: () => get().userProfile?.tweetProfile?.accessToken || null,
+      getWatchlist: () => get().userProfile?.twitterWatchList?.map(item => item.username) || [],
+    }),
+    {
+      name: 'user-store', // Key used in localStorage
+      partialize: (state) => ({
+        userProfile: state.userProfile,
+        isAuthenticated: state.isAuthenticated,
+      }),
+    }
+  )
+);

@@ -1,15 +1,61 @@
-/* font */
 @font-face {
   font-family: 'Press Start 2P';
   src: url('@/assets/fonts/Press Start 2P.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
+
 @font-face {
-  font-family: 'Inknut Antiqua';
-  src: url('@/assets/fonts/InknutAntiqua-Regular.ttf') format('truetype');
+  font-family: 'Geologica';
+  src: url('@/assets/fonts/Geologica-Light.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
+}
+
+@font-face {
+  font-family: 'GeologicaRegular';
+  src: url('@/assets/fonts/Geologica-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gantari';
+  src: url('@/assets/fonts/Gantari.woff2') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Tiny5';
+  src: url('@/assets/fonts/Tiny5.woff2') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Averia Serif Libre';
+  src: url('@/assets/fonts/AveriaSerifLibre-Regular-7.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 像素字体 */
+.press-start-2p {
+  font-family: 'Press Start 2P';
+}
+
+.Geologica {
+  font-family: 'Geologica';
+}
+.GeologicaRegular {
+  font-family: 'GeologicaRegular';
+}
+.Tiny5 {
+  font-family: 'Tiny5';
+}
+.Gantari {
+  font-family: 'Gantari';
 }
 
 :root {
@@ -25,15 +71,13 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* scrollbar-width */
 * {
   -ms-overflow-style: none;
-  /* IE & Edge */
+  /* IE and Edge */
   scrollbar-width: none;
   /* Firefox */
 }
 
-/* webkit */
 *::-webkit-scrollbar {
   display: none;
   /* Chrome, Safari, Opera */
@@ -41,10 +85,9 @@
 
 body {
   margin: 0;
-  min-width: 450px;
+  /* min-width: 450px; */
 }
 
-/* clear */
 a {
   @apply text-blue-500 decoration-none;
 }
@@ -53,7 +96,6 @@ a:hover {
   @apply text-blue-600 decoration-none;
 }
 
-/* clear button style */
 button {
   @apply bg-transparent;
   @apply border-none;
@@ -74,7 +116,6 @@ button:focus-visible {
   @apply border-none;
 }
 
-/* clear ul li */
 ul,
 li {
   list-style: none;
@@ -83,8 +124,50 @@ li {
   font-family: inherit;
 }
 
-/* clear input style */
 input {
+  border: none;
+  outline: none;
+  color: inherit;
+  font-family: inherit;
+}
+
+input[type='checkbox'] {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: white;
+  border: 2px solid #ccc;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+}
+
+input[type='checkbox']:checked {
+  background-color: #2cc83e;
+  border-color: #2cc83e;
+  color: #f0f3f4;
+  background-image: url('../src/assets/icons/tick.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 12px 12px;
+}
+
+/* input[type='checkbox']:checked::after {
+  content: '✔';
+  color: white;
+  font-size: 14px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+} */
+
+input[type='checkbox']:hover {
+  border-color: #2cc83e;
+}
+
+textarea {
   border: none;
   outline: none;
   color: inherit;

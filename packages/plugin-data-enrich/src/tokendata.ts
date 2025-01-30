@@ -1,6 +1,6 @@
-import { IAgentRuntime, Memory, Provider, State } from "@elizaos/eliza";
-import { ICacheManager, settings } from "@elizaos/eliza";
-import { messageCompletionFooter } from "@elizaos/eliza";
+import { IAgentRuntime, Memory, Provider, State } from "@elizaos/core";
+import { ICacheManager, settings } from "@elizaos/core";
+import { messageCompletionFooter } from "@elizaos/core";
 import * as path from "path";
 
 

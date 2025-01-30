@@ -1,6 +1,6 @@
 // The message collaboration/cooperative utils.
 
-import { IAgentRuntime } from "@elizaos/eliza";
+import { IAgentRuntime } from "@elizaos/core";
 /*
 import { createLibp2p } from 'libp2p';
 import { tcp } from '@libp2p/tcp';
@@ -48,7 +48,7 @@ export class ConsensusProvider {
     async startNode() {
         // create libp2p node
         this.node = await createLibp2p({
-            addresses: 
+            addresses:
                 listen: [`/ip4/0.0.0.0/tcp/${CONSENSUS_PORT}`]
             },
             transports: [tcp(), WS()],
@@ -61,20 +61,20 @@ export class ConsensusProvider {
                 })
             ]
         })
-    
+
         // Start up the node
         await this.node.start();
         console.log('Node started with Gossip protocol');
-    
+
         // node id
         const nodeId: PeerId = this.node.peerId;
         console.log('Node ID:', nodeId.toString());
-    
+
         // port info
         //const listenAddr = `/ip4/0.0.0.0/tcp/${CONSENSUS_PORT}`;
         //this.node.listen(listenAddr);
         //console.log('Listening on address:', listenAddr);
-    
+
         // join the group
         await this.node.pubsub.subscribe(TOPIC_INFER_MESSAGE, (message) => {
             const receivedMessage: GossipMessage = msgpack.decode(message.data);

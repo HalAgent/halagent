@@ -9,8 +9,8 @@ type PixModalProps = {
 const PixModal: React.FC<PixModalProps> = ({ children, isOpen }) => {
   return (
     <dialog
-      className={`fixed z-9998 inset-0 flex box-border w-screen h-screen items-center justify-center p-4 bg-black/50 ${
-        isOpen ? 'block' : 'hidden'
+      className={`fixed z-9998 inset-0 box-border w-screen h-screen items-center justify-center p-4 bg-black/50 ${
+        isOpen ? 'flex' : 'hidden'
       }`}
     >
       <div className="pixModal-bg flex box-border items-center justify-center p-4 relative">

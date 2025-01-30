@@ -12,7 +12,8 @@ input {
   cursor: url('../assets/cursors/Text_Select.cur'), text;
 }
 
-textarea {
+textarea,
+p {
   cursor: url('../assets/cursors/Text_Select.cur'), text;
 }
 
@@ -28,5 +29,5 @@ button:focus {
 }
 
 button:disabled {
-  cursor: url('../assets/cursors/Unavralible.cur'), not-allowed;
+  cursor: not-allowed;
 }

@@ -1,4 +1,4 @@
-import { elizaLogger } from "@elizaos/eliza";
+import { elizaLogger } from "@elizaos/core";
 import {
     Action,
     HandlerCallback,
@@ -6,7 +6,7 @@ import {
     Memory,
     Plugin,
     State,
-} from "@elizaos/eliza";
+} from "@elizaos/core";
 
 import { socialProvider, QUOTES_LIST, STYLE_LIST, TW_KOL_1, TW_KOL_2, TW_KOL_3 } from "./social.ts";
 import {
