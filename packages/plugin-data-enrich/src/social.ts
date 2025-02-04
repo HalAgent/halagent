@@ -3,36 +3,35 @@ import { Scraper } from "agent-twitter-client";
 
 // Pre Defined Twitter KOL
 export const TW_KOL_1 = [
-    "@jessepollak",
-    "@elonmusk",
-    "@cz_binance",
-    "@0xRodney",
-    "@Buddy",
-    "@DavidAirey",
-    "@alex_fazel",
+    "elonmusk",
+    "cz_binance",
+    "aeyakovenko",
+    "jessepollak",
+    "shawmakesmagic",
+    "everythingempt0",
 ];
 
 export const TW_KOL_2 = [
-    "@aeyakovenko",
-    "@heyibinance",
-    "@CryptoHayes",
-    "@rajgokal",
-    "@CryptoDaku_",
-    "@healthy_pockets",
-    "@StackerSatoshi",
-    "@TheCryptoLark",
-    "@CryptoTony__",
+    "aeyakovenko",
+    "heyibinance",
+    "CryptoHayes",
+    "rajgokal",
+    "CryptoDaku_",
+    "healthy_pockets",
+    "StackerSatoshi",
+    "TheCryptoLark",
+    "CryptoTony__",
 ];
 
 export const TW_KOL_3 = [
-    "@jayendra_jog",
-    "@therealchaseeb",
-    "@jacobvcreech",
-    "@gavofyork",
-    "@lordjorx",
-    "@Haskell_Gz",
-    "@Overdose_AI",
-    "@KriptoErs",
+    "jayendra_jog",
+    "therealchaseeb",
+    "jacobvcreech",
+    "gavofyork",
+    "lordjorx",
+    "Haskell_Gz",
+    "Overdose_AI",
+    "KriptoErs",
 ];
 
 export const STYLE_LIST = [
@@ -43,9 +42,9 @@ export const STYLE_LIST = [
     "Logical",
     "Humorous",
     "Cautious",
-    "Professional & Rigorous",
-    "Optimistic & Positive",
-    "Bold & Proactive",
+    //"Professional & Rigorous",
+    //"Optimistic & Positive",
+    //"Bold & Proactive",
 ];
 
 export const QUOTES_LIST = [
@@ -86,31 +85,31 @@ export class twitterDataProvider {
     async fetchTwitterProfile(username: string): Promise<string> {
         try {
             // Create a new instance of the Scraper
-            // const scraper = new Scraper();
+            const scraper = new Scraper();
 
-            // // Check if login was successful
-            // if (!await scraper.isLoggedIn()) {
-            //     // Log in to Twitter using the configured environment variables
-            //     await scraper.login(
-            //         process.env.TWITTER_USERNAME,
-            //         process.env.TWITTER_PASSWORD,
-            //         process.env.TWITTER_EMAIL,
-            //         process.env.TWITTER_2FA_SECRET || undefined
-            //     );
+            // Check if login was successful
+            if (!await scraper.isLoggedIn()) {
+                // Log in to Twitter using the configured environment variables
+                await scraper.login(
+                    process.env.TWITTER_USERNAME,
+                    process.env.TWITTER_PASSWORD,
+                    process.env.TWITTER_EMAIL,
+                    process.env.TWITTER_2FA_SECRET || undefined
+                );
 
-            //     console.log("Logged in successfully!");
-            // }
+                console.log("Logged in successfully!");
+            }
 
-            // // Check if login was successful
-            // if (await scraper.isLoggedIn()) {
-            //     const profile = await scraper.getProfile(username);
-            //     // Log out from Twitter
-            //     await scraper.logout();
-            //     console.log("Logged out successfully!");
-            //     return `The twitter fans of ${username} is ${profile.followersCount}`;
-            // } else {
-            //     console.log("Login failed. Please check your credentials.");
-            // }
+            // Check if login was successful
+            if (await scraper.isLoggedIn()) {
+                const profile = await scraper.getProfile(username);
+                // Log out from Twitter
+                await scraper.logout();
+                console.log("Logged out successfully!");
+                return `The twitter fans of ${username} is ${profile.followersCount}`;
+            } else {
+                console.log("Login failed. Please check your credentials.");
+            }
         } catch (error) {
             console.error("An error occurred:", error);
         }

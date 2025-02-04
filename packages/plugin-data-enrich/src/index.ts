@@ -21,6 +21,7 @@ import {
 import {
     ConsensusProvider
 } from "./consensus.ts";
+import { UserManager } from "./userprofile.ts";
 
 
 const dataEnrich: Action = {
@@ -69,6 +70,7 @@ export const dataEnrichPlugin: Plugin = {
 };
 
 export {
+    UserManager,
     ConsensusProvider,
     InferMessageProvider,
     socialProvider,
