@@ -350,6 +350,16 @@ export class TwitterWatchClient {
 
     }
 
+    async withTimeout(promise, timeoutMs) {
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(
+                () => reject(new Error("fetching... Operation timed out")),
+                timeoutMs
+            )
+        );
+        return Promise.race([promise, timeoutPromise]);
+    }
+
     async fetchTokens() {
         let fetchedTokens = new Map();
 
@@ -361,59 +371,121 @@ export class TwitterWatchClient {
             //    60 * 60 * 24;
             const kolList = await this.getKolList();
             let index = 0;
+            console.log("fetching... 0，kol: " + kolList.length);
             for (const kol of kolList) {
-                const { timestamp, tweetsCount, followingCount, followingList } = await this.userManager.getTwitterScrapData(kol);
-                const twProfile = await this.client.twitterClient.getProfile(kol);
+                const {
+                    timestamp,
+                    tweetsCount,
+                    followingCount,
+                    followingList,
+                } = await this.userManager.getTwitterScrapData(kol);
+                const twProfile =
+                    await this.client.twitterClient.getProfile(kol);
                 let newFollowingList: string[] = [];
-                if (followingCount != 0 && followingCount < twProfile.followingCount) {
+                if (
+                    followingCount != 0 &&
+                    followingCount < twProfile.followingCount
+                ) {
                     //TODO: the delete of the followings
                     // Get the change of followingCount
-                    const followings = await this.client.twitterClient.fetchProfileFollowing(twProfile.userId, 10);
-                    newFollowingList = followings.profiles.map(item => item.username);
+                    const followings =
+                        await this.client.twitterClient.fetchProfileFollowing(
+                            twProfile.userId,
+                            10
+                        );
+                    newFollowingList = followings.profiles.map(
+                        (item) => item.username
+                    );
                     if (followingList.length > 0) {
-                        await this.setFollowingChanged(kol, newFollowingList, followingList);
+                        await this.setFollowingChanged(
+                            kol,
+                            newFollowingList,
+                            followingList
+                        );
                     }
-                    await this.userManager.setTwitterScrapData(kol, timestamp,
-                        twProfile.tweetsCount, twProfile.followingCount, newFollowingList);
+                    await this.userManager.setTwitterScrapData(
+                        kol,
+                        timestamp,
+                        twProfile.tweetsCount,
+                        twProfile.followingCount,
+                        newFollowingList
+                    );
                 }
                 console.log(timestamp);
                 if (tweetsCount == twProfile.tweetsCount) {
-                    console.log(`Skip for ${kol}, ${tweetsCount} - ${twProfile.tweetsCount}`)
+                    console.log(
+                        `Skip for ${kol}, ${tweetsCount} - ${twProfile.tweetsCount}`
+                    );
                     continue; // TODO for tweet delete
                 }
-                console.log("fetching...");
+                console.log("fetching... 1");
                 let latestTimestamp = timestamp;
                 let kolTweets = [];
                 let tweets = [];
                 if (index++ < TWITTER_COUNT_PER_TIME) {
-                    tweets = await this.client.twitterClient.getTweetsAndReplies(
-                        kol,
-                        TWEET_COUNT_PER_TIME
-                    );
-                }
-                else {
+                    console.log("fetching... 2");
+
+                    tweets =
+                        await this.client.twitterClient.getTweetsAndReplies(
+                            kol,
+                            TWEET_COUNT_PER_TIME
+                        );
+                    console.log("fetching... 3");
+                } else {
                     tweets = await this.getTweetV2(kol, TWEET_COUNT_PER_TIME);
                     console.log(tweets.length);
                 }
-                // Fetch and process tweetsss
-                try {
-                    for await (const tweet of tweets) {
-                        if (tweet.timestamp > latestTimestamp) {
-                            latestTimestamp = tweet.timestamp;
-                        }
-                        if (tweet.timestamp <= timestamp) {
-                            continue; // Skip the outdates.
-                        }
-                        kolTweets.push(tweet);
-                    }
-                } catch (error) {
-                    console.error("Error fetching tweets:", error);
-                    console.log(`kol ${kol} not found`);
+                if (!tweets || tweets.length <= 0) {
+                    console.log(
+                        "fetching... 4, current kol tweets len is zeor, skip."
+                    );
                     continue;
                 }
-                console.log(kolTweets.length);
-                await this.userManager.setTwitterScrapData(kol, latestTimestamp,
-                    twProfile.tweetsCount, twProfile.followingCount, newFollowingList);
+                // Fetch and process tweetsss
+                async function fetchAndProcessTweets(
+                    tweets: AsyncIterable<any>,
+                    latestTimestamp: number,
+                    timestamp: number,
+                    kolTweets: any[],
+                    kol: string
+                ) {
+                    try {
+                        console.log("fetching... 4.3");
+                        for await (const tweet of tweets) {
+                            console.log("fetching... 4.5");
+                            if (tweet.timestamp > latestTimestamp) {
+                                latestTimestamp = tweet.timestamp;
+                            }
+                            if (tweet.timestamp <= timestamp) {
+                                continue; // Skip the outdates.
+                            }
+                            kolTweets.push(tweet);
+                        }
+                    } catch (error) {
+                        console.error("Error fetching tweets:", error);
+                        console.log(`kol ${kol} not found`);
+                    }
+                }
+
+                const result = await this.withTimeout(
+                    fetchAndProcessTweets(
+                        tweets,
+                        latestTimestamp,
+                        timestamp,
+                        kolTweets,
+                        kol
+                    ),
+                    15000
+                );
+
+                console.log("fetching... kol tw len: " + kolTweets.length);
+                await this.userManager.setTwitterScrapData(
+                    kol,
+                    latestTimestamp,
+                    twProfile.tweetsCount,
+                    twProfile.followingCount,
+                    newFollowingList
+                );
                 if (kolTweets.length < 1) {
                     continue;
                 }
