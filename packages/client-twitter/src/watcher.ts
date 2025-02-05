@@ -23,8 +23,8 @@ import {
     TTweetv2TweetField,
     TTweetv2UserField,
     UserV2,
-  } from 'twitter-api-v2';
-  import { Tweet } from "agent-twitter-client";
+} from "twitter-api-v2";
+import { Tweet } from "agent-twitter-client";
 
 const WATCHER_INSTRUCTION = `
 Please find the following data according to the text provided in the following format:
@@ -157,40 +157,57 @@ export class TwitterWatchClient {
         prompt += "Twitter content is after the keyword [Twitter],";
         prompt += "\n[Twitter]:";
         prompt += text;
-        prompt += 'Your return result only contains JSON structure: {"resultText": ""}, and no other text should be provided.';
+        prompt +=
+            'Your return result only contains JSON structure: {"resultText": ""}, and no other text should be provided.';
         return prompt;
     }
     async runTask() {
+        elizaLogger.log(
+            "sendTweet in loop, 0 looping: " + this.sendingTwitterInLooping
+        );
         if (this.sendingTwitterInLooping) {
             return;
         }
         this.sendingTwitterInLooping = true;
-        elizaLogger.log("Twitter Sender task loop");
         // const userManager = new UserManager(this.runtime.cacheManager);
         const userProfiles = await this.userManager.getAllUserProfiles();
         for (let i = 0; i < userProfiles.length; i++) {
-            let userProfile = userProfiles[i];
+            let userProfileValue = userProfiles[i];
+            let userProfile =
+                typeof userProfileValue === "string"
+                    ? JSON.parse("" + userProfileValue)
+                    : userProfileValue;
+            elizaLogger.log(
+                "sendTweet in loop, 2.2, profile: ",
+                JSON.stringify(userProfile)
+            );
             if (
                 !userProfile.agentCfg ||
                 !userProfile.agentCfg.interval ||
                 !userProfile.agentCfg.imitate
             ) {
+                elizaLogger.log("sendTweet in loop, 3");
                 continue;
             }
             const { enabled, interval, imitate } = userProfile.agentCfg;
             if (!enabled) {
+                elizaLogger.log("sendTweet in loop, 4");
                 continue;
             }
-            if(!(userProfile?.tweetProfile?.accessToken)) {
-                console.error("sendTweet in Loop Twitter Access token not found");
+            if (!userProfile?.tweetProfile?.accessToken) {
+                console.error(
+                    "sendTweet in Loop Twitter Access token not found"
+                );
                 continue;
                 //throw new Error("Send Twitter in Loop Twitter Access token not found");
             }
             const lastTweetTime = userProfile.tweetFrequency.lastTweetTime;
+            elizaLogger.log("sendTweet in loop, 5");
             if (
                 Date.now() - lastTweetTime >
-                (this.sendingTwitterDebug? 60000:
-                this.convertTimeToMilliseconds(interval))
+                (this.sendingTwitterDebug
+                    ? 60000
+                    : this.convertTimeToMilliseconds(interval))
             ) {
                 userProfile.tweetFrequency.lastTweetTime = Date.now();
                 this.userManager.saveUserData(userProfile);
@@ -280,8 +297,9 @@ export class TwitterWatchClient {
         });*/
         this.intervalId = setInterval(
             () => this.runTask(),
-            (this.sendingTwitterDebug ? 120000 : SEND_TWITTER_INTERNAL)
+            this.sendingTwitterDebug ? 60000 : SEND_TWITTER_INTERNAL
         );
+        this.runTask();
         const genReportLoop = async () => {
             elizaLogger.log("TwitterWatcher loop");
             const lastGen = await this.runtime.cacheManager.get<{
@@ -297,9 +315,12 @@ export class TwitterWatchClient {
                 await this.fetchTokens();
             }
 
-            setTimeout(() => {
-                genReportLoop(); // Set up next iteration
-            }, (this.sendingTwitterDebug ? 50000 : GEN_TOKEN_REPORT_DELAY));
+            setTimeout(
+                () => {
+                    genReportLoop(); // Set up next iteration
+                },
+                this.sendingTwitterDebug ? 50000 : GEN_TOKEN_REPORT_DELAY
+            );
 
             console.log(
                 `Next tweet scheduled in ${GEN_TOKEN_REPORT_DELAY / 60 / 1000} minutes`
@@ -335,19 +356,25 @@ export class TwitterWatchClient {
     }
 
     // get the following list
-    async setFollowingChanged(username: string,
-        followingList: string[], preFollowingList: string[]) {
-        const changedList = followingList.filter(item => !preFollowingList.includes(item));
+    async setFollowingChanged(
+        username: string,
+        followingList: string[],
+        preFollowingList: string[]
+    ) {
+        const changedList = followingList.filter(
+            (item) => !preFollowingList.includes(item)
+        );
         //console.log(changedList);
         if (changedList && changedList.length > 0) {
             //await this.inferMsgProvider.addFollowingChangeMessage(kol,
             //    ` for changing about ${twProfile.followingCount - followingCount} new followings, please check.`)
-            const output = `[${changedList.map(item => `@${item}`).join(', ')}]`;
+            const output = `[${changedList.map((item) => `@${item}`).join(", ")}]`;
             console.log(output);
-            await this.inferMsgProvider.addFollowingChangeMessage(username,
-                ` for changing ${changedList.length} new followings of ${output}.`);
+            await this.inferMsgProvider.addFollowingChangeMessage(
+                username,
+                ` for changing ${changedList.length} new followings of ${output}.`
+            );
         }
-
     }
 
     async withTimeout(promise, timeoutMs) {
@@ -551,7 +578,7 @@ export class TwitterWatchClient {
     async sendReTweet(tweed: string, userId: any) {
         //const userManager = new UserManager(this.runtime.cacheManager);
         const profile = await this.userManager.verifyExistingUser(userId);
-        if(!(profile?.tweetProfile?.accessToken)) {
+        if (!profile?.tweetProfile?.accessToken) {
             console.error("sendTweet in share Twitter Access token not found");
             return;
             // throw new Error("Twitter Access token not found");
@@ -577,10 +604,7 @@ export class TwitterWatchClient {
             modelClass: ModelClass.LARGE,
         });
 
-        console.log(
-            "sendTweet in share Part5: responseStr: ",
-            responseStr
-        );
+        console.log("sendTweet in share Part5: responseStr: ", responseStr);
         let responseObj = JSON.parse(responseStr);
 
         const { resultText } = responseObj;
@@ -604,7 +628,7 @@ export class TwitterWatchClient {
                 if (profile && profile.tweetProfile.accessToken) {
                     let twitterClient = await this.getTwitterClient(
                         profile.tweetProfile.accessToken,
-                        profile.tweetProfile.refreshToken,
+                        profile.tweetProfile.refreshToken
                     );
                     if (twitterClient) {
                         const tweetResponse = await twitterClient.v2.tweet({
@@ -641,7 +665,10 @@ export class TwitterWatchClient {
     }
 
     // Get the TwitterAPI Client by accessToken or refreshToken
-    async getTwitterClient(accessToken: string, refreshToken: string): Promise<TwitterApi> {
+    async getTwitterClient(
+        accessToken: string,
+        refreshToken: string
+    ): Promise<TwitterApi> {
         console.log("Watcher getTwitterClinet");
         try {
             let twitterClient = null;
@@ -660,11 +687,10 @@ export class TwitterWatchClient {
                 const clientRefresh = new TwitterApi({
                     clientId: settings.TWITTER_CLIENT_ID,
                     clientSecret: settings.TWITTER_CLIENT_SECRET,
-                    refreshToken
+                    refreshToken,
                 });
-                const { accessToken: newToken } = await clientRefresh.refreshOAuth2Token(
-                    refreshToken
-                );
+                const { accessToken: newToken } =
+                    await clientRefresh.refreshOAuth2Token(refreshToken);
                 if (!newToken) {
                     console.error("refresh token error");
                 }
@@ -684,26 +710,37 @@ export class TwitterWatchClient {
     async getTweetV2(kolname: string, count: number) {
         console.log("Watcher getTweetV2");
         try {
-            const { accessToken, refreshToken } = await this.userManager.getUserTwitterAccessTokenSequence();
+            const { accessToken, refreshToken } =
+                await this.userManager.getUserTwitterAccessTokenSequence();
             if (accessToken && refreshToken) {
                 // New Twitter API v2 by access token
-                const twitterClient = await this.getTwitterClient(accessToken, refreshToken);
+                const twitterClient = await this.getTwitterClient(
+                    accessToken,
+                    refreshToken
+                );
                 if (twitterClient) {
                     const params = {
                         max_results: count, // 5-100
                         pagination_token: undefined,
                         //exclude: [],
                         expansions: defaultOptions.expansions,
-                        'tweet.fields': defaultOptions.tweetFields,
-                        'user.fields': defaultOptions.userFields,
+                        "tweet.fields": defaultOptions.tweetFields,
+                        "user.fields": defaultOptions.userFields,
                     };
-                    const kolid = await this.client.twitterClient.getUserIdByScreenName(kolname);
-                    const tweets = await twitterClient.v2.userTimeline(kolid, params);
+                    const kolid =
+                        await this.client.twitterClient.getUserIdByScreenName(
+                            kolname
+                        );
+                    const tweets = await twitterClient.v2.userTimeline(
+                        kolid,
+                        params
+                    );
                     //console.log("getTweetV2 result: ", tweets);
-                    return tweets._realData?.data.map((tweet: TweetV2) => parseTweetV2ToV1(tweet, tweets._realData?.includes));
+                    return tweets._realData?.data.map((tweet: TweetV2) =>
+                        parseTweetV2ToV1(tweet, tweets._realData?.includes)
+                    );
                 }
             }
-
         } catch (error) {
             console.error("Watcher getTweetV2 error: ", error);
         }
@@ -713,135 +750,144 @@ export class TwitterWatchClient {
 
 export const defaultOptions = {
     expansions: [
-      'attachments.poll_ids',
-      'attachments.media_keys',
-      'author_id',
-      'referenced_tweets.id',
-      'in_reply_to_user_id',
-      'edit_history_tweet_ids',
-      'geo.place_id',
-      'entities.mentions.username',
-      'referenced_tweets.id.author_id',
+        "attachments.poll_ids",
+        "attachments.media_keys",
+        "author_id",
+        "referenced_tweets.id",
+        "in_reply_to_user_id",
+        "edit_history_tweet_ids",
+        "geo.place_id",
+        "entities.mentions.username",
+        "referenced_tweets.id.author_id",
     ] as TTweetv2Expansion[],
     tweetFields: [
-      'attachments',
-      'author_id',
-      'context_annotations',
-      'conversation_id',
-      'created_at',
-      'entities',
-      'geo',
-      'id',
-      'in_reply_to_user_id',
-      'lang',
-      'public_metrics',
-      'edit_controls',
-      'possibly_sensitive',
-      'referenced_tweets',
-      'reply_settings',
-      'source',
-      'text',
-      'withheld',
-      'note_tweet',
+        "attachments",
+        "author_id",
+        "context_annotations",
+        "conversation_id",
+        "created_at",
+        "entities",
+        "geo",
+        "id",
+        "in_reply_to_user_id",
+        "lang",
+        "public_metrics",
+        "edit_controls",
+        "possibly_sensitive",
+        "referenced_tweets",
+        "reply_settings",
+        "source",
+        "text",
+        "withheld",
+        "note_tweet",
     ] as TTweetv2TweetField[],
     pollFields: [
-      'duration_minutes',
-      'end_datetime',
-      'id',
-      'options',
-      'voting_status',
+        "duration_minutes",
+        "end_datetime",
+        "id",
+        "options",
+        "voting_status",
     ] as TTweetv2PollField[],
     userFields: [
-      'created_at',
-      'description',
-      'entities',
-      'id',
-      'location',
-      'name',
-      'profile_image_url',
-      'protected',
-      'public_metrics',
-      'url',
-      'username',
-      'verified',
-      'withheld',
+        "created_at",
+        "description",
+        "entities",
+        "id",
+        "location",
+        "name",
+        "profile_image_url",
+        "protected",
+        "public_metrics",
+        "url",
+        "username",
+        "verified",
+        "withheld",
     ] as TTweetv2UserField[],
 };
 
 function parseTweetV2ToV1(
     tweetV2: TweetV2,
     includes?: ApiV2Includes,
-    defaultTweetData?: Tweet | null,
-  ): Tweet {
+    defaultTweetData?: Tweet | null
+): Tweet {
     let parsedTweet: Tweet;
     if (defaultTweetData != null) {
-      parsedTweet = defaultTweetData;
+        parsedTweet = defaultTweetData;
     }
     parsedTweet = {
-      id: tweetV2.id,
-      text: tweetV2.text ?? defaultTweetData?.text ?? '',
-      hashtags:
-        tweetV2.entities?.hashtags?.map((tag) => tag.tag) ??
-        defaultTweetData?.hashtags ??
-        [],
-      mentions:
-        tweetV2.entities?.mentions?.map((mention) => ({
-          id: mention.id,
-          username: mention.username,
-        })) ??
-        defaultTweetData?.mentions ??
-        [],
-      urls:
-        tweetV2.entities?.urls?.map((url) => url.url) ??
-        defaultTweetData?.urls ??
-        [],
-      likes: tweetV2.public_metrics?.like_count ?? defaultTweetData?.likes ?? 0,
-      retweets:
-        tweetV2.public_metrics?.retweet_count ?? defaultTweetData?.retweets ?? 0,
-      replies:
-        tweetV2.public_metrics?.reply_count ?? defaultTweetData?.replies ?? 0,
-      views:
-        tweetV2.public_metrics?.impression_count ?? defaultTweetData?.views ?? 0,
-      userId: tweetV2.author_id ?? defaultTweetData?.userId,
-      conversationId: tweetV2.conversation_id ?? defaultTweetData?.conversationId,
-      photos: defaultTweetData?.photos ?? [],
-      videos: defaultTweetData?.videos ?? [],
-      poll: defaultTweetData?.poll ?? null,
-      username: defaultTweetData?.username ?? '',
-      name: defaultTweetData?.name ?? '',
-      place: defaultTweetData?.place,
-      thread: defaultTweetData?.thread ?? [],
+        id: tweetV2.id,
+        text: tweetV2.text ?? defaultTweetData?.text ?? "",
+        hashtags:
+            tweetV2.entities?.hashtags?.map((tag) => tag.tag) ??
+            defaultTweetData?.hashtags ??
+            [],
+        mentions:
+            tweetV2.entities?.mentions?.map((mention) => ({
+                id: mention.id,
+                username: mention.username,
+            })) ??
+            defaultTweetData?.mentions ??
+            [],
+        urls:
+            tweetV2.entities?.urls?.map((url) => url.url) ??
+            defaultTweetData?.urls ??
+            [],
+        likes:
+            tweetV2.public_metrics?.like_count ?? defaultTweetData?.likes ?? 0,
+        retweets:
+            tweetV2.public_metrics?.retweet_count ??
+            defaultTweetData?.retweets ??
+            0,
+        replies:
+            tweetV2.public_metrics?.reply_count ??
+            defaultTweetData?.replies ??
+            0,
+        views:
+            tweetV2.public_metrics?.impression_count ??
+            defaultTweetData?.views ??
+            0,
+        userId: tweetV2.author_id ?? defaultTweetData?.userId,
+        conversationId:
+            tweetV2.conversation_id ?? defaultTweetData?.conversationId,
+        photos: defaultTweetData?.photos ?? [],
+        videos: defaultTweetData?.videos ?? [],
+        poll: defaultTweetData?.poll ?? null,
+        username: defaultTweetData?.username ?? "",
+        name: defaultTweetData?.name ?? "",
+        place: defaultTweetData?.place,
+        thread: defaultTweetData?.thread ?? [],
     };
 
     // Process Polls
     if (includes?.polls?.length) {
-      const poll = includes.polls[0];
-      parsedTweet.poll = {
-        id: poll.id,
-        end_datetime: poll.end_datetime
-          ? poll.end_datetime
-          : defaultTweetData?.poll?.end_datetime
-          ? defaultTweetData?.poll?.end_datetime
-          : undefined,
-        options: poll.options.map((option) => ({
-          position: option.position,
-          label: option.label,
-          votes: option.votes,
-        })),
-        voting_status:
-          poll.voting_status ?? defaultTweetData?.poll?.voting_status,
-      };
+        const poll = includes.polls[0];
+        parsedTweet.poll = {
+            id: poll.id,
+            end_datetime: poll.end_datetime
+                ? poll.end_datetime
+                : defaultTweetData?.poll?.end_datetime
+                  ? defaultTweetData?.poll?.end_datetime
+                  : undefined,
+            options: poll.options.map((option) => ({
+                position: option.position,
+                label: option.label,
+                votes: option.votes,
+            })),
+            voting_status:
+                poll.voting_status ?? defaultTweetData?.poll?.voting_status,
+        };
     }
 
     // Process User (for author info)
     if (includes?.users?.length) {
-      const user = includes.users.find(
-        (user: UserV2) => user.id === tweetV2.author_id,
-      );
-      if (user) {
-        parsedTweet.username = user.username ?? defaultTweetData?.username ?? '';
-        parsedTweet.name = user.name ?? defaultTweetData?.name ?? '';
-      }
+        const user = includes.users.find(
+            (user: UserV2) => user.id === tweetV2.author_id
+        );
+        if (user) {
+            parsedTweet.username =
+                user.username ?? defaultTweetData?.username ?? "";
+            parsedTweet.name = user.name ?? defaultTweetData?.name ?? "";
+        }
     }
 
     // TODO: Process Thread (referenced tweets) and remove reference to v1

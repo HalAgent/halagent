@@ -107,7 +107,7 @@ export class InferMessageProvider {
                         TokenAlphaReport.push(item);
                     }
 
-                    let tokenInfo = "";//await this.enrichByWebSearch(item.token);
+                    let tokenInfo = ""; //await this.enrichByWebSearch(item.token);
 
                     let alpha: WatchItem = {
                         kol: kol,
@@ -283,12 +283,12 @@ export class InferMessageProvider {
         if (specificKols) {
             return Array.isArray(specificKols) ? specificKols : [];
         }
-
-        // settings.TW_KOL_LIST
-        const settingsList = JSON.parse(settings.TW_KOL_LIST);
-        if (Array.isArray(settingsList) && settingsList.length > 0) {
-            return settingsList;
-        }
+        // // settings.TW_KOL_LIST
+        // todo: here json parse error. need handle the error.
+        // const settingsList = JSON.parse(settings.TW_KOL_LIST);
+        // if (Array.isArray(settingsList) && settingsList.length > 0) {
+        //     return settingsList;
+        // }
 
         // TW_KOL_1 as default
         return TW_KOL_1;

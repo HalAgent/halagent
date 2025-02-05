@@ -1,7 +1,12 @@
 import express from "express";
 import { DirectClient } from "./index";
 import { Scraper } from "agent-twitter-client";
-import { elizaLogger, generateText, ModelClass, stringToUuid } from "@elizaos/core";
+import {
+    elizaLogger,
+    generateText,
+    ModelClass,
+    stringToUuid,
+} from "@elizaos/core";
 import { Memory, settings } from "@elizaos/core";
 import { AgentConfig } from "../../../agent/src";
 
@@ -12,7 +17,7 @@ import {
     InferMessageProvider,
     tokenWatcherConversationTemplate,
 } from "@elizaos/plugin-data-enrich";
-import { TwitterApi } from 'twitter-api-v2';
+import { TwitterApi } from "twitter-api-v2";
 
 import { callSolanaAgentTransfer } from "./solanaagentkit";
 
@@ -145,11 +150,9 @@ class AuthUtils {
         //         credentials.password,
         //         credentials.email
         //     );
-
         //     if (!(await scraper.isLoggedIn())) {
         //         throw new ApiError(401, "Twitter login failed");
         //     }
-
         //     const profile = await scraper.getProfile(credentials.username);
         //     return { ...profile };
         // } finally {
@@ -245,7 +248,7 @@ class AuthUtils {
     createDefaultProfile(username: string, email: string): UserProfile {
         return {
             username,
-            userId:"position_placeholder",
+            userId: "position_placeholder",
             email,
             level: 1,
             experience: 0,
@@ -303,14 +306,20 @@ export class Routes {
     private generateGuestName(): string {
         const timestamp = Date.now();
         const randomNum = Math.floor(Math.random() * 10000);
-        return 'Guest-' + timestamp + randomNum;
+        return "Guest-" + timestamp + randomNum;
     }
     private ALL_USER_IDS: string = "USER_PROFILE_ALL_IDS_";
 
     setupRoutes(app: express.Application): void {
         app.post("/:agentId/login", this.handleLogin.bind(this));
-        app.get("/:agentId/twitter_oauth_init", this.handleTwitterOauthInit.bind(this));
-        app.get("/:agentId/twitter_oauth_callback", this.handleTwitterOauthCallback.bind(this));
+        app.get(
+            "/:agentId/twitter_oauth_init",
+            this.handleTwitterOauthInit.bind(this)
+        );
+        app.get(
+            "/:agentId/twitter_oauth_callback",
+            this.handleTwitterOauthCallback.bind(this)
+        );
         app.post("/:agentId/profile_upd", this.handleProfileUpdate.bind(this));
         app.post("/:agentId/profile", this.handleProfileQuery.bind(this));
         app.post("/:agentId/create_agent", this.handleCreateAgent.bind(this));
@@ -387,19 +396,28 @@ export class Routes {
             const { url, state, codeVerifier } = client.generateOAuth2AuthLink(
                 `${settings.MY_APP_URL}/${req.params.agentId}/twitter_oauth_callback`,
                 {
-                  scope: ['tweet.read', 'tweet.write', 'users.read', 'offline.access'],
+                    scope: [
+                        "tweet.read",
+                        "tweet.write",
+                        "users.read",
+                        "offline.access",
+                    ],
                 }
             );
 
             // Save state & codeVerifier
             const runtime = await this.authUtils.getRuntime(req.params.agentId);
-            await runtime.cacheManager.set("oauth_verifier", JSON.stringify({
-                codeVerifier,
-                state,
-                timestamp: Date.now()
-            }), {
-                expires: Date.now() + 2* 60 * 60 * 1000,
-            });
+            await runtime.cacheManager.set(
+                "oauth_verifier",
+                JSON.stringify({
+                    codeVerifier,
+                    state,
+                    timestamp: Date.now(),
+                }),
+                {
+                    expires: Date.now() + 2 * 60 * 60 * 1000,
+                }
+            );
             //await runtime.databaseAdapter?.setCache({
             //    agentId: state,
             //    key: 'oauth_verifier',
@@ -415,100 +433,121 @@ export class Routes {
                 guest_name,
                 ""
             );
-            await runtime.cacheManager.set("userProfile", JSON.stringify(userProfile), {
-                expires: Date.now() + 2 * 60 * 60 * 1000,
-            });
+            await runtime.cacheManager.set(
+                "userProfile",
+                JSON.stringify(userProfile),
+                {
+                    expires: Date.now() + 2 * 60 * 60 * 1000,
+                }
+            );
 
-            return { url, state, guest_name};
+            return { url, state, guest_name };
         });
     }
 
-    async handleTwitterOauthCallback(req: express.Request, res: express.Response) {
+    async handleTwitterOauthCallback(
+        req: express.Request,
+        res: express.Response
+    ) {
         //return this.authUtils.withErrorHandling(req, res, async () => {
-            // 1. Get code and state
-            const { code, state } = req.query;
+        // 1. Get code and state
+        const { code, state } = req.query;
 
-            if (!code || !state) {
-                res.status(200).json({ ok: true });
-                return;
-                //throw new ApiError(400, "Missing required OAuth parameters");
-            }
+        if (!code || !state) {
+            res.status(200).json({ ok: true });
+            return;
+            //throw new ApiError(400, "Missing required OAuth parameters");
+        }
 
-            const runtime = await this.authUtils.getRuntime(req.params.agentId);
-            elizaLogger.info("handleTwitterOauthInit 5");
+        const runtime = await this.authUtils.getRuntime(req.params.agentId);
+        elizaLogger.info("handleTwitterOauthInit 5");
 
-            const verifierData = await runtime.cacheManager.get("oauth_verifier");
-            elizaLogger.info("handleTwitterOauthInit 6");
+        const verifierData = await runtime.cacheManager.get("oauth_verifier");
+        elizaLogger.info("handleTwitterOauthInit 6");
 
-            if (!verifierData) {
-                // error
-                console.error(`OAuth verification failed - State: ${state}, No verifier data found`);
-                throw new ApiError(400, "OAuth session expired or invalid. Please try authenticating again.");
-            }
+        if (!verifierData) {
+            // error
+            console.error(
+                `OAuth verification failed - State: ${state}, No verifier data found`
+            );
+            throw new ApiError(
+                400,
+                "OAuth session expired or invalid. Please try authenticating again."
+            );
+        }
 
-            const { codeVerifier, timestamp } = JSON.parse(verifierData);
+        const { codeVerifier, timestamp } = JSON.parse(verifierData);
 
-            try {
-                const client = new TwitterApi({
-                    clientId: settings.TWITTER_CLIENT_ID,
-                    clientSecret: settings.TWITTER_CLIENT_SECRET,
-                });
+        try {
+            const client = new TwitterApi({
+                clientId: settings.TWITTER_CLIENT_ID,
+                clientSecret: settings.TWITTER_CLIENT_SECRET,
+            });
 
-                const {
-                    accessToken,
-                    refreshToken,
-                    expiresIn
-                } = await client.loginWithOAuth2({
+            const { accessToken, refreshToken, expiresIn } =
+                await client.loginWithOAuth2({
                     code,
                     codeVerifier,
                     redirectUri: `${settings.MY_APP_URL}/${req.params.agentId}/twitter_oauth_callback`,
                 });
 
-                // Clear
-                await runtime.databaseAdapter?.deleteCache({
-                    agentId: state,
-                    key: 'oauth_verifier'
-                });
+            // Clear
+            await runtime.databaseAdapter?.deleteCache({
+                agentId: state,
+                key: "oauth_verifier",
+            });
 
-                // Save twitter profile
-                // TODO: encrypt token
-                const userId = req.params.agentId;
-                // const userProfile = this.authUtils.createDefaultProfile(
-                //     "",
-                //     ""
-                // );
-                const cached = await runtime.cacheManager.get("userProfile");
-                elizaLogger.info("handleTwitterOauthInit 7");
+            // Save twitter profile
+            // TODO: encrypt token
+            const userId = req.params.agentId;
+            // const userProfile = this.authUtils.createDefaultProfile(
+            //     "",
+            //     ""
+            // );
+            const cached = await runtime.cacheManager.get("userProfile");
+            elizaLogger.info("handleTwitterOauthInit 7");
 
-                if (cached) {
-                    const userProfile = JSON.parse(cached);
-                    userProfile.tweetProfile = {
-                       code,
-                       codeVerifier,
-                       accessToken,
-                       refreshToken,
-                       expiresIn
-                   };
-                   console.log("userProfile is", userProfile);
-                   console.log("userId is", userId);
-                   await runtime.cacheManager.set(userProfile.username, JSON.stringify(userProfile), {
-                       expires: Date.now() + 2 * 60 * 60 * 1000,});
-                   let idsStr = (await runtime.cacheManager.get(this.ALL_USER_IDS)) as string;
-                   let ids = idsStr ? new Set(JSON.parse(idsStr)) : new Set();
-                   ids.add(userProfile.username);
-                   await runtime.cacheManager.set(this.ALL_USER_IDS,  JSON.stringify(Array.from(ids)), {
-                    expires: Date.now() + 2 * 60 * 60 * 1000,});
-                   console.log("userProfile set");
-                }
-                /*await this.authUtils.saveUserData(
+            if (cached) {
+                const userProfile = JSON.parse(cached);
+                userProfile.tweetProfile = {
+                    code,
+                    codeVerifier,
+                    accessToken,
+                    refreshToken,
+                    expiresIn,
+                };
+                console.log("userProfile is", userProfile);
+                console.log("userId is", userId);
+                await runtime.cacheManager.set(
+                    userProfile.username,
+                    JSON.stringify(userProfile),
+                    {
+                        expires: Date.now() + 2 * 60 * 60 * 1000,
+                    }
+                );
+                let idsStr = (await runtime.cacheManager.get(
+                    this.ALL_USER_IDS
+                )) as string;
+                let ids = idsStr ? new Set(JSON.parse(idsStr)) : new Set();
+                ids.add(userProfile.username);
+                await runtime.cacheManager.set(
+                    this.ALL_USER_IDS,
+                    JSON.stringify(Array.from(ids)),
+                    {
+                        expires: Date.now() + 2 * 60 * 60 * 1000,
+                    }
+                );
+                console.log("userProfile set");
+            }
+            /*await this.authUtils.saveUserData(
                     userId,
                     runtime,
                     { username: "", email: "", password: "" },
                     userProfile
                 );*/
 
-                //return { accessToken };
-                res.send(`
+            //return { accessToken };
+            res.send(`
                     <!DOCTYPE html>
                     <html lang="en">
                     <head>
@@ -578,11 +617,11 @@ export class Routes {
 
                     </body>
                 </html>`);
-            } catch (error) {
-                console.error("Error during OAuth callback:", error);
-                //throw new ApiError(500, "Internal server error");
-                res.status(500).json({ error: "Internal server error" });
-            }
+        } catch (error) {
+            console.error("Error during OAuth callback:", error);
+            //throw new ApiError(500, "Internal server error");
+            res.status(500).json({ error: "Internal server error" });
+        }
         //});
     }
 
@@ -597,7 +636,9 @@ export class Routes {
                     error: "Missing required profile fields",
                 });
             }
-            elizaLogger.log("Profile update request, name: " + profile.username);
+            elizaLogger.log(
+                "Profile update request, name: " + profile.username
+            );
 
             // check
             // if (
@@ -632,26 +673,46 @@ export class Routes {
             //         stringToUuid(req.body.username)
             //     );
             const runtime = await this.authUtils.getRuntime(req.params.agentId);
-            const profileStr = (await runtime.cacheManager.get(profile.username)) as string;
-            elizaLogger.log("Profile update request: 2 , before profilestr: " + profileStr);
+            const userProfileValue = await runtime.cacheManager.get(
+                profile.username
+            );
 
-            if(!profileStr) {
+            elizaLogger.log(
+                "Profile update request: 2 , before profilestr: " +
+                    userProfileValue
+            );
+
+            if (!userProfileValue) {
                 return res.json({
                     success: false,
                     profile: profile,
                 });
             }
-            const existingProfile = JSON.parse(profileStr);
+            const existingProfile =
+                typeof userProfileValue === "string"
+                    ? JSON.parse(userProfileValue)
+                    : userProfileValue;
             // const updatedProfile = { ...existingProfile, ...profile };
-            const updatedProfile = { ...existingProfile, agentCfg: profile.agentCfg };
+            const updatedProfile = {
+                ...existingProfile,
+                agentCfg: profile.agentCfg,
+            };
             // await runtime.databaseAdapter?.setCache({
             //     agentId: stringToUuid(req.body.username),
             //     key: "userProfile",
             //     value: JSON.stringify(updatedProfile),
             // });
-            await runtime.cacheManager.set(updatedProfile.username, JSON.stringify(updatedProfile), {
-                expires: Date.now() + 2 * 60 * 60 * 1000,});
-            elizaLogger.log("Profile update request: 3 , after profilestr: " + JSON.stringify(updatedProfile));
+            await runtime.cacheManager.set(
+                updatedProfile.username,
+                JSON.stringify(updatedProfile),
+                {
+                    expires: Date.now() + 2 * 60 * 60 * 1000,
+                }
+            );
+            elizaLogger.log(
+                "Profile update request: 3 , after profilestr: " +
+                    JSON.stringify(updatedProfile)
+            );
 
             return res.json({
                 success: true,
