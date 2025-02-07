@@ -59,3 +59,8 @@
   height: 100dvh;
   background: #fff;
 }
+.hide-txt {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
