@@ -39,8 +39,8 @@ const MessageList = [
   `Meet Daisy 9000, the first AI Agent from HAL Agent Network!`,
   `Not just a tool—I’m your trusted partner. HAL Agent Network is on the way.`,
 ];
-
 const isMobile = CheckIsMobile();
+
 const Hosting = () => {
   const [enabled, setEnabled] = useState(false);
   const [character, setCharacter] = useState('');
@@ -127,8 +127,7 @@ const Hosting = () => {
   },[UserProfile])
 
   return (
-    <div className={isMobile ? '' : 'pc-bg'} >
-      <div className="hosting" style={{ width: isMobile ? '100%' : '375px' }}>
+      <div className="hosting" >
         <PixModal isOpen={isModalOpen} onClose={closeModal}>
           <div className="flex flex-col gap-4 max-w-[400px] averia-serif-libre">
             <h2 className="text-center my-0">Login Tips</h2>
@@ -204,8 +203,8 @@ const Hosting = () => {
                       transition
                       anchor="bottom"
                       style={{
-                        width: `calc(${isMobile ? '100vw' : '375px'} - 72px)`,
                         boxShadow: '0 2px 14px rgb(0 0 0 / 10%)',
+                        width: `calc(${isMobile ? '100vw' : '375px'} - 72px)`,
                       }}
                       className="z-10 bg-[#fff] mt-[6px] origin-top-right rounded-xl p-1 text-sm/6  transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
                       onMouseUp={event => handleSelectionChange(event, 'interval')}
@@ -232,8 +231,8 @@ const Hosting = () => {
                       transition
                       anchor="bottom"
                       style={{
-                        width: `calc(${isMobile ? '100vw' : '375px'} - 72px)`,
                         boxShadow: '0 2px 14px rgb(0 0 0 / 10%)',
+                        width: `calc(${isMobile ? '100vw' : '375px'} - 72px)`,
                       }}
                       className="z-10 bg-[#fff] mt-[6px] box-border p-y-[4px] origin-top-right rounded-xl p-1 text-sm/6  transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
                       onMouseUp={event => handleSelectionChange(event, 'character')}
@@ -283,7 +282,6 @@ const Hosting = () => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

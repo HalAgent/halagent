@@ -48,6 +48,8 @@
 }
 
 .pc-bg {
+  display: flex;
+  justify-content: center;
   background-image: url('./assets/images/background/pc-bg.png');
-  background-size:cover;
+  background-size: cover;
 }
