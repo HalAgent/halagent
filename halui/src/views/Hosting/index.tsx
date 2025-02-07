@@ -248,7 +248,7 @@ const Hosting = () => {
                   </Menu>
                 </div>
 
-                <div className="hosting-content-popup-main-footer">
+                {/* <div className="hosting-content-popup-main-footer">
                   <div
                     className="hosting-content-popup-main-footer-item"
                     onClick={() => {
@@ -276,7 +276,7 @@ const Hosting = () => {
                     <img className="hosting-content-popup-main-footer-item-icon" src={DexScreener}></img>
                     <div className="hosting-content-popup-main-footer-item-text">DexScreener</div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
