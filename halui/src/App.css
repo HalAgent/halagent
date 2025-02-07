@@ -48,8 +48,14 @@
 }
 
 .pc-bg {
+  height: 100vh;
   display: flex;
   justify-content: center;
   background-image: url('./assets/images/background/pc-bg.png');
   background-size: cover;
+}
+
+.h5-page {
+  height: 100dvh;
+  background: #fff;
 }

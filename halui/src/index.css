@@ -18,6 +18,12 @@
   font-weight: normal;
   font-style: normal;
 }
+@font-face {
+  font-family: 'GeologicaMedium';
+  src: url('@/assets/fonts/Geologica-Medium.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 
 @font-face {
   font-family: 'Gantari';
@@ -51,6 +57,9 @@
 .GeologicaRegular {
   font-family: 'GeologicaRegular';
 }
+.GeologicaMedium {
+  font-family: 'GeologicaMedium';
+}
 .Tiny5 {
   font-family: 'Tiny5';
 }
@@ -60,7 +69,7 @@
 
 :root {
   --window-width: 100vw;
-  font-family: 'Press Start 2P', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Geologica', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: light dark;
@@ -188,3 +197,4 @@ textarea {
     @apply bg-gray-100;
   }
 }
+

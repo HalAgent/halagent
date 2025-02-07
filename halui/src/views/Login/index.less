@@ -1,0 +1,69 @@
+.login {
+  user-select: none;
+  .login-header {
+    position: relative;
+    height: 248px;
+    background: url('@/assets/images/login/header.svg');
+    background-size: cover;
+    .login-header-role {
+      position: absolute;
+      left: 100px;
+      top: 100px;
+    }
+  }
+  .login-title {
+    margin: 65px auto 0;
+    font-family: GeologicaMedium;
+    width: 280px;
+    color: #000;
+    text-align: center;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 34px;
+  }
+
+  .login-google {
+    display: block;
+    margin: 55px auto 0;
+  }
+  .login-or {
+    margin-top: 30px;
+    color: #b9b9b9;
+    font-family: Geologica;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    text-align: center;
+  }
+
+  .login-guest {
+    display: block;
+    margin: 29px auto 0;
+  }
+  .hosting-content-popup-main-footer {
+    position: absolute;
+    bottom: 43px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    .hosting-content-popup-main-footer-item {
+      display: flex;
+      align-items: center;
+      margin-right: 20px;
+      &:last-of-type {
+        margin-right: 0;
+      }
+      .hosting-content-popup-main-footer-item-icon {
+        width: 24px;
+        height: 24px;
+        margin-right: 8px;
+      }
+      .hosting-content-popup-main-footer-item-text {
+        font-size: 11px;
+        font-family: 'Geologica';
+      }
+    }
+  }
+}

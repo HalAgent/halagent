@@ -5,7 +5,7 @@ const isMobile = CheckIsMobile();
 const layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className={isMobile ? '' : 'pc-bg'}>
-      <div style={{ width: isMobile ? '100%' : '375px' }}>{children}</div>
+      <div className='h5-page' style={{ width: isMobile ? '100%' : '375px' }}>{children}</div>
     </div>
   );
 };
