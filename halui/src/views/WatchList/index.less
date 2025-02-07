@@ -1,0 +1,70 @@
+.watch-list {
+  box-sizing: border-box;
+  height: 100dvh;
+  padding: 0 16px 105px;
+  background: rgb(241, 241, 241);
+  overflow: scroll;
+  .watch-list-title {
+    position: sticky;
+    top: 0;
+    padding: 20px 0 15px;
+    color: #000;
+    font-family: GeologicaMedium;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    background: rgb(241, 241, 241);
+  }
+  .watch-list-item {
+    box-sizing: border-box;
+    padding: 15px;
+    margin-bottom: 16px;
+    border-radius: 18px 18px 18px 0px;
+    background: #fff;
+    .watch-list-item-date {
+      color: #5b5b5b;
+      font-family: Geologica;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 300;
+      line-height: normal;
+    }
+    .watch-list-item-title {
+      margin-top: 12px;
+      color: #222;
+      font-family: GeologicaRegular;
+      font-size: 13px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+    .watch-list-item-des {
+      margin-top: 16px;
+      flex-shrink: 0;
+      color: #555;
+      font-family: Geologica;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 300;
+      line-height: 20px;
+    }
+    .watch-list-item-footer {
+      margin-top: 10px;
+      display: flex;
+      justify-content: flex-end;
+      .watch-list-item-footer-item {
+        margin-right: 14px;
+        width: 18px;
+        height: 18px;
+        color: #666;
+        &:hover {
+          color: #222;
+        }
+      }
+    }
+    &:last-of-type{
+        margin-bottom: 0;
+    }
+  }
+}

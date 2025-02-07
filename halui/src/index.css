@@ -175,6 +175,9 @@ input[type='checkbox']:checked {
 input[type='checkbox']:hover {
   border-color: #2cc83e;
 }
+input::placeholder {
+  color: #ccc;
+}
 
 textarea {
   border: none;
@@ -197,4 +200,3 @@ textarea {
     @apply bg-gray-100;
   }
 }
-

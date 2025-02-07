@@ -28,11 +28,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.warn(location.pathname);
-
-    const index = TabPage.findIndex(tab => tab.path === location.pathname);
-    console.warn(index);
-
+    const index = ['/watchlist', '/search', 'chat-no', '/hosting', '/memo'].findIndex(tab => tab === location.pathname);
     setActiveTab(index);
     setShowTab(index !== -1);
   }, [location.pathname]);

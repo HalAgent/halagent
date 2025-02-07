@@ -1,0 +1,125 @@
+.search-page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  height: 100dvh;
+  padding: 0 16px;
+  .search-page-title {
+    padding: 20px 0 15px;
+    color: #000;
+    font-family: GeologicaMedium;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+  .search-page-input {
+    margin-top: 7px;
+    box-sizing: border-box;
+    padding: 0 19px 0 16px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    border-radius: 12px;
+    border: 1px solid #000;
+
+    .search-page-input-main {
+      color: #222;
+      font-family: GeologicaRegular;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      flex: 1;
+    }
+    .search-page-input-icon {
+      margin-left: 16px;
+      width: 24px;
+      height: 24px;
+      color: #666;
+      &:hover {
+        color: #222;
+      }
+    }
+  }
+  .search-page-list,
+  .search-list {
+    box-sizing: border-box;
+    padding-top: 31px;
+    overflow: scroll;
+    flex: 1;
+    .search-page-list-item {
+      display: flex;
+      align-items: center;
+      font-family: InknutAntiquaRegular;
+      margin-bottom: 24px;
+      &:last-of-type {
+        margin-bottom: 0;
+      }
+      .search-page-list-item-avatar {
+        width: 44px;
+        height: 44px;
+        margin-right: 13px;
+        object-fit: cover;
+        border-radius: 50%;
+        background: skyblue;
+      }
+      .search-page-list-item-detail {
+        flex: 1;
+        margin-right: 16px;
+        .search-page-list-item-detail-header {
+          display: flex;
+          align-items: center;
+          .search-page-list-item-detail-header-title {
+            font-size: 16px;
+            color: #151515;
+            margin-right: 13px;
+            font-family: InknutAntiquaRegular;
+          }
+          .search-page-list-item-detail-header-des {
+            font-size: 14px;
+            color: #666;
+          }
+        }
+        .search-page-list-item-detail-footer {
+          font-size: 14px;
+          color: #666;
+        }
+      }
+      .search-page-list-item-btn {
+        width: 82px;
+        height: 32px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 16px;
+        border: 1px solid #cfcfcf;
+        color: #333;
+        font-family: InknutAntiquaRegular;
+        font-size: 12px;
+      }
+      .search-page-list-item-btn-active {
+        color: #fff;
+        background: #222;
+        border-color: #222;
+      }
+    }
+  }
+
+  .search-list {
+    position: absolute;
+    top: 117px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-sizing: border-box;
+    margin: 0;
+    padding: 25px 18px;
+    height: auto;
+    max-height: 60dvh;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0px 4px 18px 0px rgba(0, 0, 0, 0.1);
+    overflow: scroll;
+  }
+}

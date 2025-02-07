@@ -18,7 +18,7 @@ function App() {
       <Layout>
         <Suspense fallback={<div>Loading...</div>}>
           <Routes>
-            <Route path="/" element={<Hosting />} />
+            <Route path="/" element={<WatchList />} />
             <Route path="/hosting" element={<Hosting />} />
             <Route path="/login" element={<Login />} />
             <Route path="/pick" element={<Pick />} />
@@ -34,4 +34,3 @@ function App() {
 }
 
 export default App;
- 
