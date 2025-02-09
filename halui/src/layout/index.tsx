@@ -11,6 +11,7 @@ import ImgSearch1 from '@/assets/images/tab/search-1.svg';
 import ImgMemo0 from '@/assets/images/tab/memo-0.svg';
 import ImgMemo1 from '@/assets/images/tab/memo-1.svg';
 import ImgChat from '@/assets/images/tab/chat.svg';
+import AppPriviyProvider from './privy';
 
 const isMobile = CheckIsMobile();
 const TabPage = [
@@ -28,7 +29,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const index = ['/watchlist', '/search', 'chat-no', '/hosting', '/memo'].findIndex(tab => tab === location.pathname);
+    let index = ['/watchlist', '/search', 'chat-no', '/hosting', '/memo'].findIndex(tab => tab === location.pathname);
+    if (location.pathname === '/') {
+      index = 0;
+    }
     setActiveTab(index);
     setShowTab(index !== -1);
   }, [location.pathname]);
@@ -39,23 +43,25 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <div className={isMobile ? '' : 'pc-bg'}>
-      <div className="h5-page" style={{ width: isMobile ? '100%' : '375px' }}>
-        {children}
-        {showTab && (
-          <div className="h5-tab">
-            {TabPage.map((tab, index) => (
-              <img
-                key={tab.path}
-                src={activeTab === index ? tab.activeIcon : tab.icon}
-                className={`h5-tab-item ${activeTab === index ? 'h5-tab-item-active' : ''}`}
-                onClick={() => handleTabClick(index)}
-              ></img>
-            ))}
-          </div>
-        )}
+    <AppPriviyProvider>
+      <div className={isMobile ? '' : 'pc-bg'}>
+        <div className="h5-page" style={{ width: isMobile ? '100%' : '375px' }}>
+          {children}
+          {showTab && (
+            <div className="h5-tab">
+              {TabPage.map((tab, index) => (
+                <img
+                  key={tab.path}
+                  src={activeTab === index ? tab.activeIcon : tab.icon}
+                  className={`h5-tab-item ${activeTab === index ? 'h5-tab-item-active' : ''}`}
+                  onClick={() => handleTabClick(index)}
+                ></img>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </AppPriviyProvider>
   );
 };
 

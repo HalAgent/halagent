@@ -9,20 +9,24 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     proxy: {
-        '/dev': {
-          target: 'https://halagent.org/dev',
-          secure: false,
-          ws: true,
-          changeOrigin: true,
-          rewrite: path => path.replace(/^\/dev/, ''),
-        },
-        '/api': {
-          target: 'https://host.halagent.org/api',
-          secure: false,
-          ws: true,
-          changeOrigin: true,
-          rewrite: path => path.replace(/^\/api/, ''),
-        },
+      '/dev': {
+        target: 'http://23.106.133.215:3000',
+        // target: "http://18.205.246.62:3000",
+        // target: 'http://localhost:3000',
+        secure: false,
+        ws: true,
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/dev/, ''),
+      },
+      '/api': {
+        target: 'http://23.106.133.215:3000',
+        // target: "http://18.205.246.62:3000",
+        // target: 'http://localhost:3000',
+        secure: false,
+        ws: true,
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api/, ''),
+      },
     },
   },
   base: './',

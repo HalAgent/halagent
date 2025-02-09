@@ -5,6 +5,7 @@ import {
   ProfileUpdateResponse,
   ProfileQueryResponse,
   AgentConfig,
+  UserProfile,
   //AgentConfig,
 } from '../types/auth';
 import { useUserStore } from '@/stores/useUserStore';
@@ -85,13 +86,10 @@ export const authService = {
    * @returns Updated profile
    * @throws Update Exception
    */
-  async updateProfile( profile: {
-    email: string;
-    username: string;
-    password: string;
-  }): Promise<ProfileUpdateResponse> {
+  async updateProfile(userId: string, profile: UserProfile): Promise<ProfileUpdateResponse> {
     try {
       const response = await api.post(`/profile_upd`, {
+        userId,
         profile,
       });
       if (response.data) {
@@ -103,6 +101,24 @@ export const authService = {
       throw error;
     }
   },
+//   async updateProfile( profile: {
+//     email: string;
+//     username: string;
+//     password: string;
+//   }): Promise<ProfileUpdateResponse> {
+//     try {
+//       const response = await api.post(`/profile_upd`, {
+//         profile,
+//       });
+//       if (response.data) {
+//         useUserStore.getState().updateProfile(response.data.profile);
+//       }
+//       return response.data;
+//     } catch (error) {
+//       console.error('Profile update error:', error);
+//       throw error;
+//     }
+//   },
 
   /**
    * Read the user profile
