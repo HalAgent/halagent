@@ -139,7 +139,7 @@ export class twitterDataProvider {
             for await (const tweet of tweets) {
                 posts.push(tweet);
             }
-            
+
             const prompt =`
                 The biography of ${username} is ${userBio}.\n
                 Here are some posts of ${username}:
@@ -159,7 +159,7 @@ export class twitterDataProvider {
             });
             //console.log(response);
             summary = response;
-            if (response && response.contains("The user is not related to Web3")) {
+            if (response && response.includes("The user is not related to Web3")) {
                 summary = "";
             }
         } catch (error) {

@@ -14,8 +14,6 @@ import {
     type Character,
 } from "@elizaos/core";
 
-import type { TeeLogQuery, TeeLogService } from "@elizaos/plugin-tee-log";
-import { REST, Routes } from "discord.js";
 import type { DirectClient } from ".";
 import { validateUuid } from "@elizaos/core";
 

@@ -3,10 +3,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 
 import { type AgentRuntime, elizaLogger, ServiceType }  from "@elizaos/core";
-import type {
-    VerifiableLogService,
-    VerifiableLogQuery,
-} from "@elizaos/plugin-tee-verifiable-log";
+
 
 export function createVerifiableLogApiRouter(
     agents: Map<string, AgentRuntime>
