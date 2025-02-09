@@ -4,7 +4,7 @@ import api from './axios';
 import { useUserStore } from '@/stores/useUserStore';
 import { XUserProfile } from '@/types/account';
 
-interface WatchResponse {
+export interface WatchResponse {
   items: {
     token: string;
     title: string;

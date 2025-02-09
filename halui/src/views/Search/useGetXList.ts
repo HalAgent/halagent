@@ -46,7 +46,7 @@ export const useGetXList = () => {
   const refresh = async () => {
     initList();
   };
-  
+
   const onFollow = async (
     account: WatchItem & {
       isWatched: boolean;
