@@ -1,15 +1,14 @@
-import {
-    Client,
-    elizaLogger,
-    IAgentRuntime,
-} from "@elizaos/core";
+import { type Client, elizaLogger, type IAgentRuntime } from "@elizaos/core";
 import { ClientBase } from "./base.ts";
-import { validateTwitterConfig, TwitterConfig } from "./environment.ts";
+import { validateTwitterConfig, type TwitterConfig } from "./environment.ts";
 import { TwitterInteractionClient } from "./interactions.ts";
 import { TwitterPostClient } from "./post.ts";
 import { TwitterSearchClient } from "./search.ts";
-// import { TwitterSpaceClient } from "./spaces.ts";
+import { TwitterSpaceClient } from "./spaces.ts";
 import { TwitterWatchClient } from "./watcher.ts";
+import { SighterClient, KEY_BNB_CACHE_STR } from "./sighter.ts";
+import { TwitterFinderClient } from "./finder.ts";
+import { EventEmitter } from 'events';
 
 /**
  * A manager that orchestrates all specialized Twitter logic:
@@ -23,9 +22,11 @@ class TwitterManager {
     client: ClientBase;
     post: TwitterPostClient;
     search: TwitterSearchClient;
-    watcher: TwitterWatchClient;
     interaction: TwitterInteractionClient;
-    space?: null;
+    space?: TwitterSpaceClient;
+    watcher: TwitterWatchClient;
+    sighter: SighterClient;
+    finder: TwitterFinderClient;
 
     constructor(runtime: IAgentRuntime, twitterConfig: TwitterConfig) {
         // Pass twitterConfig to the base client
@@ -47,17 +48,27 @@ class TwitterManager {
         // Mentions and interactions
         this.interaction = new TwitterInteractionClient(this.client, runtime);
 
+        this.sighter = new SighterClient(this.client, runtime);
+
         // Optional Spaces logic (enabled if TWITTER_SPACES_ENABLE is true)
-        // if (twitterConfig.TWITTER_SPACES_ENABLE) {
-        //     this.space = new TwitterSpaceClient(this.client, runtime);
-        // }
+        if (twitterConfig.TWITTER_SPACES_ENABLE) {
+            this.space = new TwitterSpaceClient(this.client, runtime);
+        }
+
+        // Watcher
         this.watcher = new TwitterWatchClient(this.client, runtime);
+
+        // Finder
+        this.finder = new TwitterFinderClient(this.client, runtime);
     }
 }
 
+export const twEventCenter = new EventEmitter();
+
 export const TwitterClientInterface: Client = {
     async start(runtime: IAgentRuntime) {
-        const twitterConfig: TwitterConfig = await validateTwitterConfig(runtime);
+        const twitterConfig: TwitterConfig =
+            await validateTwitterConfig(runtime);
 
         elizaLogger.log("Twitter client started");
 
@@ -70,18 +81,28 @@ export const TwitterClientInterface: Client = {
         //await manager.post.start();
 
         // Start the search logic if it exists
-        //if (manager.search) {
-        //    await manager.search.start();
-        //}
+        if (manager.search) {
+            await manager.search.start();
+        }
 
         // Start interactions (mentions, replies)
         //await manager.interaction.start();
-        await manager.watcher.start();
 
         // If Spaces are enabled, start the periodic check
-        //if (manager.space) {
-        //    manager.space.startPeriodicSpaceCheck();
-        //}
+        if (manager.space) {
+            //manager.space.startPeriodicSpaceCheck();
+        }
+
+        await manager.finder.start();
+        await manager.watcher.start();
+        twEventCenter.on('MSG_RE_TWITTER', (text, userId) => {
+            console.log('MSG_RE_TWITTER userId: ' + userId + " text: " + text);
+            manager.watcher.sendReTweet(text, userId);
+        });
+        twEventCenter.on("MSG_BNB_QUERY", (coinsymbol, userId) => {
+            // console.log('MSG_RE_TWITTER userId: ' + userId + " text: " + text);
+            manager.sighter.bnbQuery(coinsymbol, userId);
+        });
 
         return manager;
     },

@@ -1,4 +1,12 @@
-import { IAgentRuntime, Memory, Provider, State } from "@elizaos/core";
+import {
+    generateText,
+    IAgentRuntime,
+    ModelClass,
+    Memory,
+    Provider,
+    State,
+    settings
+} from "@elizaos/core";
 import { Scraper } from "agent-twitter-client";
 
 // Pre Defined Twitter KOL
@@ -80,7 +88,112 @@ export const socialProvider: Provider = {
     },
 }
 
+const ABSTRACTOR_INSTRUCTION = `
+    Please summary the user information by the provided biography and post tweets.
+    The total words count should be between 20 and 30.
+    If the user is not related to web3 or crypto, just return "The user is not related to Web3".`;
+
+const TW_ABSTRACTOR_PREFIX: string = "ABSTRACTOR_KEY_TW_PROFILE_PREFIX_";
+const TW_ABSTRACTOR_POST_COUNT = 20;
+
 export class twitterDataProvider {
+    constructor(
+        private runtime: IAgentRuntime,
+        private scraper: Scraper,
+    ) {}
+
+    private async readFromCache<T>(key: string): Promise<T | null> {
+        const cached = await this.runtime.cacheManager.get<T>(key);
+        return cached;
+    }
+
+    private async writeToCache<T>(key: string, data: T): Promise<void> {
+        await this.runtime.cacheManager.set(key, data,
+            { expires: Date.now() + 60 * 60 * 1000 }); //expires is NEED
+    }
+
+    private async getCachedData<T>(key: string): Promise<T | null> {
+        const fileCachedData = await this.readFromCache<T>(TW_ABSTRACTOR_PREFIX + key);
+        if (fileCachedData) {
+            return fileCachedData;
+        }
+
+        return null;
+    }
+
+    private async setCachedData<T>(cacheKey: string, data: T): Promise<void> {
+        await this.writeToCache(TW_ABSTRACTOR_PREFIX + cacheKey, data);
+    }
+
+    async getAISummary(username: string) {
+        console.log(`getAISummary ${username}`);
+        let summary = "";
+        try {
+            let userBio = "";
+            const profile = await this.getProfile(username);
+            if (profile) {
+                userBio += profile.biography + ", joined on " + profile.joined;
+            }
+            const tweets = await this.scraper.getTweets(username, TW_ABSTRACTOR_POST_COUNT);
+            const posts = [];
+            for await (const tweet of tweets) {
+                posts.push(tweet);
+            }
+            
+            const prompt =`
+                The biography of ${username} is ${userBio}.\n
+                Here are some posts of ${username}:
+                     ${[...posts]
+                        .map(
+                            (tweet) => `
+                    Text: ${tweet.text}\n
+                    Likes: ${tweet.likes}, Replies: ${tweet.replies}, Retweets: ${tweet.retweets},
+                        `
+                        )
+                        .join("\n")}
+                ${ABSTRACTOR_INSTRUCTION}`;
+            let response = await generateText({
+                runtime: this.runtime,
+                context: prompt,
+                modelClass: ModelClass.LARGE,
+            });
+            //console.log(response);
+            summary = response;
+            if (response && response.contains("The user is not related to Web3")) {
+                summary = "";
+            }
+        } catch (error) {
+            console.error("getAISummary error:", error);
+        }
+        return summary;
+    }
+
+    async getProfile(username: string) {
+        let searchResult = null;
+
+        try {
+            // Search from cache firstly
+            let cachedProfile = await this.getCachedData(username.toLowerCase());
+            if (cachedProfile) {
+                searchResult = cachedProfile;
+            }
+            else {
+                try {
+                    const response = await this.scraper.getProfile(username);
+                    if (response) {
+                        searchResult = response;
+                        this.setCachedData(searchResult.username.toLowerCase(), searchResult);
+                    }
+                } catch (error) {
+                    console.error("Search from client error:", error);
+                }
+            }
+        } catch (error) {
+            console.error("getProfile error:", error);
+        }
+
+        return searchResult;
+    }
 
     async fetchTwitterProfile(username: string): Promise<string> {
         try {
@@ -91,10 +204,10 @@ export class twitterDataProvider {
             if (!await scraper.isLoggedIn()) {
                 // Log in to Twitter using the configured environment variables
                 await scraper.login(
-                    process.env.TWITTER_USERNAME,
-                    process.env.TWITTER_PASSWORD,
-                    process.env.TWITTER_EMAIL,
-                    process.env.TWITTER_2FA_SECRET || undefined
+                    settings.TWITTER_USERNAME,
+                    settings.TWITTER_PASSWORD,
+                    settings.TWITTER_EMAIL,
+                    settings.TWITTER_2FA_SECRET || undefined
                 );
 
                 console.log("Logged in successfully!");

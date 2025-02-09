@@ -283,14 +283,14 @@ export class UserManager implements UserManageInterface {
             if (!idsStr) {
                 return { accessToken, refreshToken };
             }
-
+    
             let idSeq = (await this.getCachedData<number>(
                 UserManager.USER_ID_SEQUENCE
             ));
             if (!idSeq) {
                 idSeq = 0;
             }
-
+    
             // Parse IDs array
             const ids = new Set(JSON.parse(idsStr));
             const idArray = Array.from(ids);

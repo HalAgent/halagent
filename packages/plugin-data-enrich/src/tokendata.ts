@@ -11,7 +11,16 @@ export const TOP_TOKENS = [
     "SOL",
     "BNB",
     "DOT",
+    "@base",
+    "base",
+    "Base",
+    "BASE",
+    "solana",
+    "Solana",
+    "SOLANA",
+    "bitcoin",
     "Bitcoin",
+    "Ethereum",
 ];
 
 export const tokenWatcherConversationTemplate =

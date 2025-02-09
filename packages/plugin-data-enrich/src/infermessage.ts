@@ -1,8 +1,9 @@
 // The define of AI Infer Message
-import { ICacheManager, settings } from "@elizaos/core";
+import { IAgentRuntime, ICacheManager, settings } from "@elizaos/core";
 import { TOP_TOKENS } from "./tokendata.ts";
-import { TW_KOL_1 } from "./social.ts";
+import { TW_KOL_1, twitterDataProvider } from "./social.ts";
 import * as path from "path";
+import { Scraper } from "agent-twitter-client";
 
 var TokenAlphaReport = [];
 var TokenAlphaText = [];
@@ -34,18 +35,24 @@ interface WatchItemsPage {
 
 export class InferMessageProvider {
     private static cacheKey: string = "data-enrich/infermessage";
+    private twProvider: twitterDataProvider = null;
 
-    constructor(private cacheManager: ICacheManager) {}
+    constructor(
+        private runtime: IAgentRuntime,
+        private scraper: Scraper
+    ) {
+        this.twProvider = new twitterDataProvider(runtime, scraper);
+    }
 
     private async readFromCache<T>(key: string): Promise<T | null> {
-        const cached = await this.cacheManager.get<T>(
+        const cached = await this.runtime.cacheManager.get<T>(
             path.join(InferMessageProvider.cacheKey, key)
         );
         return cached;
     }
 
     private async writeToCache<T>(key: string, data: T): Promise<void> {
-        await this.cacheManager.set(
+        await this.runtime.cacheManager.set(
             path.join(InferMessageProvider.cacheKey, key),
             data,
             {
@@ -107,16 +114,14 @@ export class InferMessageProvider {
                         TokenAlphaReport.push(item);
                     }
 
-                    let tokenInfo = ""; //await this.enrichByWebSearch(item.token);
+                    //let tokenInfo = "";//await this.enrichByWebSearch(item.token);
+                    let tokenInfo = await this.twProvider.getAISummary(item.token);
 
                     let alpha: WatchItem = {
                         kol: kol,
                         token: item.token,
-                        title: `${item.interact}, total ${item.count} times`,
-                        //updatedAt: new Date()
-                        //    .toISOString()
-                        //    .slice(0, 16)
-                        //    .replace(/T/g, " "),
+                        //title: `${item.interact}, total ${item.count} times`,
+                        title: `${item.interact}`,
                         updatedAt: Date.now().toString(),
                         text: `${item.token}: ${item.event}\r\n\r\n ${tokenInfo}`,
                     };
@@ -283,12 +288,12 @@ export class InferMessageProvider {
         if (specificKols) {
             return Array.isArray(specificKols) ? specificKols : [];
         }
-        // // settings.TW_KOL_LIST
-        // todo: here json parse error. need handle the error.
-        // const settingsList = JSON.parse(settings.TW_KOL_LIST);
-        // if (Array.isArray(settingsList) && settingsList.length > 0) {
-        //     return settingsList;
-        // }
+
+        // settings.TW_KOL_LIST
+        const settingsList = JSON.parse(settings.TW_KOL_LIST);
+        if (Array.isArray(settingsList) && settingsList.length > 0) {
+            return settingsList;
+        }
 
         // TW_KOL_1 as default
         return TW_KOL_1;
