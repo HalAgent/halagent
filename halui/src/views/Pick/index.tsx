@@ -4,10 +4,16 @@ import ImgPickDone from '@/assets/icons/pickDone.svg';
 import { useGetXList } from '../Search/useGetXList';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 const Pick = () => {
   const navigate = useNavigate();
   const { xList, loading, searchUser, onFollow } = useGetXList();
   const goHome = () => {
+    const list = xList.filter(item => item.isWatched);
+    if (list.length < 5) {
+      toast('Please pick at least 5.');
+      return;
+    }
     navigate('/');
   };
   useEffect(() => {
