@@ -1,9 +1,8 @@
 import './App.css';
 import Layout from './layout';
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import 'virtual:uno.css';
 import { Suspense, lazy } from 'react';
-
 const Hosting = lazy(() => import('./views/Hosting'));
 const Login = lazy(() => import('./views/Login'));
 const Pick = lazy(() => import('./views/Pick'));
@@ -18,7 +17,7 @@ function App() {
       <Layout>
         <Suspense fallback={<div>Loading...</div>}>
           <Routes>
-            <Route path="/" element={<WatchList />} />
+            <Route path="/" element={<Navigate to="/watchlist" replace />} />
             <Route path="/hosting" element={<Hosting />} />
             <Route path="/login" element={<Login />} />
             <Route path="/pick" element={<Pick />} />

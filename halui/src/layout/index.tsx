@@ -12,6 +12,7 @@ import ImgMemo0 from '@/assets/images/tab/memo-0.svg';
 import ImgMemo1 from '@/assets/images/tab/memo-1.svg';
 import ImgChat from '@/assets/images/tab/chat.svg';
 import AppPriviyProvider from './privy';
+import { ToastContainer } from 'react-toastify';
 
 const isMobile = CheckIsMobile();
 const TabPage = [
@@ -43,9 +44,18 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AppPriviyProvider>
-      <div className={isMobile ? '' : 'pc-bg'}>
-        <div className="h5-page" style={{ width: isMobile ? '100%' : '375px' }}>
+    <div className={isMobile ? '' : 'pc-bg'}>
+      <div className="h5-page" style={{ width: isMobile ? '100%' : '375px' }}>
+        <AppPriviyProvider>
+          <ToastContainer
+            className="layout-toast"
+            position="top-right"
+            autoClose={2000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            pauseOnHover={false}
+            theme="colored"
+          />
           {children}
           {showTab && (
             <div className="h5-tab">
@@ -59,9 +69,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               ))}
             </div>
           )}
-        </div>
+        </AppPriviyProvider>
       </div>
-    </AppPriviyProvider>
+    </div>
   );
 };
 
