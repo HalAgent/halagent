@@ -25,6 +25,14 @@
       width: 24px;
       height: 24px;
     }
+    .memo-operation-des {
+      color: #2a2a2a;
+      font-family: Geologica;
+      font-size: 13px;
+      font-style: normal;
+      font-weight: 300;
+      line-height: normal;
+    }
   }
   .memo-operation {
     margin-top: 14px;
@@ -75,8 +83,7 @@
         }
       }
       .memo-list-item-des {
-        margin-top: 16px;
-        color: #ababab;
+        color: #141414;
         font-family: Geologica;
         font-size: 13px;
         font-style: normal;
@@ -84,6 +91,7 @@
         line-height: 20px;
       }
       .memo-list-item-footer {
+        overflow: hidden;
         display: flex;
         align-items: center;
         padding-top: 11px;
@@ -93,6 +101,7 @@
           width: 22px;
           height: 22px;
           color: #666;
+          object-fit: cover;
           &:hover {
             color: #666 !important;
           }

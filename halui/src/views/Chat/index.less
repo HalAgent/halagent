@@ -1,165 +1,177 @@
 .chat-page {
-    height: 100vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0 16px 24px;
+  box-sizing: border-box;
+  background-color: #fff;
+  &-header {
+    font-family: GeologicaRegular;
+    display: flex;
+    align-items: center;
+    height: 44px;
+    color: #000;
+    font-size: 18px;
+    font-weight: 400;
+    & > img:nth-child(1) {
+      height: 34px;
+    }
+    & > img:nth-child(2) {
+      height: 35px;
+      margin-right: 6px;
+    }
+  }
+  .chat-page-items {
+    display: inline-block;
+    padding: 9px 10px;
+    border-radius: 8px;
+    border: 1px solid #e5e5e5;
+    color: #666;
+    font-size: 13px;
+    font-weight: 300;
+    text-transform: capitalize;
+    cursor: pointer;
+    overflow: hidden;
+    &:hover {
+      background: #f3f3f3;
+    }
+  }
+  &-cont {
+    flex: 1;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding: 0 16px 24px;
-    box-sizing: border-box;
-    background-color: #fff;
-    &-header {
-        font-family: GeologicaRegular;
+    &-item {
+      display: inline-block;
+      border-radius: 16px;
+      background: #f7f7f7;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 300;
+      line-height: 24px;
+      color: #111;
+      padding: 8px 12px 13px;
+      margin-bottom: 16px;
+      white-space: pre-line;
+      &:last-child {
+        margin-bottom: 0;
+      }
+      &-opt {
         display: flex;
         align-items: center;
-        height: 44px;
-        color: #000;
-        font-size: 18px;
-        font-weight: 400;
-        & > img:nth-child(1) {
-            height: 34px;
+        justify-content: flex-end;
+        gap: 14px;
+        margin-top: 14px;
+        color: #b9b9b9;
+        svg:hover {
+          color: #222;
         }
-        & > img:nth-child(2){
-            height: 35px;
-            margin-right: 6px;
-        }
+      }
+      &.self {
+        align-self: flex-end;
+        padding: 11px;
+        background-color: #2a2a2a;
+        color: #fff;
+      }
     }
-    .chat-page-items {
-        display: inline-block;
-        padding: 9px 10px;
-        border-radius: 8px;
-        border: 1px solid #E5E5E5;
-        color: #666;
-        font-size: 13px;
-        font-weight: 300;
-        text-transform: capitalize;
-        cursor: pointer;
-        overflow: hidden;
-        &:hover {
-            background: #F3F3F3;
-        }
-    }
-    &-cont {
+  }
+  &-topic {
+    &-title {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 30px;
+      color: #111;
+      font-size: 14px;
+      font-style: normal;
+      text-transform: capitalize;
+      font-family: GeologicaRegular;
+      & > img {
+        width: 20px;
+        margin-top: -4px;
+      }
+      & > .line {
         flex: 1;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        &-item {
-            display: inline-block;
-            border-radius: 16px;
-            background: #F7F7F7;
-            font-size: 14px;
-            font-style: normal;
-            font-weight: 300;
-            line-height: 24px;
-            color: #111;
-            padding: 8px 12px 13px;
-            margin-bottom: 16px;
-            &:last-child {
-                margin-bottom: 0;
-            }
-            &-opt {
-                display: flex;
-                align-items: center;
-                justify-content: flex-end;
-                gap: 14px;
-                margin-top: 14px;
-                color: #B9B9B9;
-                svg:hover {
-                    color: #222;
-                }
-            }
-            &.self {
-                align-self: flex-end;
-                padding: 11px;
-                background-color: #2A2A2A;
-                color: #fff;
-            }
-        }
+        margin-left: 20px;
+        height: 1px;
+        background: #f3f3f3;
+      }
     }
-    &-topic {
-        &-title {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            margin-top: 30px;
-            color: #111;
-            font-size: 14px;
-            font-style: normal;
-            text-transform: capitalize;
-            font-family: GeologicaRegular;
-            & > img {
-                width: 20px;
-                margin-top: -4px;
-            }
-            & > .line {
-                flex: 1;
-                margin-left: 20px;
-                height: 1px;
-                background: #F3F3F3;
-
-            }
+    &-list {
+      list-style: none;
+      margin-top: 26px;
+      & > .chat-page-items {
+        margin-bottom: 16px;
+        &:last-child {
+          margin-bottom: 0;
         }
-        &-list {
-            list-style: none;
-            margin-top: 26px;
-            & > .chat-page-items {
-                margin-bottom: 16px;
-                &:last-child {
-                    margin-bottom: 0;
-                }
-            }
-        }
+      }
     }
-    &-keys {
-        display: flex;
-        flex-wrap: nowrap;
-        margin-top: 10px;
-        overflow-x: auto;
-        & > .chat-page-items {
-            margin-right: 10px;
-            flex-shrink: 0;
-            &:last-child {
-                margin-right: 0;
-            }
-            &:hover {
-                background: #F3F3F3;
-            }
-        }
+  }
+  &-keys {
+    display: flex;
+    flex-wrap: nowrap;
+    margin-top: 10px;
+    overflow-x: auto;
+    & > .chat-page-items {
+      margin-right: 10px;
+      flex-shrink: 0;
+      background: #fff !important;
+      &:last-child {
+        margin-right: 0;
+      }
     }
-    &-input {
-        display: flex;
-        align-items: center;
-        border-radius: 12px;
-        background: #FFF;
-        box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.12);
-        margin-top: 10px;
-        padding: 16px;
-        & > textarea {
-            padding: 0;
-            flex: 1;
-            font-size: 14px;
-            height: 18px;
-            line-height: 18px;
-        }
-        & > img {
-            align-self: flex-end;
-            cursor: pointer;
-            height: 22px;
-            margin-left: 10px;
-        }
-        textarea::-webkit-input-placeholder {
-            color: #C2C2C2;
-            font-size: 14px;
-            font-weight: 300;
-        }
-        textarea:-ms-input-placeholder {
-            color:#C2C2C2;
-            font-size: 14px;
-            font-weight: 300;
-        }
-        textarea:-moz-placeholder {
-            color:#C2C2C2;
-            font-size: 14px;
-            font-weight: 300;
-        }
+  }
+  &-input {
+    display: flex;
+    align-items: center;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.12);
+    margin-top: 10px;
+    padding: 16px;
+    & > textarea {
+      padding: 0;
+      flex: 1;
+      font-size: 14px;
+      height: 18px;
+      line-height: 18px;
     }
+    & > img {
+      align-self: flex-end;
+      cursor: pointer;
+      height: 22px;
+      margin-left: 10px;
+    }
+    textarea::-webkit-input-placeholder {
+      color: #c2c2c2;
+      font-size: 14px;
+      font-weight: 300;
+    }
+    textarea:-ms-input-placeholder {
+      color: #c2c2c2;
+      font-size: 14px;
+      font-weight: 300;
+    }
+    textarea:-moz-placeholder {
+      color: #c2c2c2;
+      font-size: 14px;
+      font-weight: 300;
+    }
+    textarea:disabled {
+      background-color: transparent;
+    }
+    .chat-loading {
+      animation: spin 1s linear infinite;
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    }
+  }
 }

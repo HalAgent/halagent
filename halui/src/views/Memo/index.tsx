@@ -1,61 +1,90 @@
 import { ReactSVG } from 'react-svg';
-import ImgSearch from '@/assets/icons/search2.svg';
-import ImgAdd from '@/assets/icons/add.svg';
+// import ImgSearch from '@/assets/icons/search2.svg';
+// import ImgAdd from '@/assets/icons/add.svg';
 import ImgAi from '@/assets/icons/ai.svg';
 import ImgDelete from '@/assets/icons/Delete.svg';
 import ImgTime from '@/assets/icons/Time.svg';
 import ImgShare from '@/assets/icons/share.svg';
+import { memoApi } from '@/services/memo';
+import { Memo } from '@/types/memo';
 
-import { Checkbox } from '@headlessui/react';
-import { CheckIcon } from '@heroicons/react/16/solid';
 import './index.less';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import useShare from '@/hooks/useShare';
+import PixModal from '@/components/common/PixModal/index';
 
-const Memo = () => {
-  const [enabled, setEnabled] = useState(false);
+const MemoPage = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [memos, setMemos] = useState<Memo[]>([]);
+  const [current, setCurrent] = useState<Memo>();
+  const { handleShareClick: shareHook } = useShare();
+
+  const handlerSDhare = (item: Memo) => {
+    shareHook(item.content);
+  };
+  const handlerDelete = (item: Memo) => {
+    setIsOpen(true);
+    setCurrent(item);
+  };
+
+  const handlerConfirmDelete = () => {
+    memoApi.deleteMomo([current!.id]).then(() => {
+      setMemos(prev => prev.filter(memo => memo.id !== current!.id));
+      setIsOpen(false);
+    });
+  };
+
+  useEffect(() => {
+    memoApi.reset();
+    memoApi.getMemoList().then(data => {
+      setMemos(data.reverse());
+    });
+  }, []);
   return (
     <div className="memo">
+      <PixModal
+        isOpen={isOpen}
+        title="Delete Confirmation"
+        cancelText="Cancel"
+        onCancel={() => setIsOpen(false)}
+        confirmText="Confirm"
+        onConfirm={handlerConfirmDelete}
+      ></PixModal>
       <div className="memo-title">
         <div className="memo-title-text">Memo</div>
-        <ReactSVG className="memo-title-icon" src={ImgSearch}></ReactSVG>
-        <ReactSVG className="memo-title-icon" src={ImgAdd}></ReactSVG>
-      </div>
-      <div className="memo-operation">
-        <Checkbox
-          checked={enabled}
-          onChange={setEnabled}
-          className="group mr-[11px] w-[22px] h-[22px] border border-solid  border-[#2a2a2a] rounded-[4px] text-black flex items-center justify-center
-"
-        >
-          <CheckIcon className="hidden size-4 fill-black group-data-[checked]:block" />
-        </Checkbox>
-        <div className="memo-operation-des flex-1">Selected 0 items</div>
+        {/* <ReactSVG className="memo-title-icon" src={ImgSearch}></ReactSVG>
+        <ReactSVG className="memo-title-icon" src={ImgAdd}></ReactSVG> */}
         <ReactSVG className=" w-[28px] h-[28px] ml-[58px]" src={ImgAi}></ReactSVG>
         <div className="memo-operation-des mr-[16px]">AI summary</div>
-        <ReactSVG className="memo-operation-icon" src={ImgDelete}></ReactSVG>
       </div>
+
       <div className="memo-list">
-        {[1, 1, 1, 1, 1, 1, 1, 1, 1].map(item => {
+        {memos.map(item => {
           return (
             <div className="memo-list-item">
-              <div className="memo-list-item-title">
-                <div className="memo-list-item-title-text hide-txt">Introducing Memo</div>
-                <Checkbox
-                  checked={enabled}
-                  onChange={setEnabled}
-                  className="group mr-[11px] w-[22px] h-[22px] border border-solid  border-[#2a2a2a] rounded-[4px] text-black flex items-center justify-center
-      "
-                >
-                  <CheckIcon className="hidden size-4 fill-black group-data-[checked]:block" />
-                </Checkbox>
-              </div>
-              <div className="memo-list-item-des">
-                Memo is your exclusive Alknowledge base. You cancollect any webpage, Al chatrecords, images, and PDF...
-              </div>
+              {/* <div className="memo-list-item-title">
+                <div className="memo-list-item-title-text hide-txt">{item.title}</div>
+              </div> */}
+              <div className="memo-list-item-des">{item.content}</div>
               <div className="memo-list-item-footer">
                 <ReactSVG className="memo-list-item-footer-icon" src={ImgTime}></ReactSVG>
                 <div className="memo-list-item-footer-des">Note · Nov 23, 2024</div>
-                <ReactSVG className="memo-list-item-footer-icon" style={{ color: '#b9b9b9' }} src={ImgShare}></ReactSVG>
+                <ReactSVG
+                  className="memo-list-item-footer-icon"
+                  style={{ color: '#b9b9b9', marginBottom: '-2px', marginRight: '2px' }}
+                  src={ImgShare}
+                  onClick={() => {
+                    handlerSDhare(item);
+                  }}
+                ></ReactSVG>
+                <ReactSVG
+                  className="memo-list-item-footer-icon"
+                  style={{ color: '#b9b9b9' }}
+                  src={ImgDelete}
+                  onClick={() => {
+                    handlerDelete(item);
+                  }}
+                ></ReactSVG>
               </div>
             </div>
           );
@@ -65,4 +94,4 @@ const Memo = () => {
   );
 };
 
-export default Memo;
+export default MemoPage;

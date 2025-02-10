@@ -1,17 +1,13 @@
 import './index.less';
 import bg from '@/assets/images/hosting/bg.png';
-import avatar from '@/assets/images/hosting/avatar.png';
+import avatar from '@/assets/icons/person.png';
 import sj from '@/assets/images/hosting/sj.png';
 import host from '@/assets/images/hosting/host.gif';
 import popup from '@/assets/images/hosting/popup.png';
-import TitleText from '@/assets/images/hosting/title-text.png';
+import TitleText from '@/assets/images/hosting/title-text.svg';
 import xsj from '@/assets/icons/xsj.png';
 
-import Twitter from '@/assets/icons/Twitter.png';
-import Website from '@/assets/icons/Website.png';
-import DexScreener from '@/assets/icons/DexScreener.png';
-
-import IconX from '@/assets/images/hosting/x.png';
+import IconX from '@/assets/icons/x.svg';
 import { Menu, MenuButton, MenuItem, MenuItems, Switch } from '@headlessui/react';
 import { useEffect, useState } from 'react';
 import { authService } from '@/services/auth';
