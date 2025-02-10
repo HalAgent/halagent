@@ -1,14 +1,15 @@
-import { Tweet } from "agent-twitter-client";
+import type { Tweet } from "agent-twitter-client";
 import { getEmbeddingZeroVector } from "@elizaos/core";
-import { Content, Memory, UUID } from "@elizaos/core";
+import type { Content, Memory, UUID } from "@elizaos/core";
 import { stringToUuid } from "@elizaos/core";
-import { ClientBase } from "./base";
+import type { ClientBase } from "./base";
 import { elizaLogger } from "@elizaos/core";
-import { Media } from "@elizaos/core";
+import type { Media } from "@elizaos/core";
 import fs from "fs";
 import path from "path";
+import { MediaData } from "./types";
 
-export const wait = (minTime: number = 1000, maxTime: number = 3000) => {
+export const wait = (minTime = 1000, maxTime = 3000) => {
     const waitTime =
         Math.floor(Math.random() * (maxTime - minTime + 1)) + minTime;
     return new Promise((resolve) => setTimeout(resolve, waitTime));
@@ -32,12 +33,12 @@ export const isValidTweet = (tweet: Tweet): boolean => {
 export async function buildConversationThread(
     tweet: Tweet,
     client: ClientBase,
-    maxReplies: number = 10
+    maxReplies = 10
 ): Promise<Tweet[]> {
     const thread: Tweet[] = [];
     const visited: Set<string> = new Set();
 
-    async function processThread(currentTweet: Tweet, depth: number = 0) {
+    async function processThread(currentTweet: Tweet, depth = 0) {
         elizaLogger.debug("Processing tweet:", {
             id: currentTweet.id,
             inReplyToStatusId: currentTweet.inReplyToStatusId,
@@ -164,6 +165,36 @@ export async function buildConversationThread(
     return thread;
 }
 
+export async function fetchMediaData(
+    attachments: Media[]
+): Promise<MediaData[]> {
+    return Promise.all(
+        attachments.map(async (attachment: Media) => {
+            if (/^(http|https):\/\//.test(attachment.url)) {
+                // Handle HTTP URLs
+                const response = await fetch(attachment.url);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch file: ${attachment.url}`);
+                }
+                const mediaBuffer = Buffer.from(await response.arrayBuffer());
+                const mediaType = attachment.contentType;
+                return { data: mediaBuffer, mediaType };
+            } else if (fs.existsSync(attachment.url)) {
+                // Handle local file paths
+                const mediaBuffer = await fs.promises.readFile(
+                    path.resolve(attachment.url)
+                );
+                const mediaType = attachment.contentType;
+                return { data: mediaBuffer, mediaType };
+            } else {
+                throw new Error(
+                    `File not found: ${attachment.url}. Make sure the path is correct.`
+                );
+            }
+        })
+    );
+}
+
 export async function sendTweet(
     client: ClientBase,
     content: Content,
@@ -179,49 +210,32 @@ export async function sendTweet(
     let previousTweetId = inReplyTo;
 
     for (const chunk of tweetChunks) {
-        let mediaData: { data: Buffer; mediaType: string }[] | undefined;
+        let mediaData = null;
 
         if (content.attachments && content.attachments.length > 0) {
-            mediaData = await Promise.all(
-                content.attachments.map(async (attachment: Media) => {
-                    if (/^(http|https):\/\//.test(attachment.url)) {
-                        // Handle HTTP URLs
-                        const response = await fetch(attachment.url);
-                        if (!response.ok) {
-                            throw new Error(
-                                `Failed to fetch file: ${attachment.url}`
-                            );
-                        }
-                        const mediaBuffer = Buffer.from(
-                            await response.arrayBuffer()
-                        );
-                        const mediaType = attachment.contentType;
-                        return { data: mediaBuffer, mediaType };
-                    } else if (fs.existsSync(attachment.url)) {
-                        // Handle local file paths
-                        const mediaBuffer = await fs.promises.readFile(
-                            path.resolve(attachment.url)
-                        );
-                        const mediaType = attachment.contentType;
-                        return { data: mediaBuffer, mediaType };
-                    } else {
-                        throw new Error(
-                            `File not found: ${attachment.url}. Make sure the path is correct.`
-                        );
-                    }
-                })
-            );
+            mediaData = await fetchMediaData(content.attachments);
         }
+
+        const cleanChunk = deduplicateMentions(chunk.trim())
+
         const result = await client.requestQueue.add(async () =>
             isLongTweet
-                ? client.twitterClient.sendLongTweet(chunk.trim(), previousTweetId, mediaData)
-                : client.twitterClient.sendTweet(chunk.trim(), previousTweetId, mediaData)
+                ? client.twitterClient.sendLongTweet(
+                      cleanChunk,
+                      previousTweetId,
+                      mediaData
+                  )
+                : client.twitterClient.sendTweet(
+                      cleanChunk,
+                      previousTweetId,
+                      mediaData
+                  )
         );
 
         const body = await result.json();
         const tweetResult = isLongTweet
-            ? body.data.notetweet_create.tweet_results.result
-            : body.data.create_tweet.tweet_results.result;
+            ? body?.data?.notetweet_create?.tweet_results?.result
+            : body?.data?.create_tweet?.tweet_results?.result;
 
         // if we have a response
         if (tweetResult) {
@@ -245,7 +259,10 @@ export async function sendTweet(
             sentTweets.push(finalTweet);
             previousTweetId = finalTweet.id;
         } else {
-            elizaLogger.error("Error sending tweet chunk:", { chunk, response: body });
+            elizaLogger.error("Error sending tweet chunk:", {
+                chunk,
+                response: body,
+            });
         }
 
         // Wait a bit between tweets to avoid rate limiting issues
@@ -257,6 +274,7 @@ export async function sendTweet(
         agentId: client.runtime.agentId,
         userId: client.runtime.agentId,
         content: {
+            tweetId: tweet.id,
             text: tweet.text,
             source: "twitter",
             url: tweet.permanentUrl,
@@ -268,7 +286,7 @@ export async function sendTweet(
         },
         roomId,
         embedding: getEmbeddingZeroVector(),
-        createdAt: tweet.timestamp * 1000,
+        createdAt: tweet.timestamp * 1000, 
     }));
 
     return memories;
@@ -310,11 +328,31 @@ function splitTweetContent(content: string, maxLength: number): string[] {
     return tweets;
 }
 
-function splitParagraph(paragraph: string, maxLength: number): string[] {
-    // eslint-disable-next-line
-    const sentences = paragraph.match(/[^\.!\?]+[\.!\?]+|[^\.!\?]+$/g) || [
-        paragraph,
-    ];
+function extractUrls(paragraph: string): {
+    textWithPlaceholders: string;
+    placeholderMap: Map<string, string>;
+} {
+    // replace https urls with placeholder
+    const urlRegex = /https?:\/\/[^\s]+/g;
+    const placeholderMap = new Map<string, string>();
+
+    let urlIndex = 0;
+    const textWithPlaceholders = paragraph.replace(urlRegex, (match) => {
+        // twitter url would be considered as 23 characters
+        // <<URL_CONSIDERER_23_1>> is also 23 characters
+        const placeholder = `<<URL_CONSIDERER_23_${urlIndex}>>`; // Placeholder without . ? ! etc
+        placeholderMap.set(placeholder, match);
+        urlIndex++;
+        return placeholder;
+    });
+
+    return { textWithPlaceholders, placeholderMap };
+}
+
+function splitSentencesAndWords(text: string, maxLength: number): string[] {
+    // Split by periods, question marks and exclamation marks
+    // Note that URLs in text have been replaced with `<<URL_xxx>>` and won't be split by dots
+    const sentences = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [text];
     const chunks: string[] = [];
     let currentChunk = "";
 
@@ -326,13 +364,16 @@ function splitParagraph(paragraph: string, maxLength: number): string[] {
                 currentChunk = sentence;
             }
         } else {
+            // Can't fit more, push currentChunk to results
             if (currentChunk) {
                 chunks.push(currentChunk.trim());
             }
+
+            // If current sentence itself is less than or equal to maxLength
             if (sentence.length <= maxLength) {
                 currentChunk = sentence;
             } else {
-                // Split long sentence into smaller pieces
+                // Need to split sentence by spaces
                 const words = sentence.split(" ");
                 currentChunk = "";
                 for (const word of words) {
@@ -355,9 +396,66 @@ function splitParagraph(paragraph: string, maxLength: number): string[] {
         }
     }
 
+    // Handle remaining content
     if (currentChunk) {
         chunks.push(currentChunk.trim());
     }
 
     return chunks;
+}
+
+function deduplicateMentions(paragraph: string) {
+    // Regex to match mentions at the beginning of the string
+  const mentionRegex = /^@(\w+)(?:\s+@(\w+))*(\s+|$)/;
+
+  // Find all matches
+  const matches = paragraph.match(mentionRegex);
+
+  if (!matches) {
+    return paragraph; // If no matches, return the original string
+  }
+
+  // Extract mentions from the match groups
+  let mentions = matches.slice(0, 1)[0].trim().split(' ')
+
+  // Deduplicate mentions
+  mentions = [...new Set(mentions)];
+
+  // Reconstruct the string with deduplicated mentions
+  const uniqueMentionsString = mentions.join(' ');
+
+  // Find where the mentions end in the original string
+  const endOfMentions = paragraph.indexOf(matches[0]) + matches[0].length;
+
+  // Construct the result by combining unique mentions with the rest of the string
+  return uniqueMentionsString + ' ' + paragraph.slice(endOfMentions);
+}
+
+function restoreUrls(
+    chunks: string[],
+    placeholderMap: Map<string, string>
+): string[] {
+    return chunks.map((chunk) => {
+        // Replace all <<URL_CONSIDERER_23_>> in chunk back to original URLs using regex
+        return chunk.replace(/<<URL_CONSIDERER_23_(\d+)>>/g, (match) => {
+            const original = placeholderMap.get(match);
+            return original || match; // Return placeholder if not found (theoretically won't happen)
+        });
+    });
+}
+
+function splitParagraph(paragraph: string, maxLength: number): string[] {
+    // 1) Extract URLs and replace with placeholders
+    const { textWithPlaceholders, placeholderMap } = extractUrls(paragraph);
+
+    // 2) Use first section's logic to split by sentences first, then do secondary split
+    const splittedChunks = splitSentencesAndWords(
+        textWithPlaceholders,
+        maxLength
+    );
+
+    // 3) Replace placeholders back to original URLs
+    const restoredChunks = restoreUrls(splittedChunks, placeholderMap);
+
+    return restoredChunks;
 }

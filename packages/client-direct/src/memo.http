@@ -1,0 +1,21 @@
+###  Get the memo for current user
+GET http://localhost:3000/{agenId}/memo
+Authorization: Bearer {privyToken}
+
+### Add memo item
+POST http://localhost:3000/{agenId}/memo
+Authorization: Bearer {privyToken}
+
+# Add more fields，add id & userId
+ {
+    "content": "....."
+ }
+
+###  Delete memo
+DELETE http://localhost:3000/{agenId}/memo
+Authorization: Bearer {privyToken}
+
+[
+    "memoId1",
+    "memoId2"
+]

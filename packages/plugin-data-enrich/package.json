@@ -6,6 +6,11 @@
     "types": "dist/index.d.ts",
     "dependencies": {
         "@elizaos/core": "workspace:*",
+        "@solana/web3.js": "^1.95.8",
+        "@solana/spl-token": "^0.4.9",
+        "agent-twitter-client": "0.0.18",
+        "solana-agent-kit": "^1.2.0",
+        "bs58": "^6.0.0",
         "node-cache": "5.1.2",
         "tsup": "^8.3.5"
     },

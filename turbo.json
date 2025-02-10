@@ -14,20 +14,30 @@
             "outputs": ["dist/**"],
             "dependsOn": ["^@elizaos/core#build"]
         },
+        "@elizaos/client-direct#build": {
+            "outputs": ["dist/**"],
+            "dependsOn": [
+                "@elizaos/plugin-image-generation#build"
+            ]
+        },
         "@elizaos/plugin-solana#build": {
             "outputs": ["dist/**"],
             "dependsOn": [
-                "@elizaos/plugin-trustdb#build",
-                "@elizaos/plugin-tee#build"
+                "@elizaos/plugin-trustdb#build"
             ]
         },
         "@elizaos/plugin-nft-generation#build": {
             "outputs": ["dist/**"],
             "dependsOn": ["@elizaos/plugin-node#build"]
         },
-        "@elizaos/plugin-evm#build": {
+        "@elizaos/client-direct#build": {
+            "outputs": ["dist/**"]
+        },
+        "@elizaos/plugin-quai#build": {
             "outputs": ["dist/**"],
-            "dependsOn": ["@elizaos/plugin-tee#build"]
+            "dependsOn": [
+                "@elizaos/plugin-trustdb#build"
+            ]
         },
         "eliza-docs#build": {
             "outputs": ["build/**"]
