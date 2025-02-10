@@ -55,6 +55,54 @@ export class TwitterFinderClient {
             // Send back
             twEventCenter.emit('MSG_SEARCH_TWITTER_PROFILE_RESP', profiles);
         });
+
+        twEventCenter.on('MSG_KOLS_TWITTER_PROFILE', async (data) => {
+            // console.log('Received message userkols:', JSON.stringify(data.kols));
+            let searchResult = [];
+            const limitedKols = JSON.parse(data.kols).slice(0, 15);
+
+            // Iterate through each KOL
+            for (const kol of limitedKols) {
+                const profiles = await this.searchProfileKols(kol, 1, data.userId);
+                if(profiles?.length > 0) {
+                    // console.log('Received message kol: ' + kol +' profile:' + JSON.stringify(profiles[0]));
+                    searchResult.push(profiles[0]);
+                }
+            }
+            // Send back
+            twEventCenter.emit('MSG_KOLS_TWITTER_PROFILE_RESP', searchResult);
+        });
+    }
+
+    async searchProfileKols(username: string, count: number, userId: string) {
+        let searchResult = [];
+        try {
+            // Search from cache firstly
+            let cachedProfile = await this.getCachedData(username.toLowerCase());
+            if (cachedProfile) {
+                searchResult.push(cachedProfile);
+            }
+            else {
+                try {
+                    const response = await this.client.twitterClient.searchProfiles(
+                        username,
+                        count
+                    );
+                    if (response) {
+                        for await (const profile of response) {
+                            // console.log('Received message searchProfile kol: ' + JSON.stringify(profile));
+                            searchResult.push(profile);
+                            this.setCachedData(profile.username.toLowerCase(), profile);
+                        }
+                    }
+                } catch (error) {
+                    console.error("Search from client error:", error);
+                }
+            }
+        } catch (error) {
+            console.error("searchProfile error:", error);
+        }
+        return searchResult;
     }
 
     async searchProfile(username: string, count: number, userId: string) {

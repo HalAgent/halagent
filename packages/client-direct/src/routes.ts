@@ -211,6 +211,10 @@ export class Routes {
             "/:agentId/twitter_profile_search",
             this.handleTwitterProfileSearch.bind(this)
         );
+        app.post(
+            "/:agentId/twitter_profile_kols",
+            this.handleTwitterProfileKols.bind(this)
+        );
         app.post("/:agentId/re_twitter", this.handleReTwitter.bind(this));
         app.post(
             "/:agentId/translate_text",
@@ -719,6 +723,44 @@ export class Routes {
         });
     }
 
+    async handleTwitterProfileKols(
+        req: express.Request,
+        res: express.Response
+    ) {
+        return this.authUtils.withErrorHandling(req, res, async () => {
+            // const { username, count, userId } = req.body;
+            const {userId } = req.body;
+            //const fetchCount = Math.min(20, count);
+            const runtime = await this.authUtils.getRuntime(req.params.agentId);
+            console.log("kols handleTwitterProfileKols" + userId);
+            if (!userId) {
+                console.error("userId is empty.");
+                return [];
+            }
+
+            try {
+                let profilesOutput = [];
+                const promise = new Promise((resolve, reject) => {
+                    twEventCenter.on('MSG_KOLS_TWITTER_PROFILE_RESP', (data) => {
+                        resolve(data);
+                    });
+
+                    // set request
+                    twEventCenter.emit('MSG_KOLS_TWITTER_PROFILE',
+                        {kols: settings.TW_KOL_LIST || TW_KOL_1, userId });
+                    //console.log("Send search request");
+                });
+
+                // wait for result
+                profilesOutput = await promise;
+                return profilesOutput;
+            } catch (error) {
+                console.error("Profile search error:", error);
+                return [];
+            }
+        });
+    }
+
     async handleReTwitter(req: express.Request, res: express.Response) {
         try {
             console.log("handleReTwitter");
@@ -1090,7 +1132,7 @@ export class Routes {
             const tokenAmount = 1; // tokenAmount Backend control
             switch (typestr) {
                 case "sol-spl":
-                    // Handle sol-spl transfer       
+                    // Handle sol-spl transfer
                     try {
                         const signature = await createSolSplTransferTransaction({
                             //fromTokenAccountPubkey: settings.SOL_SPL_FROM_PUBKEY,
@@ -1124,7 +1166,7 @@ export class Routes {
                     }
                     break;
                 case "sol":
-                    // Handle sol transfer       
+                    // Handle sol transfer
                     try {
                         const transaction = await createSolTransferTransaction({
                             fromPubkey: settings.SOL_FROM_PUBKEY,
@@ -1154,7 +1196,7 @@ export class Routes {
                         throw new ApiError(500, "Internal server error");
                     }
                 case "sol-agent-kit":
-                    // Handle sol-spl agent-kit transfer       
+                    // Handle sol-spl agent-kit transfer
                     try {
                         //return res.json({
                         //    success: true,
