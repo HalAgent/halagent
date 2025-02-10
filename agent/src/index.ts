@@ -12,18 +12,18 @@ import { AutoClientInterface } from "@elizaos/client-auto";
 // import { TelegramClientInterface } from "@elizaos/client-telegram";
 // import { TelegramAccountClientInterface } from "@elizaos/client-telegram-account";
 import { TwitterClientInterface } from "@elizaos/client-twitter";
-import { AlexaClientInterface } from "@elizaos/client-alexa";
+// import { AlexaClientInterface } from "@elizaos/client-alexa";
 import { MongoDBDatabaseAdapter } from "@elizaos/adapter-mongodb";
-import { DevaClientInterface } from "@elizaos/client-deva";
+// import { DevaClientInterface } from "@elizaos/client-deva";
 
 // import { FarcasterClientInterface } from "@elizaos/client-farcaster";
-import { OmniflixPlugin } from "@elizaos/plugin-omniflix";
-import { JeeterClientInterface } from "@elizaos/client-simsai";
-import { XmtpClientInterface } from "@elizaos/client-xmtp";
+// import { OmniflixPlugin } from "@elizaos/plugin-omniflix";
+// import { JeeterClientInterface } from "@elizaos/client-simsai";
+// import { XmtpClientInterface } from "@elizaos/client-xmtp";
 import { DirectClient } from "@elizaos/client-direct";
 import { agentKitPlugin } from "@elizaos/plugin-agentkit";
 import { PrimusAdapter } from "@elizaos/plugin-primus";
-import { lightningPlugin } from "@elizaos/plugin-lightning";
+// import { lightningPlugin } from "@elizaos/plugin-lightning";
 import { elizaCodeinPlugin, onchainJson } from "@elizaos/plugin-iq6900";
 // import { dcapPlugin } from "@elizaos/plugin-dcap";
 import {
@@ -47,7 +47,6 @@ import {
     stringToUuid,
     validateCharacterConfig,
 } from "@elizaos/core";
-import { zgPlugin } from "@elizaos/plugin-0g";
 import { footballPlugin } from "@elizaos/plugin-football";
 
 import { bootstrapPlugin } from "@elizaos/plugin-bootstrap";
@@ -62,7 +61,7 @@ import { akashPlugin } from "@elizaos/plugin-akash";
 import { alloraPlugin } from "@elizaos/plugin-allora";
 import { aptosPlugin } from "@elizaos/plugin-aptos";
 import { artheraPlugin } from "@elizaos/plugin-arthera";
-import { autonomePlugin } from "@elizaos/plugin-autonome";
+// import { autonomePlugin } from "@elizaos/plugin-autonome";
 import { availPlugin } from "@elizaos/plugin-avail";
 import { avalanchePlugin } from "@elizaos/plugin-avalanche";
 import { b2Plugin } from "@elizaos/plugin-b2";
@@ -83,15 +82,15 @@ import { coinmarketcapPlugin } from "@elizaos/plugin-coinmarketcap";
 import { confluxPlugin } from "@elizaos/plugin-conflux";
 import { createCosmosPlugin } from "@elizaos/plugin-cosmos";
 import { cronosZkEVMPlugin } from "@elizaos/plugin-cronoszkevm";
-import { evmPlugin } from "@elizaos/plugin-evm";
+// import { evmPlugin } from "@elizaos/plugin-evm";
 import { flowPlugin } from "@elizaos/plugin-flow";
 import { fuelPlugin } from "@elizaos/plugin-fuel";
 import { genLayerPlugin } from "@elizaos/plugin-genlayer";
 import { gitcoinPassportPlugin } from "@elizaos/plugin-gitcoin-passport";
-import { initiaPlugin } from "@elizaos/plugin-initia";
+// import { initiaPlugin } from "@elizaos/plugin-initia";
 // import { imageGenerationPlugin } from "@elizaos/plugin-image-generation";
 import { lensPlugin } from "@elizaos/plugin-lens-network";
-import { litPlugin } from "@elizaos/plugin-lit";
+// import { litPlugin } from "@elizaos/plugin-lit";
 import { mindNetworkPlugin } from "@elizaos/plugin-mind-network";
 import { multiversxPlugin } from "@elizaos/plugin-multiversx";
 // import { nearPlugin } from "@elizaos/plugin-near";
@@ -801,10 +800,10 @@ export async function initializeClients(
         if (autoClient) clients.auto = autoClient;
     }
 
-    if (clientTypes.includes(Clients.XMTP)) {
-        const xmtpClient = await XmtpClientInterface.start(runtime);
-        if (xmtpClient) clients.xmtp = xmtpClient;
-    }
+    // if (clientTypes.includes(Clients.XMTP)) {
+    //     const xmtpClient = await XmtpClientInterface.start(runtime);
+    //     if (xmtpClient) clients.xmtp = xmtpClient;
+    // }
 
     // if (clientTypes.includes(Clients.DISCORD)) {
     //     const discordClient = await DiscordClientInterface.start(runtime);
@@ -830,12 +829,12 @@ export async function initializeClients(
         }
     }
 
-    if (clientTypes.includes(Clients.ALEXA)) {
-        const alexaClient = await AlexaClientInterface.start(runtime);
-        if (alexaClient) {
-            clients.alexa = alexaClient;
-        }
-    }
+    // if (clientTypes.includes(Clients.ALEXA)) {
+    //     const alexaClient = await AlexaClientInterface.start(runtime);
+    //     if (alexaClient) {
+    //         clients.alexa = alexaClient;
+    //     }
+    // }
 
     // if (clientTypes.includes(Clients.INSTAGRAM)) {
     //     const instagramClient = await InstagramClientInterface.start(runtime);
@@ -857,19 +856,19 @@ export async function initializeClients(
     //     clients.lens = lensClient;
     // }
 
-    if (clientTypes.includes(Clients.SIMSAI)) {
-        const simsaiClient = await JeeterClientInterface.start(runtime);
-        if (simsaiClient) clients.simsai = simsaiClient;
-    }
+    // if (clientTypes.includes(Clients.SIMSAI)) {
+    //     const simsaiClient = await JeeterClientInterface.start(runtime);
+    //     if (simsaiClient) clients.simsai = simsaiClient;
+    // }
 
-    elizaLogger.log("client keys", Object.keys(clients));
+    // elizaLogger.log("client keys", Object.keys(clients));
 
-    if (clientTypes.includes("deva")) {
-        if (clientTypes.includes("deva")) {
-            const devaClient = await DevaClientInterface.start(runtime);
-            if (devaClient) clients.deva = devaClient;
-        }
-    }
+    // if (clientTypes.includes("deva")) {
+    //     if (clientTypes.includes("deva")) {
+    //         const devaClient = await DevaClientInterface.start(runtime);
+    //         if (devaClient) clients.deva = devaClient;
+    //     }
+    // }
 
     // if (clientTypes.includes("slack")) {
     //     const slackClient = await SlackClientInterface.start(runtime);
