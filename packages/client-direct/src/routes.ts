@@ -746,8 +746,7 @@ export class Routes {
                     });
 
                     // set request
-                    twEventCenter.emit('MSG_KOLS_TWITTER_PROFILE',
-                        {kols: settings.TW_KOL_LIST || TW_KOL_1, userId });
+                    twEventCenter.emit('MSG_KOLS_TWITTER_PROFILE', { });
                     //console.log("Send search request");
                 });
 

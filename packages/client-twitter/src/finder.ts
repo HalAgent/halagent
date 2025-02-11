@@ -15,6 +15,129 @@ const TW_PROFILE_PREFIX: string = "FINDER_KEY_TW_PROFILE_PREFIX_";
 export class TwitterFinderClient {
     client: ClientBase;
     runtime: IAgentRuntime;
+    twitterKolUsers: string[] = [
+        '0xRodney',
+        'Buddy',
+        'DavidAirey',
+        'alex_fazel',
+        'JoshRMeier',
+        'coinbureau',
+        'lukebelmar',
+        'IvanOnTech',
+        'Ashcryptoreal',
+        'VirtualBacon0x',
+        'LadyofCrypto1',
+        'milesdeutscher',
+        'crypto_banter',
+        'Pentosh1',
+        'kyledoops',
+        'MarioNawfal',
+        'dingalingts',
+        'rektfencer',
+        'JoeParys',
+        'LMECripto',
+        'AltcoinDailyio',
+        'ExitLiqCapital',
+        'CryptoGodJohn',
+        'CryptoZachLA',
+        'BrianDEvans',
+        'scottmelker',
+        'DaanCrypto',
+        'Axel_bitblaze69',
+        'CryptoDaku_',
+        'healthy_pockets',
+        'StackerSatoshi',
+        'TheCryptoLark',
+        'CryptoTony__',
+        'EricCryptoman',
+        'noBScrypto',
+        'TheDustyBC',
+        'Defi_Shiller1',
+        'KrugerSays',
+        'Fabian',
+        'boxmining',
+        'Bayc364',
+        'LouisCooper_',
+        'AltcoinSherpa',
+        'MasonVersluis',
+        'megbzk',
+        'AltCryptoGems',
+        'resdegen',
+        'docXBT',
+        'cruzcontrol660',
+        'BlocksNThoughts',
+        'SecretoDefi',
+        'PastanagaCrypto',
+        'LexMorenoWeb3',
+        'b_block_oficial',
+        'lordjorx',
+        'Haskell_Gz',
+        'Overdose_AI',
+        'KriptoErs',
+        'thebrianjung',
+        'LagoTasso',
+        'MacnBTC',
+        'eliz883',
+        '0xHustlepedia',
+        'drakeondigital',
+        'GarlamWON',
+        'HouseOfCrypto3',
+        'kyle_chasse',
+        'MarioNawfal',
+        'gafoorkhann',
+        'senamakel',
+        'Sarv_shaktiman',
+        'bebetoo_cuk',
+        'gametheorizing',
+        '0RYKER',
+        'hebi555',
+        'zyclw',
+        'Phyrex_Ni',
+        'hellosuoha',
+        'Web3Nina',
+        '0xjuu_17',
+        'visionofviii',
+        'MetaHunter168',
+        'vikingdao2022',
+        'xiaoxin_bit',
+        '0xSunNFT',
+        '0xKillTheWolf',
+        'Mumu_yay',
+        'laoxue_eth',
+        'jianshubiji',
+        'cryp_orange',
+        'zeroblocks',
+        'luge517',
+        'SEFATUBA3',
+        'hhyjylabs',
+        '0xKevin00',
+        'tyw1984',
+        '0xzhaozhao',
+        'pipizhu_eth',
+        'Elizabethofyou',
+        'connectfarm1',
+        '0xcryptowizard',
+        'CoinHuSays',
+        '0xmina_',
+        'cherlyn0105',
+        'Unipioneer',
+        'kimyg002',
+        'ROKMCFIREANT',
+        'akiii345',
+        'lucianlampdefi',
+        'BigcoinVN',
+        'SimonTran1111',
+        'tuannguyenminh',
+        'tobi_k300',
+        'vanthucbk',
+        'LisaFlorentina8',
+        'danhtran68',
+        'bachkhoabnb',
+        'Kan_0xGemi',
+        'XDeGods',
+        'auksorn_'
+    ];
+
 
     constructor(client: ClientBase, runtime: IAgentRuntime) {
         this.client = client;
@@ -56,14 +179,14 @@ export class TwitterFinderClient {
             twEventCenter.emit('MSG_SEARCH_TWITTER_PROFILE_RESP', profiles);
         });
 
-        twEventCenter.on('MSG_KOLS_TWITTER_PROFILE', async (data) => {
+        twEventCenter.on('MSG_KOLS_TWITTER_PROFILE', async () => {
             // console.log('Received message userkols:', JSON.stringify(data.kols));
             let searchResult = [];
-            const limitedKols = JSON.parse(data.kols).slice(0, 15);
+            const limitedKols = await this.getRandomUsers(this.twitterKolUsers, 16);
 
             // Iterate through each KOL
             for (const kol of limitedKols) {
-                const profiles = await this.searchProfileKols(kol, 1, data.userId);
+                const profiles = await this.searchProfileKols(kol, 1);
                 if(profiles?.length > 0) {
                     // console.log('Received message kol: ' + kol +' profile:' + JSON.stringify(profiles[0]));
                     searchResult.push(profiles[0]);
@@ -73,8 +196,11 @@ export class TwitterFinderClient {
             twEventCenter.emit('MSG_KOLS_TWITTER_PROFILE_RESP', searchResult);
         });
     }
-
-    async searchProfileKols(username: string, count: number, userId: string) {
+    async getRandomUsers(users: string[], count: number): Promise<string[]> {
+        const shuffled = [...users].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, count);
+    }
+    async searchProfileKols(username: string, count: number) {
         let searchResult = [];
         try {
             // Search from cache firstly
