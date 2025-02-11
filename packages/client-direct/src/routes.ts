@@ -211,6 +211,10 @@ export class Routes {
             "/:agentId/twitter_profile_search",
             this.handleTwitterProfileSearch.bind(this)
         );
+        app.post(
+            "/:agentId/twitter_profile_kols",
+            this.handleTwitterProfileKols.bind(this)
+        );
         app.post("/:agentId/re_twitter", this.handleReTwitter.bind(this));
         app.post(
             "/:agentId/translate_text",
@@ -275,9 +279,16 @@ export class Routes {
             );
 
             const userManager = new UserManager(runtime.cacheManager);
+
+            const cacheProfile = await userManager.verifyExistingUser(userId);
+            if(cacheProfile) {
+                return {
+                    profile: cacheProfile,
+                };
+            }
+
             const userProfile = userManager.createDefaultProfile(userId, gmail);
             await userManager.saveUserData(userProfile);
-
             return {
                 profile: userProfile,
             };
@@ -316,6 +327,12 @@ export class Routes {
             );
 
             const userManager = new UserManager(runtime.cacheManager);
+            const cacheProfile = await userManager.verifyExistingUser(userId);
+            if(cacheProfile) {
+                return {
+                    profile: cacheProfile,
+                };
+            }
             const userProfile = userManager.createDefaultProfile(userId, email);
             await userManager.saveUserData(userProfile);
 
@@ -719,6 +736,43 @@ export class Routes {
         });
     }
 
+    async handleTwitterProfileKols(
+        req: express.Request,
+        res: express.Response
+    ) {
+        return this.authUtils.withErrorHandling(req, res, async () => {
+            // const { username, count, userId } = req.body;
+            const {userId } = req.body;
+            //const fetchCount = Math.min(20, count);
+            const runtime = await this.authUtils.getRuntime(req.params.agentId);
+            console.log("kols handleTwitterProfileKols" + userId);
+            if (!userId) {
+                console.error("userId is empty.");
+                return [];
+            }
+
+            try {
+                let profilesOutput = [];
+                const promise = new Promise((resolve, reject) => {
+                    twEventCenter.on('MSG_KOLS_TWITTER_PROFILE_RESP', (data) => {
+                        resolve(data);
+                    });
+
+                    // set request
+                    twEventCenter.emit('MSG_KOLS_TWITTER_PROFILE', { });
+                    //console.log("Send search request");
+                });
+
+                // wait for result
+                profilesOutput = await promise;
+                return profilesOutput;
+            } catch (error) {
+                console.error("Profile search error:", error);
+                return [];
+            }
+        });
+    }
+
     async handleReTwitter(req: express.Request, res: express.Response) {
         try {
             console.log("handleReTwitter");
@@ -740,22 +794,29 @@ export class Routes {
 
     async handleTranslateText(req: express.Request, res: express.Response) {
         try {
-            console.log("handleTranslateText 1");
-            const { text } = req.body;
-            console.log("handleTranslateText 2" + text);
+            const {languagecode, text } = req.body;
+            console.log("handleTranslateText, code: " + languagecode);
+            console.log("handleTranslateText, text: " + text);
+            if(!languagecode || languagecode === "en" || languagecode.includes("en-")) {
+                return res.json({
+                    success: true,
+                    data:  {"result": text},
+                });
+            }
+
 
             const runtime = await this.authUtils.getRuntime(req.params.agentId);
             const prompt =
-                'You are a helpful translator. If the following text is in English, please translate it into Chinese. If it is in another language, translate it into English; The returned result only includes the translated result,The JSON structure of the returned result is: {"result":""}. The text that needs to be translated starts with [Text]. [TEXT]: ' +
+                'You are a helpful translator. Please translate the following text into the language corresponding to this code: ' + languagecode + ', The returned result only includes the translated result,The JSON structure of the returned result is: {"result":""}, No need to use markdown syntax to modify JSON, just include JSON. The text that needs to be translated starts with [Text]. [TEXT]: ' +
                 text;
-            //console.log("handleTranslateText 3" + prompt);
+            //console.log("handleTranslateText " + prompt);
 
             const response = await generateText({
                 runtime: runtime,
                 context: prompt,
                 modelClass: ModelClass.SMALL,
             });
-            //console.log("handleTranslateText 4" + response);
+            //console.log("handleTranslateText " + response);
 
             if (!response) {
                 throw new Error("No response from generateText");
@@ -1090,7 +1151,7 @@ export class Routes {
             const tokenAmount = 1; // tokenAmount Backend control
             switch (typestr) {
                 case "sol-spl":
-                    // Handle sol-spl transfer       
+                    // Handle sol-spl transfer
                     try {
                         const signature = await createSolSplTransferTransaction({
                             //fromTokenAccountPubkey: settings.SOL_SPL_FROM_PUBKEY,
@@ -1124,7 +1185,7 @@ export class Routes {
                     }
                     break;
                 case "sol":
-                    // Handle sol transfer       
+                    // Handle sol transfer
                     try {
                         const transaction = await createSolTransferTransaction({
                             fromPubkey: settings.SOL_FROM_PUBKEY,
@@ -1154,7 +1215,7 @@ export class Routes {
                         throw new ApiError(500, "Internal server error");
                     }
                 case "sol-agent-kit":
-                    // Handle sol-spl agent-kit transfer       
+                    // Handle sol-spl agent-kit transfer
                     try {
                         //return res.json({
                         //    success: true,

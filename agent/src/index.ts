@@ -51,22 +51,22 @@ import { footballPlugin } from "@elizaos/plugin-football";
 
 import { bootstrapPlugin } from "@elizaos/plugin-bootstrap";
 import { normalizeCharacter } from "@elizaos/plugin-di";
-import createGoatPlugin from "@elizaos/plugin-goat";
-import createZilliqaPlugin from "@elizaos/plugin-zilliqa";
+// import createGoatPlugin from "@elizaos/plugin-goat";
+// import createZilliqaPlugin from "@elizaos/plugin-zilliqa";
 
 // import { intifacePlugin } from "@elizaos/plugin-intiface";
 // import { ThreeDGenerationPlugin } from "@elizaos/plugin-3d-generation";
 import { abstractPlugin } from "@elizaos/plugin-abstract";
 import { akashPlugin } from "@elizaos/plugin-akash";
 import { alloraPlugin } from "@elizaos/plugin-allora";
-import { aptosPlugin } from "@elizaos/plugin-aptos";
+// import { aptosPlugin } from "@elizaos/plugin-aptos";
 import { artheraPlugin } from "@elizaos/plugin-arthera";
 // import { autonomePlugin } from "@elizaos/plugin-autonome";
-import { availPlugin } from "@elizaos/plugin-avail";
-import { avalanchePlugin } from "@elizaos/plugin-avalanche";
+// import { availPlugin } from "@elizaos/plugin-avail";
+// import { avalanchePlugin } from "@elizaos/plugin-avalanche";
 import { b2Plugin } from "@elizaos/plugin-b2";
 import { binancePlugin } from "@elizaos/plugin-binance";
-import { birdeyePlugin } from "@elizaos/plugin-birdeye";
+// import { birdeyePlugin } from "@elizaos/plugin-birdeye";
 import { bittensorPlugin } from "@elizaos/plugin-bittensor";
 import { bnbPlugin } from "@elizaos/plugin-bnb";
 // import {
@@ -77,11 +77,11 @@ import { bnbPlugin } from "@elizaos/plugin-bnb";
 //     tradePlugin,
 //     webhookPlugin,
 // } from "@elizaos/plugin-coinbase";
-import { coingeckoPlugin } from "@elizaos/plugin-coingecko";
-import { coinmarketcapPlugin } from "@elizaos/plugin-coinmarketcap";
-import { confluxPlugin } from "@elizaos/plugin-conflux";
-import { createCosmosPlugin } from "@elizaos/plugin-cosmos";
-import { cronosZkEVMPlugin } from "@elizaos/plugin-cronoszkevm";
+// import { coingeckoPlugin } from "@elizaos/plugin-coingecko";
+// import { coinmarketcapPlugin } from "@elizaos/plugin-coinmarketcap";
+// import { confluxPlugin } from "@elizaos/plugin-conflux";
+// import { createCosmosPlugin } from "@elizaos/plugin-cosmos";
+// import { cronosZkEVMPlugin } from "@elizaos/plugin-cronoszkevm";
 // import { evmPlugin } from "@elizaos/plugin-evm";
 import { flowPlugin } from "@elizaos/plugin-flow";
 import { fuelPlugin } from "@elizaos/plugin-fuel";
@@ -92,7 +92,7 @@ import { gitcoinPassportPlugin } from "@elizaos/plugin-gitcoin-passport";
 import { lensPlugin } from "@elizaos/plugin-lens-network";
 // import { litPlugin } from "@elizaos/plugin-lit";
 import { mindNetworkPlugin } from "@elizaos/plugin-mind-network";
-import { multiversxPlugin } from "@elizaos/plugin-multiversx";
+// import { multiversxPlugin } from "@elizaos/plugin-multiversx";
 // import { nearPlugin } from "@elizaos/plugin-near";
 // import createNFTCollectionsPlugin from "@elizaos/plugin-nft-collections";
 // import { nftGenerationPlugin } from "@elizaos/plugin-nft-generation";
@@ -111,25 +111,25 @@ import { stargazePlugin } from "@elizaos/plugin-stargaze";
 import { suiPlugin } from "@elizaos/plugin-sui";
 // import { tonPlugin } from "@elizaos/plugin-ton";
 import { webSearchPlugin } from "@elizaos/plugin-web-search";
-import { dkgPlugin } from "@elizaos/plugin-dkg";
-import { injectivePlugin } from "@elizaos/plugin-injective";
-import { giphyPlugin } from "@elizaos/plugin-giphy";
-import { letzAIPlugin } from "@elizaos/plugin-letzai";
+// import { dkgPlugin } from "@elizaos/plugin-dkg";
+// import { injectivePlugin } from "@elizaos/plugin-injective";
+// import { giphyPlugin } from "@elizaos/plugin-giphy";
+// import { letzAIPlugin } from "@elizaos/plugin-letzai";
 import { thirdwebPlugin } from "@elizaos/plugin-thirdweb";
-import { hyperliquidPlugin } from "@elizaos/plugin-hyperliquid";
-import { moralisPlugin } from "@elizaos/plugin-moralis";
+// import { hyperliquidPlugin } from "@elizaos/plugin-hyperliquid";
+// import { moralisPlugin } from "@elizaos/plugin-moralis";
 import { echoChambersPlugin } from "@elizaos/plugin-echochambers";
-import { dexScreenerPlugin } from "@elizaos/plugin-dexscreener";
-import { pythDataPlugin } from "@elizaos/plugin-pyth-data";
+// import { dexScreenerPlugin } from "@elizaos/plugin-dexscreener";
+// import { pythDataPlugin } from "@elizaos/plugin-pyth-data";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 import nitroPlugin from "@elizaos/plugin-router-nitro";
 import { devinPlugin } from "@elizaos/plugin-devin";
 // import { zksyncEraPlugin } from "@elizaos/plugin-zksync-era";
 import { chainbasePlugin } from "@elizaos/plugin-chainbase";
 import { holdstationPlugin } from "@elizaos/plugin-holdstation";
-import { nvidiaNimPlugin } from "@elizaos/plugin-nvidia-nim";
-import { zxPlugin } from "@elizaos/plugin-0x";
-import { hyperbolicPlugin } from "@elizaos/plugin-hyperbolic";
+// import { nvidiaNimPlugin } from "@elizaos/plugin-nvidia-nim";
+// import { zxPlugin } from "@elizaos/plugin-0x";
+// import { hyperbolicPlugin } from "@elizaos/plugin-hyperbolic";
 import Database from "better-sqlite3";
 import fs from "fs";
 import net from "net";
@@ -138,14 +138,14 @@ import { fileURLToPath } from "url";
 import yargs from "yargs";
 import { emailPlugin } from "@elizaos/plugin-email";
 import { emailAutomationPlugin } from "@elizaos/plugin-email-automation";
-import { seiPlugin } from "@elizaos/plugin-sei";
-import { sunoPlugin } from "@elizaos/plugin-suno";
-import { udioPlugin } from "@elizaos/plugin-udio";
-import { imgflipPlugin } from "@elizaos/plugin-imgflip";
-import { ethstoragePlugin } from "@elizaos/plugin-ethstorage";
-import { zerionPlugin } from "@elizaos/plugin-zerion";
+// import { seiPlugin } from "@elizaos/plugin-sei";
+// import { sunoPlugin } from "@elizaos/plugin-suno";
+// import { udioPlugin } from "@elizaos/plugin-udio";
+// import { imgflipPlugin } from "@elizaos/plugin-imgflip";
+// import { ethstoragePlugin } from "@elizaos/plugin-ethstorage";
+// import { zerionPlugin } from "@elizaos/plugin-zerion";
 import { minaPlugin } from "@elizaos/plugin-mina";
-import { ankrPlugin } from "@elizaos/plugin-ankr";
+// import { ankrPlugin } from "@elizaos/plugin-ankr";
 import { formPlugin } from "@elizaos/plugin-form";
 import { MongoClient } from "mongodb";
 import { quickIntelPlugin } from "@elizaos/plugin-quick-intel";
@@ -929,11 +929,11 @@ export async function createAgent(
 
     let goatPlugin: any | undefined;
 
-    if (getSecret(character, "EVM_PRIVATE_KEY")) {
-        goatPlugin = await createGoatPlugin((secret) =>
-            getSecret(character, secret)
-        );
-    }
+    // if (getSecret(character, "EVM_PRIVATE_KEY")) {
+    //     goatPlugin = await createGoatPlugin((secret) =>
+    //         getSecret(character, secret)
+    //     );
+    // }
 
     let zilliqaPlugin: any | undefined;
     if (getSecret(character, "ZILLIQA_PRIVATE_KEY")) {
