@@ -1,6 +1,6 @@
 import './index.less';
 import bg from '@/assets/images/hosting/bg.png';
-import avatar from '@/assets/icons/person.png';
+import avatar from '@/assets/icons/person2.svg';
 import sj from '@/assets/images/hosting/sj.png';
 import host from '@/assets/images/hosting/host.gif';
 import popup from '@/assets/images/hosting/popup.png';

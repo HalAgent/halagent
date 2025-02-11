@@ -122,14 +122,14 @@ export const authService = {
 
   /**
    * Read the user profile
-   * @param username username
+   * @param userId userId
    * @returns UserProfile
    * @throws Geting Exception
    */
-  async getProfile(username: string): Promise<ProfileQueryResponse> {
+  async getProfile(userId: string): Promise<ProfileQueryResponse> {
     try {
       const response = await api.post<ProfileQueryResponse>(`/profile`, {
-        username,
+        userId,
       });
       if (response?.data && response?.data?.profile) {
         useUserStore.getState().setUserProfile(response?.data?.profile);
