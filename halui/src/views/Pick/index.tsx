@@ -5,9 +5,10 @@ import { useGetXList } from '../Search/useGetXList';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import PixLoading from '@/components/common/PixLoading';
 const Pick = () => {
   const navigate = useNavigate();
-  const { xList, loading, searchUser, onFollow } = useGetXList();
+  const { xList, TwitterProfileKols, onFollow, loading } = useGetXList();
   const goHome = () => {
     const list = xList.filter(item => item.isWatched);
     if (list.length < 5) {
@@ -17,10 +18,10 @@ const Pick = () => {
     navigate('/');
   };
   useEffect(() => {
-    searchUser('bnb', 15);
+    TwitterProfileKols();
   }, []);
   if (loading) {
-    return <></>;
+    return <PixLoading></PixLoading>;
   }
   return (
     <div className="pick">

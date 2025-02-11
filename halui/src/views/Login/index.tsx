@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import './index.less';
 import Role from '@/assets/images/login/role.svg';
 import LoginGoogle from '@/assets/images/login/login-google.svg';
@@ -6,14 +5,26 @@ import LoginGuest from '@/assets/images/login/login-guest.svg';
 import Twitter from '@/assets/icons/Twitter.png';
 import Website from '@/assets/icons/Website.png';
 import DexScreener from '@/assets/icons/DexScreener.png';
-import { useLogin } from '@privy-io/react-auth';
+import { useLogin, usePrivy } from '@privy-io/react-auth';
 import { authService } from '@/services/auth';
 import { useNavigate } from 'react-router-dom';
+import { storage } from '@/utils/storage';
+
 const Login = () => {
   const navigate = useNavigate();
+  const { getAccessToken } = usePrivy();
+
   const { login } = useLogin({
-    onComplete(params) {
+    onComplete: async params => {
       console.warn(params);
+      if (params?.user?.id) {
+        const token = await getAccessToken();
+        if (token) {
+          storage.setToken(token);
+        }
+        await authService.login(params.user.id, params.user?.google?.email as string);
+        navigate('/pick');
+      }
     },
   });
   function generateGuestName() {
@@ -31,6 +42,7 @@ const Login = () => {
     console.log('guest auth, res: ' + response);
     navigate('/pick');
   };
+
   return (
     <div className="login">
       <div className="login-header">

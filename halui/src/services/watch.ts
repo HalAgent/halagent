@@ -108,14 +108,24 @@ class WatchApi {
     }
   }
 
+  async searchTwitterProfileKols(userId: string): Promise<ResponseData<XUserProfile[]>> {
+    try {
+      const response = await api.post(`/twitter_profile_kols`, { userId });
+      return response.data;
+    } catch (error) {
+      console.error('Search tw user error:', error);
+      throw error;
+    }
+  }
+
   async reTweeted(text: string, userId: string): Promise<string> {
-      try {
-        const response = await api.post(`/re_twitter`, { text, userId });
-        return response.data;
-      } catch (error) {
-        console.error('reTweeted error:', error);
-        throw error;
-      }
+    try {
+      const response = await api.post(`/re_twitter`, { text, userId });
+      return response.data;
+    } catch (error) {
+      console.error('reTweeted error:', error);
+      throw error;
+    }
   }
 
   async translateText(text: string): Promise<string> {

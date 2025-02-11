@@ -10,7 +10,7 @@ export default defineConfig({
     host: '0.0.0.0',
     proxy: {
       '/dev': {
-        target: 'http://23.106.133.215:3000',
+        target: 'https://host.halagent.org/dev',
         // target: "http://18.205.246.62:3000",
         // target: 'http://localhost:3000',
         secure: false,

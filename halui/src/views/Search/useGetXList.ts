@@ -47,6 +47,21 @@ export const useGetXList = () => {
     initList();
   };
 
+  const TwitterProfileKols = async () => {
+    setLoading(true);
+    try {
+      if (userId) {
+        const response = await watchApi.searchTwitterProfileKols(userId);
+        setXList(response?.data || []);
+      } else {
+        throw 'error: miss user info';
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    setLoading(false);
+  };
+
   const onFollow = async (
     account: WatchItem & {
       isWatched: boolean;
@@ -87,6 +102,7 @@ export const useGetXList = () => {
     setXList,
     loading,
     searchUser,
+    TwitterProfileKols,
     refresh,
     onFollow,
   };
