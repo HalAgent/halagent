@@ -50,7 +50,7 @@ const Pick = () => {
         })}
       </div>
       <div className="pick-btn" onClick={goHome}>
-        ok
+        OK
       </div>
     </div>
   );

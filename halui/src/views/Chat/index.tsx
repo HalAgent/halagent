@@ -43,7 +43,7 @@ const Chat = () => {
   const isTranslatingRef = useRef(false);
   const chatContainerRef = useRef<HTMLUListElement | null>(null); // Added ref for message container
 
-  const keyList = ['AI Prediction', 'Bitcoin.D', 'Altcoin Index'];
+  const keyList = ['AI Prediction'];
 
   // Load saved messages from local storage and initialize displayText
   useEffect(() => {

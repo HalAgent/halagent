@@ -101,24 +101,24 @@ export const authService = {
       throw error;
     }
   },
-//   async updateProfile( profile: {
-//     email: string;
-//     username: string;
-//     password: string;
-//   }): Promise<ProfileUpdateResponse> {
-//     try {
-//       const response = await api.post(`/profile_upd`, {
-//         profile,
-//       });
-//       if (response.data) {
-//         useUserStore.getState().updateProfile(response.data.profile);
-//       }
-//       return response.data;
-//     } catch (error) {
-//       console.error('Profile update error:', error);
-//       throw error;
-//     }
-//   },
+  //   async updateProfile( profile: {
+  //     email: string;
+  //     username: string;
+  //     password: string;
+  //   }): Promise<ProfileUpdateResponse> {
+  //     try {
+  //       const response = await api.post(`/profile_upd`, {
+  //         profile,
+  //       });
+  //       if (response.data) {
+  //         useUserStore.getState().updateProfile(response.data.profile);
+  //       }
+  //       return response.data;
+  //     } catch (error) {
+  //       console.error('Profile update error:', error);
+  //       throw error;
+  //     }
+  //   },
 
   /**
    * Read the user profile
@@ -128,7 +128,7 @@ export const authService = {
    */
   async getProfile(username: string): Promise<ProfileQueryResponse> {
     try {
-      const response = await api.post<ProfileQueryResponse>(`/profile_upd`, {
+      const response = await api.post<ProfileQueryResponse>(`/profile`, {
         username,
       });
       if (response?.data && response?.data?.profile) {
@@ -210,17 +210,18 @@ export const authService = {
 
   twitterOAuth: {
     async getAuthUrl() {
-      const response = await api.get('/twitter_oauth_init');
+      const userId = useUserStore.getState().getUserId();
+      const response = await api.get('/twitter_oauth_init?userId=' + userId);
       const result = response.data;
       return result.data;
     },
 
     async handleRevoke() {
-      const userProfile = useUserStore.getState()
+      const userProfile = useUserStore.getState();
       const response = await api.get('/twitter_oauth_revoke?userId=' + userProfile.userProfile?.userId);
       userProfile.updateProfile({
         ...userProfile.userProfile,
-        tweetProfile: undefined
+        tweetProfile: undefined,
       });
       console.warn('Twitter revoke success', useUserStore.getState());
       const result = response.data;
@@ -239,7 +240,7 @@ export const authService = {
     },
 
     createAuthWindow(url: string) {
-      return window.open(url, 'twitter-auth', 'width=600,height=600,status=yes,scrollbars=y es');
+      return window.open(url, 'twitter-auth', 'width=600,height=600,status=yes,scrollbars=yes');
     },
 
     listenForAuthMessage() {

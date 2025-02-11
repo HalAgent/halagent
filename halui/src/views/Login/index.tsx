@@ -1,5 +1,5 @@
 import './index.less';
-import Role from '@/assets/images/login/role.svg';
+import Role from '@/assets/images/login/role.gif';
 import LoginGoogle from '@/assets/images/login/login-google.svg';
 import LoginGuest from '@/assets/images/login/login-guest.svg';
 import Twitter from '@/assets/icons/Twitter.png';
@@ -48,7 +48,9 @@ const Login = () => {
       <div className="login-header">
         <img className="login-header-role" src={Role}></img>
       </div>
-      <div className="login-title">CREATE YOUR OWN SOCIAL AGENT</div>
+      <div className="login-title">
+        YOUR DATA,<br></br> YOUR AGENTS, <br></br>YOUR POWER.
+      </div>
       <img className="login-google" src={LoginGoogle} onClick={login}></img>
       <div className="login-or">or</div>
       <img className="login-guest" src={LoginGuest} onClick={guestLogin}></img>
