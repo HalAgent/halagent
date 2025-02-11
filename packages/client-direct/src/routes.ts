@@ -279,9 +279,16 @@ export class Routes {
             );
 
             const userManager = new UserManager(runtime.cacheManager);
+
+            const cacheProfile = await userManager.verifyExistingUser(userId);
+            if(cacheProfile) {
+                return {
+                    profile: cacheProfile,
+                };
+            }
+
             const userProfile = userManager.createDefaultProfile(userId, gmail);
             await userManager.saveUserData(userProfile);
-
             return {
                 profile: userProfile,
             };
@@ -320,6 +327,12 @@ export class Routes {
             );
 
             const userManager = new UserManager(runtime.cacheManager);
+            const cacheProfile = await userManager.verifyExistingUser(userId);
+            if(cacheProfile) {
+                return {
+                    profile: cacheProfile,
+                };
+            }
             const userProfile = userManager.createDefaultProfile(userId, email);
             await userManager.saveUserData(userProfile);
 
@@ -781,22 +794,29 @@ export class Routes {
 
     async handleTranslateText(req: express.Request, res: express.Response) {
         try {
-            console.log("handleTranslateText 1");
-            const { text } = req.body;
-            console.log("handleTranslateText 2" + text);
+            const {languagecode, text } = req.body;
+            console.log("handleTranslateText, code: " + languagecode);
+            console.log("handleTranslateText, text: " + text);
+            if(!languagecode || languagecode === "en" || languagecode.includes("en-")) {
+                return res.json({
+                    success: true,
+                    data:  {"result": text},
+                });
+            }
+
 
             const runtime = await this.authUtils.getRuntime(req.params.agentId);
             const prompt =
-                'You are a helpful translator. If the following text is in English, please translate it into Chinese. If it is in another language, translate it into English; The returned result only includes the translated result,The JSON structure of the returned result is: {"result":""}. The text that needs to be translated starts with [Text]. [TEXT]: ' +
+                'You are a helpful translator. Please translate the following text into the language corresponding to this code: ' + languagecode + ', The returned result only includes the translated result,The JSON structure of the returned result is: {"result":""}, No need to use markdown syntax to modify JSON, just include JSON. The text that needs to be translated starts with [Text]. [TEXT]: ' +
                 text;
-            //console.log("handleTranslateText 3" + prompt);
+            //console.log("handleTranslateText " + prompt);
 
             const response = await generateText({
                 runtime: runtime,
                 context: prompt,
                 modelClass: ModelClass.SMALL,
             });
-            //console.log("handleTranslateText 4" + response);
+            //console.log("handleTranslateText " + response);
 
             if (!response) {
                 throw new Error("No response from generateText");
