@@ -13,6 +13,7 @@ import ImgMemo1 from '@/assets/images/tab/memo-1.svg';
 import ImgChat from '@/assets/images/tab/chat.svg';
 import AppPriviyProvider from './privy';
 import { ToastContainer } from 'react-toastify';
+import { useUserStore } from '@/stores/useUserStore';
 
 const isMobile = CheckIsMobile();
 const TabPage = [
@@ -24,12 +25,16 @@ const TabPage = [
 ];
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
+  const { userProfile } = useUserStore();
   const [showTab, setShowTab] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!userProfile) {
+      navigate('/login');
+    }
     let index = ['/watchlist', '/search', 'chat-no', '/hosting', '/memo'].findIndex(tab => tab === location.pathname);
     if (location.pathname === '/') {
       index = 0;

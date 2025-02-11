@@ -11,6 +11,7 @@ import useShare from '@/hooks/useShare';
 import useTranslate from '@/hooks/useTranslate';
 import { toast } from 'react-toastify';
 import { memoApi } from '@/services/memo';
+import { useUserStore } from '@/stores/useUserStore';
 
 interface FooterOperationProps {
   menuList?: Array<'share' | 'bookmark' | 'translate' | 'copy' | 'refresh'>;
@@ -29,6 +30,7 @@ const FooterOperation = React.memo<FooterOperationProps>(
     const [isCopied, setIsCopied] = useState(false);
     const { handleShareClick: shareHook } = useShare();
     const { handleTranslateClick: translateHook } = useTranslate();
+    const { userProfile } = useUserStore();
 
     const handleShareClick = () => {
       if (onShare) {
@@ -39,6 +41,10 @@ const FooterOperation = React.memo<FooterOperationProps>(
     };
 
     const handleBookmarkClick = () => {
+      if (!userProfile?.gmail) {
+        toast('Please login to Google before using this page.');
+        return;
+      }
       memoApi.addMemo(text);
       setIsBookMark(true);
       if (onBookmark) {
