@@ -1,5 +1,5 @@
 import { XUserProfile } from '@/types/account';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { watchApi } from '@/services/watch';
 import { useUserStore } from '@/stores/useUserStore';
 import { WatchItem } from '@/types/auth';
@@ -12,6 +12,7 @@ export const useGetXList = () => {
   const [loading, setLoading] = useState(false);
   const { getUserId, userProfile, setUserProfile } = useUserStore();
   const userId = getUserId();
+  const followHandlerList = useRef<string[]>([]);
 
   const initList = async () => {
     setLoading(true);
@@ -67,33 +68,39 @@ export const useGetXList = () => {
       isWatched: boolean;
     }
   ) => {
-    if (userProfile) {
-      const originTwitterWatchList = userProfile.twitterWatchList || [];
-      let tempTwitterWatchList = [] as WatchItem[];
-      if (account.isWatched) {
-        tempTwitterWatchList = originTwitterWatchList?.filter(item => item.username !== account.username);
+    if (followHandlerList.current.includes(account.username)) return;
+    followHandlerList.current.push(account.username);
+    try {
+      if (userProfile) {
+        const originTwitterWatchList = userProfile.twitterWatchList || [];
+        let tempTwitterWatchList = [] as WatchItem[];
+        if (account.isWatched) {
+          tempTwitterWatchList = originTwitterWatchList?.filter(item => item.username !== account.username);
+        } else {
+          originTwitterWatchList.push({ username: account.username, name: account.name, tags: account.tags, avatar: account.avatar });
+          tempTwitterWatchList = [...originTwitterWatchList];
+        }
+        const params = {
+          ...userProfile,
+          twitterWatchList: tempTwitterWatchList,
+        };
+        await authService.updateProfile(userProfile?.userId, params);
+        setUserProfile(params);
+        setXList(
+          xList.map(item => {
+            if (item.username === account.username) {
+              item.isWatched = !item.isWatched;
+            }
+            return {
+              ...item,
+            };
+          })
+        );
       } else {
-        originTwitterWatchList.push({ username: account.username, name: account.name, tags: account.tags, avatar: account.avatar });
-        tempTwitterWatchList = [...originTwitterWatchList];
+        console.log('userProfile', userProfile);
       }
-      const params = {
-        ...userProfile,
-        twitterWatchList: tempTwitterWatchList,
-      };
-      await authService.updateProfile(userProfile?.userId, params);
-      setUserProfile(params);
-      setXList(
-        xList.map(item => {
-          if (item.username === account.username) {
-            item.isWatched = !item.isWatched;
-          }
-          return {
-            ...item,
-          };
-        })
-      );
-    } else {
-      console.log('userProfile', userProfile);
+    } finally {
+      followHandlerList.current = followHandlerList.current.filter(item => item !== account.username);
     }
   };
 

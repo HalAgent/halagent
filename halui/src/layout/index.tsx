@@ -49,7 +49,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <AppPriviyProvider>
           <ToastContainer
             className="layout-toast"
-            position="top-right"
+            position="top-center"
             autoClose={2000}
             hideProgressBar={false}
             newestOnTop={false}

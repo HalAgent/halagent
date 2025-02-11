@@ -3,14 +3,20 @@ import { watchApi, WatchResponse } from '@/services/watch';
 import { useEffect, useState } from 'react';
 import { formatTimeDifference } from '@/utils/common';
 import FooterOperation from '@/components/FooterOperation';
+import PixLoading from '@/components/common/PixLoading';
 
 const WatchList = () => {
   const [data, setData] = useState<WatchResponse['items']>([]);
+  const [loading, setLoading] = useState(false);
   const fetchData = async () => {
-    const result = await watchApi.getMyWatchList();
-    console.warn(result);
-
-    setData(result);
+    setLoading(true);
+    try {
+      const result = await watchApi.getMyWatchList();
+      console.warn(result);
+      setData(result);
+    } finally {
+      setLoading(false);
+    }
   };
   const handleTranslate = (text: string, index: number) => {
     console.warn(text);
@@ -29,6 +35,7 @@ const WatchList = () => {
   return (
     <div className="watch-list">
       <div className="watch-list-title">Watchlist</div>
+      {loading && <PixLoading></PixLoading>}
       {data.map((item, index) => {
         return (
           <div className="watch-list-item" key={item.updatedAt}>

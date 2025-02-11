@@ -33,15 +33,14 @@ const Pick = () => {
         {xList.map(item => {
           return (
             <div className="pick-content-item">
-              <div className="pick-content-item-avatar">
+              <div
+                className="pick-content-item-avatar"
+                onClick={() => {
+                  onFollow(item);
+                }}
+              >
                 <img src={item.avatar} className="pick-content-item-avatar-img" />
-                <img
-                  src={item.isWatched ? ImgPickDone : ImgPickAdd}
-                  className="pick-content-item-avatar-icon"
-                  onClick={() => {
-                    onFollow(item);
-                  }}
-                />
+                <img src={item.isWatched ? ImgPickDone : ImgPickAdd} className="pick-content-item-avatar-icon" />
               </div>
               <div className="pick-content-item-title hide-txt">{item.name}</div>
               <div className="pick-content-item-des hide-txt">@{item.username}</div>

@@ -17,7 +17,7 @@ const PixModal: React.FC<PixModalProps> = ({ children, isOpen, onConfirm, onCanc
         isOpen ? 'flex' : 'hidden'
       }`}
     >
-      <div className="pixModal-bg ">
+      <div className="pixModal-bg">
         <div className="pixModal-title">{title}</div>
         {children}
         {(cancelText || confirmText) && (

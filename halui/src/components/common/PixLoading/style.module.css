@@ -8,7 +8,7 @@
   display: block;
   font-size: 0;
   color: #000;
-  margin: 100px auto;
+  margin: 100px auto 0;
 }
 
 .loading.la-dark {

@@ -12,12 +12,17 @@ import './index.less';
 import { useEffect, useState } from 'react';
 import useShare from '@/hooks/useShare';
 import PixModal from '@/components/common/PixModal/index';
+import { useUserStore } from '@/stores/useUserStore';
+import LoginTips from '@/components/LoginTips';
 
 const MemoPage = () => {
+  const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [memos, setMemos] = useState<Memo[]>([]);
   const [current, setCurrent] = useState<Memo>();
   const { handleShareClick: shareHook } = useShare();
+  const { userProfile } = useUserStore();
+  const [isLogin, setIsLogin] = useState(true);
 
   const handlerSDhare = (item: Memo) => {
     shareHook(item.content);
@@ -35,10 +40,19 @@ const MemoPage = () => {
   };
 
   useEffect(() => {
-    memoApi.reset();
-    memoApi.getMemoList().then(data => {
-      setMemos(data.reverse());
-    });
+    if (userProfile?.gmail) {
+      setLoading(true);
+      try {
+        memoApi.reset();
+        memoApi.getMemoList().then(data => {
+          setMemos(data.reverse());
+        });
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setIsLogin(false);
+    }
   }, []);
   return (
     <div className="memo">
@@ -57,7 +71,7 @@ const MemoPage = () => {
         <ReactSVG className=" w-[28px] h-[28px] ml-[58px]" src={ImgAi}></ReactSVG>
         <div className="memo-operation-des mr-[16px]">AI summary</div>
       </div>
-
+      {!isLogin && <LoginTips></LoginTips>}
       <div className="memo-list">
         {memos.map(item => {
           return (
