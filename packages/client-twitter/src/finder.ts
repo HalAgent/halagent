@@ -262,21 +262,21 @@ export class TwitterFinderClient {
             const alreadyWatchedList =
                 await userManager.getWatchList(userId);
             const usernameSet = new Set<string>();
-            if (alreadyWatchedList) {
-                for (const item of alreadyWatchedList) {
-                    const profile = {
-                        isWatched: true,
-                        username: item?.username,
-                        name: item?.name,
-                        avatar: item?.avatar,
-                    };
+            // if (alreadyWatchedList) {
+            //     for (const item of alreadyWatchedList) {
+            //         const profile = {
+            //             isWatched: true,
+            //             username: item?.username,
+            //             name: item?.name,
+            //             avatar: item?.avatar,
+            //         };
 
-                    if (item?.username) {
-                        usernameSet.add(item.username);
-                    }
-                    profilesOutput.push(profile);
-                }
-            }
+            //         if (item?.username) {
+            //             usernameSet.add(item.username);
+            //         }
+            //         profilesOutput.push(profile);
+            //     }
+            // }
 
             for await (const profile of searchResult) {
                 profile.isWatched = await userManager.isWatched(
