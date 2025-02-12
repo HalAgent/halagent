@@ -91,7 +91,9 @@ const FooterOperation = React.memo<FooterOperationProps>(
           ) : (
             <ReactSVG className="footer-operation-item" src={BookMark} onClick={handleBookmarkClick} />
           ))}
-        {menuList.includes('translate') && <ReactSVG className="footer-operation-item" src={Translate} onClick={handleTranslateClick} />}
+        {menuList.includes('translate') && navigator.language.split('-')[0] !== 'en' && (
+          <ReactSVG className="footer-operation-item" src={Translate} onClick={handleTranslateClick} />
+        )}
         {menuList.includes('copy') &&
           (isCopied ? (
             <ReactSVG className="footer-operation-item" style={{ marginTop: '-2px', color: '#222' }} src={ImgTrue} />
