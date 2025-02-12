@@ -131,7 +131,7 @@ class WatchApi {
   async translateText(text: string): Promise<string> {
     try {
       //console.log('translateText: 000 ', text);
-      const response = await api.post(`/translate_text`, { text });
+      const response = await api.post(`/translate_text`, { text,languagecode:navigator.language.split('-')[0] });
       //console.log('translateText: 111 ', response.data.data.result);
       return response.data.data.result;
     } catch (error) {
