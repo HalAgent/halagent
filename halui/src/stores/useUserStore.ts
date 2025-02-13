@@ -4,7 +4,6 @@ import { UserProfile } from '@/types/auth';
 
 interface UserState {
   userProfile: UserProfile | null;
-  isAuthenticated: boolean;
 
   setUserProfile: (profile: UserProfile | null) => void;
   login: (userProfile: UserProfile) => void;
@@ -22,31 +21,27 @@ export const useUserStore = create<UserState>()(
     (set, get) => ({
       // Initial state
       userProfile: null,
-      isAuthenticated: false,
 
       setUserProfile: profile => set({ userProfile: profile }),
-
 
       login: userProfile => {
         set({
           userProfile,
-          isAuthenticated: true,
         });
       },
 
       logout: () => {
         set({
           userProfile: null,
-          isAuthenticated: false,
         });
       },
 
       updateProfile: profile => {
         const currentProfile = get().userProfile;
         if (!currentProfile) {
-            set({ userProfile: profile as UserProfile })
-        }else{
-            set({ userProfile: { ...currentProfile, ...profile } });
+          set({ userProfile: profile as UserProfile });
+        } else {
+          set({ userProfile: { ...currentProfile, ...profile } });
         }
       },
 
@@ -57,9 +52,8 @@ export const useUserStore = create<UserState>()(
     }),
     {
       name: 'user-store', // Key used in localStorage
-      partialize: (state) => ({
+      partialize: state => ({
         userProfile: state.userProfile,
-        isAuthenticated: state.isAuthenticated,
       }),
     }
   )

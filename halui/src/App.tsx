@@ -2,7 +2,8 @@ import './App.css';
 import Layout from './layout';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import 'virtual:uno.css';
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy} from 'react';
+import useExtension from './hooks/useExtension';
 const Hosting = lazy(() => import('./views/Hosting'));
 const Login = lazy(() => import('./views/Login'));
 const Pick = lazy(() => import('./views/Pick'));
@@ -12,23 +13,26 @@ const Search = lazy(() => import('./views/Search'));
 const Chat = lazy(() => import('./views/Chat'));
 
 function App() {
+  const [show] = useExtension();
   return (
-    <Router>
-      <Layout>
-        <Suspense fallback={<div>Loading...</div>}>
-          <Routes>
-            <Route path="/" element={<Navigate to="/watchlist" replace />} />
-            <Route path="/hosting" element={<Hosting />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/pick" element={<Pick />} />
-            <Route path="/watchlist" element={<WatchList />} />
-            <Route path="/memo" element={<Memo />} />
-            <Route path="/search" element={<Search />} />
-            <Route path="/chat" element={<Chat />} />
-          </Routes>
-        </Suspense>
-      </Layout>
-    </Router>
+    show && (
+      <Router>
+        <Layout>
+          <Suspense fallback={<div></div>}>
+            <Routes>
+              <Route path="/" element={<Navigate to="/watchlist" replace />} />
+              <Route path="/hosting" element={<Hosting />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/pick" element={<Pick />} />
+              <Route path="/watchlist" element={<WatchList />} />
+              <Route path="/memo" element={<Memo />} />
+              <Route path="/search" element={<Search />} />
+              <Route path="/chat" element={<Chat />} />
+            </Routes>
+          </Suspense>
+        </Layout>
+      </Router>
+    )
   );
 }
 
