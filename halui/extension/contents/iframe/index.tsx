@@ -51,10 +51,7 @@ const HalPage = () => {
   useEffect(() => {
     if (!iframeRef.current) return
     setLoading(true)
-    const iframe = iframeRef.current
-    if (iframe) {
-      iframe.onload = initCache
-    }
+    iframeRef.current.onload = initCache
   }, [iframeRef.current])
 
   useEffect(() => {

@@ -1,0 +1,33 @@
+.hal-kol {
+  margin-top: 20px;
+}
+.hal-kol-header {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+}
+.hal-kol-content {
+  display: flex;
+}
+.hal-kol-content-item {
+  display: flex;
+  margin-right: 20px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background: #33333350;
+}
+
+.hal-kol-content-item-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ccc;
+  margin-right: 4px;
+}
+
+.hal-kol-content-item-name {
+  color: #fff;
+  font-size: 12px;
+}

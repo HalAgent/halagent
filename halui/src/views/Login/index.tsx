@@ -9,9 +9,12 @@ import { useLogin, usePrivy } from '@privy-io/react-auth';
 import { authService } from '@/services/auth';
 import { useNavigate } from 'react-router-dom';
 import { storage } from '@/utils/storage';
+import { useEffect } from 'react';
+import { useUserStore } from '@/stores/useUserStore';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { setUserProfile } = useUserStore();
   const { getAccessToken } = usePrivy();
 
   const { login } = useLogin({
@@ -43,6 +46,47 @@ const Login = () => {
     navigate('/pick');
   };
 
+  const loginClick = () => {
+    if (window.top !== window.self) {
+      window.open(`/popup-login`, 'popup', 'width=600,height=600,status=yes,scrollbars=yes');
+    } else {
+      login();
+    }
+  };
+
+  // popup login handler
+  useEffect(() => {
+    // Handle received message
+    const handleMessage = (event: MessageEvent) => {
+      const message = event.data;
+      if (message.type === 'GOOGLE_AUTH_SUCCESS') {
+        const { token, localStorageData, cookie } = message.data;
+        // Update localStorage
+        for (const key in localStorageData) {
+          localStorage.setItem(key, localStorageData[key]);
+          if (key === 'user-store') {
+            const userStore = JSON.parse(localStorageData[key]);
+            setUserProfile(userStore?.state?.userProfile);
+          }
+        }
+
+        // Update cookies
+        document.cookie = cookie;
+        storage.setToken(token);
+
+        navigate('/pick');
+      }
+    };
+
+    // Add message event listener
+    window.addEventListener('message', handleMessage);
+
+    // Cleanup event listener
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
+
   return (
     <div className="login">
       <div className="login-header">
@@ -51,7 +95,7 @@ const Login = () => {
       <div className="login-title">
         YOUR DATA,<br></br> YOUR AGENTS, <br></br>YOUR POWER.
       </div>
-      <img className="login-google" src={LoginGoogle} onClick={login}></img>
+      <img className="login-google" src={LoginGoogle} onClick={loginClick}></img>
       <div className="login-or">or</div>
       <img className="login-guest" src={LoginGuest} onClick={guestLogin}></img>
       <div className="hosting-content-popup-main-footer login-footer">

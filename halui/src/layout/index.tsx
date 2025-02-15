@@ -32,7 +32,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!userProfile) {
+    if (!userProfile && location.pathname !== '/popup-login') {
       navigate('/login');
     }
     let index = ['/watchlist', '/search', 'chat-no', '/hosting', '/memo'].findIndex(tab => tab === location.pathname);

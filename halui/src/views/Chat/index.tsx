@@ -59,7 +59,7 @@ const Chat = () => {
       setMessageList([
         {
           text: `Hi! I'm Daisy 9000, the first AI Agent Assistant from the HAL Agent Network, allows users to fully customize their AI influencer with ease. With a single click, you can connect your X account to a basic investment agent. Users can also emulate their favorite influencers based on personal preferences.\n\nMoreover, trending content is intelligently curated and either shared on X or added to your Watchlist. Equipped with Alpha Assistant capabilities, the Agent provides real-time performance tracking and actionable insights, empowering users to optimize decision-making and refine investment strategies with precision.`,
-          displayText: '',
+          displayText: `Hi! I'm Daisy 9000, the first AI Agent Assistant from the HAL Agent Network, allows users to fully customize their AI influencer with ease. With a single click, you can connect your X account to a basic investment agent. Users can also emulate their favorite influencers based on personal preferences.\n\nMoreover, trending content is intelligently curated and either shared on X or added to your Watchlist. Equipped with Alpha Assistant capabilities, the Agent provides real-time performance tracking and actionable insights, empowering users to optimize decision-making and refine investment strategies with precision.`,
           user: 'agent',
           action: 'NONE',
         },

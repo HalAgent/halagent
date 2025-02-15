@@ -1,7 +1,7 @@
 import cssText from "data-text:~/contents/floatBtn/index.css"
 
 import HAlphaImg from "raw:~/assets/HAlpha.svg"
-import LogoImg from "raw:~/assets/logo.svg"
+import LogoImg from "raw:~/assets/icon.png"
 
 export const config: PlasmoCSConfig = {
   matches: ["<all_urls>"]
