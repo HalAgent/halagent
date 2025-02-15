@@ -1,0 +1,37 @@
+.hal-float-btn {
+  position: fixed;
+  right: -32px;
+  bottom: 10vh;
+  width: 88px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 0 11px;
+  border-radius: 40px 0px 0px 40px;
+  box-shadow: 0px 2px 12px 0px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+  z-index: 2147483647;
+  background: #fff;
+}
+.hal-float-btn:hover {
+  right: 0;
+  cursor: pointer;
+  background: #fff4ef;
+  padding: 0 5px;
+}
+.hal-float-btn:hover .hal-float-btn-text {
+  opacity: 1;
+}
+
+.hal-float-btn-icon {
+  width: 33px;
+  height: 33px;
+}
+
+.hal-float-btn-text {
+  width: 43px;
+  height: 15px;
+  opacity: 0;
+  transform: all 0.5s;
+}
