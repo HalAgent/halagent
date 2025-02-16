@@ -16,6 +16,7 @@
   font-size: 12px;
   background: white;
   transition: all 0.2s;
+  color: #222;
 }
 
 .hal-tooltip-item:hover {

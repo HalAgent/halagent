@@ -69,7 +69,8 @@ const XKolList = () => {
         margin-right: 12px;
         padding: 4px 8px;
         border-radius: 12px;
-        background: rgb(26,26,26);
+        border-color: rgba(0, 0, 0, 0);
+        background-color: rgb(239, 243, 244);
       }
       .hal-kol-content-item-avatar {
 
@@ -80,7 +81,7 @@ const XKolList = () => {
         margin-right: 8px;
       }
       .hal-kol-content-item-name {
-        color: #fff;
+        color: rgb(0, 0, 0);
         font-size: 12px;
       }
     `
