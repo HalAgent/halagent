@@ -10,6 +10,7 @@ import {
 } from '../types/auth';
 import { useUserStore } from '@/stores/useUserStore';
 import api from '@/services/axios';
+const VITE_API_HOST_URL = import.meta.env.VITE_API_HOST_URL;
 
 export const authService = {
   /**
@@ -248,7 +249,7 @@ export const authService = {
         const handler = async (event: MessageEvent) => {
           // Message origin
           //if (event.origin !== window.location.origin) return;
-          const allowedOrigins = ['https://host.halagent.org', 'http://localhost:3000'];
+          const allowedOrigins = [VITE_API_HOST_URL, 'http://localhost:3000'];
 
           if (!allowedOrigins.includes(event.origin)) {
             console.warn('Received message from unauthorized origin:', event.origin);

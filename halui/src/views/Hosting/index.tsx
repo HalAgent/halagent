@@ -17,15 +17,17 @@ import ShortButton from '@/components/common/ShortButton';
 import { useNavigate } from 'react-router-dom';
 import { CheckIsMobile } from '@/utils/common';
 const INTERVAL_OPTIONS = ['30 minutes', '1 hours', '2 hours', '4 hours', '8 hours', '12 hours'];
+
 const CHARACTER_OPTIONS = [
-  'Crypto Investment',
-  'Artificial Intelligence',
-  'Trending Topics',
-  'Celebrity News',
-  'Study Tips',
-  'Books & Literature',
-  'Humor and Entertainment',
+  { text: 'Crypto Investment', disabled: false },
+  { text: 'Artificial Intelligence', disabled: true },
+  { text: 'Trending Topics', disabled: true },
+  { text: 'Celebrity News', disabled: true },
+  { text: 'Study Tips', disabled: true },
+  { text: 'Books & Literature', disabled: true },
+  { text: 'Humor and Entertainment', disabled: true },
 ];
+
 const MessageList = [
   `Hi, I'm Daisy 9000. Click "X" to authorize and unlock the automatic tweeting!`,
   `My goal is to build an AI agent network and lead data sovereignty.`,
@@ -39,7 +41,7 @@ const isMobile = CheckIsMobile();
 
 const Hosting = () => {
   const [enabled, setEnabled] = useState(false);
-  const [character, setCharacter] = useState('');
+  const [character, setCharacter] = useState('Crypto Investment');
   const [intervalValue, setIntervalValue] = useState('2h');
   const [message, setMessage] = useState(MessageList[0]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,7 +59,9 @@ const Hosting = () => {
     if (type === 'interval') {
       setIntervalValue(value);
     } else if (type === 'character') {
-      setCharacter(value);
+      if (CHARACTER_OPTIONS.findIndex(item => item.text === value && !item.disabled) !== -1) {
+        setCharacter(value);
+      }
     }
   };
   const enabledChange = () => {
@@ -231,9 +235,9 @@ const Hosting = () => {
                     onMouseUp={event => handleSelectionChange(event, 'character')}
                   >
                     {CHARACTER_OPTIONS.map(option => (
-                      <MenuItem key={option}>
-                        <div className="Geologica box-border p-x-[4px] radius-[4px] h-[32px] line-height-[32px] color-[#656565] text-[13px] data-[focus]:bg-[#E3E3E3] hover:bg-[#E3E3E3]">
-                          {option}
+                      <MenuItem key={option.text} disabled={option.disabled}>
+                        <div className="data-[disabled]:opacity-50 Geologica box-border p-x-[4px] radius-[4px] h-[32px] line-height-[32px] color-[#656565] text-[13px] data-[focus]:bg-[#E3E3E3] hover:bg-[#E3E3E3]">
+                          {option.text}
                         </div>
                       </MenuItem>
                     ))}
