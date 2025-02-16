@@ -32,31 +32,23 @@ const FloatBtn = () => {
     document.body.style.cursor = "move"
     e.preventDefault()
     const startY = e.clientY
-    const startBottom = buttons[index].bottom
+    // Record the initial positions of both buttons
+    const startPositions = buttons.map((btn) => btn.bottom)
 
     const handleMouseMove = (e: MouseEvent) => {
       const deltaY = startY - e.clientY
-      const newBottom = startBottom + deltaY
-      // 边界检查
-      const minBottom = 0
-      const maxBottom = window.innerHeight - 40
-      let clampedBottom = Math.min(Math.max(newBottom, minBottom), maxBottom)
 
-      // 防重叠检查
-      const otherIndex = index === 0 ? 1 : 0
-      const otherButton = buttons[otherIndex]
-      const spacing = 50 // 按钮间最小间距
+      // Calculate the allowed movement range
+      const minDelta = -startPositions[0] // Cannot go above the top
+      const maxDelta = window.innerHeight - 40 - startPositions[1] // Cannot go below the bottom
+      const clampedDelta = Math.max(minDelta, Math.min(deltaY, maxDelta))
 
-      if (index === 1) {
-        clampedBottom = Math.min(clampedBottom, otherButton.bottom - spacing)
-      } else {
-        clampedBottom = Math.max(clampedBottom, otherButton.bottom + spacing)
-      }
-
+      // Update the positions of both buttons simultaneously
       setButtons((prev) =>
-        prev.map((btn, i) =>
-          i === index ? { ...btn, bottom: clampedBottom } : btn
-        )
+        prev.map((btn, i) => ({
+          ...btn,
+          bottom: startPositions[i] + clampedDelta
+        }))
       )
     }
 
@@ -66,9 +58,11 @@ const FloatBtn = () => {
       document.body.style.cursor = "default"
 
       setButtons((prev) =>
-        prev.map((btn, i) =>
-          i === index ? { ...btn, isDragging: false, isLocked: true } : btn
-        )
+        prev.map((btn) => ({
+          ...btn,
+          isDragging: false,
+          isLocked: true
+        }))
       )
     }
 
@@ -88,20 +82,9 @@ const FloatBtn = () => {
         prev.map((btn, i) => (i === index ? { ...btn, hide: true } : btn))
       )
     } else {
-      window.open("https://halpha.halagent.org")
+      // to chat
     }
   }
-
-  useEffect(() => {
-    const updateInitialPositions = () => {
-      setButtons(initDat)
-    }
-
-    updateInitialPositions()
-    window.addEventListener("resize", updateInitialPositions)
-    return () => window.removeEventListener("resize", updateInitialPositions)
-  }, [])
-
   return (
     <div>
       {buttons.map((button, index) => (
