@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { formatTimeDifference } from '@/utils/common';
 import FooterOperation from '@/components/FooterOperation';
 import PixLoading from '@/components/common/PixLoading';
+const isSelf = window.top === window.self;
 
 const WatchList = () => {
   const [data, setData] = useState<WatchResponse['items']>([]);
@@ -35,7 +36,7 @@ const WatchList = () => {
   return (
     <div className="watch-list">
       <div className="watch-list-title">Watchlist</div>
-      {loading && <PixLoading></PixLoading>}
+      {loading && isSelf && <PixLoading></PixLoading>}
       {data.map((item, index) => {
         return (
           <div className="watch-list-item" key={item.updatedAt}>

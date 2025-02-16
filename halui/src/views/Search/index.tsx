@@ -85,7 +85,7 @@ const Search = () => {
         <div className="search-list" style={{ width: isMobile ? 'calc(100vw - 32px)' : '343px' }}>
           {loading ? (
             <div className="relative w-full frc-center">
-              <PixLoading />
+              <PixLoading style={{ marginTop: '10px',minHeight: '100px' }} />
             </div>
           ) : (
             xList.map(item => (

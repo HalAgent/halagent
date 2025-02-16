@@ -1,12 +1,12 @@
 import React from 'react';
-import styles from './style.module.css';
+import './index.less';
 
-const PixLoading: React.FC = () => {
+const PixLoading: React.FC<{
+  style?: React.CSSProperties;
+}> = ({ style }) => {
   return (
-    <div className={styles.loading}>
-      {Array.from({ length: 16 }).map((_, index) => (
-        <div key={index}></div>
-      ))}
+    <div className="pix-loading" style={style}>
+      <div className="pix-loading-spinner" />
     </div>
   );
 };

@@ -27,7 +27,7 @@ function IndexSidePanel() {
           <div className="hal-page-loading-spinner" />
         </div>
       )}
-      <iframe src="https://halpha.halagent.org/watchlist"></iframe>
+      <iframe ref={iframeRef} src="https://halpha.halagent.org/watchlist"></iframe>
     </div>
   )
 }
