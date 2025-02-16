@@ -20,12 +20,8 @@
 	],
 	"dependencies": {
 		"@elizaos/core": "workspace:*",
-		"@elizaos/plugin-avalanche": "workspace:*",
 		"@elizaos/plugin-binance": "workspace:*",
 		"@elizaos/plugin-data-enrich": "workspace:*",
-		"@elizaos/plugin-image-generation": "workspace:*",
-		"@elizaos/plugin-tee-verifiable-log": "workspace:*",
-		"@elizaos/plugin-tee-log": "workspace:*",
 		"@elizaos/client-twitter": "workspace:*",
 		"agent-twitter-client": "0.0.18",
 		"@privy-io/server-auth":"1.18.1",
