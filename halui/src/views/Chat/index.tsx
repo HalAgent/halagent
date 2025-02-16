@@ -2,7 +2,7 @@ import './index.less';
 import { useNavigate } from 'react-router-dom';
 import backLeft from '@/assets/icons/back-left.svg';
 import person from '@/assets/icons/person.png';
-import Send from '@/assets/icons/Send.svg';
+import Send from '@/assets/icons/send.svg';
 import SendActive from '@/assets/icons/Send-active.svg';
 import LoadingImg from '@/assets/icons/loading.svg';
 import { useEffect, useState, useCallback, useRef } from 'react';
