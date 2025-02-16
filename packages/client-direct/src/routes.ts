@@ -1201,18 +1201,6 @@ export class Routes {
                             signature,
                             data: "Sol-SPL reward processed",
                         });
-                        
-                        // Confirm the transction
-                        /*const connection = new Connection(
-                            clusterApiUrl("mainnet-beta"),
-                            "confirmed"
-                        );
-                        const signature = await sendAndConfirmTransaction(
-                            connection,
-                            transaction,
-                            [settings.SOL_SPL_OWNER_PUBKEY]
-                        );
-                        return { signature };*/
                     } catch (error) {
                         if (error instanceof SplInvalidPublicKeyError) {
                             throw new ApiError(400, error.message);
@@ -1243,7 +1231,11 @@ export class Routes {
                             transaction,
                             [settings.SOL_OWNER_PUBKEY]
                         );
-                        return { signature };
+                        return res.json({
+                            success: true,
+                            signature,
+                            data: "Sol reward processed",
+                        });
                     } catch (error) {
                         if (error instanceof InvalidPublicKeyError) {
                             throw new ApiError(400, error.message);
@@ -1266,7 +1258,11 @@ export class Routes {
                             mintPubkey: settings.SOL_SPL_OWNER_PUBKEY,
                             tokenAmount,
                         });
-                        return { transaction };
+                        return res.json({
+                            success: true,
+                            transaction,
+                            data: "Sol-Agent-Kit reward processed",
+                        });
                     } catch (error) {
                         if (error instanceof SplInvalidPublicKeyError) {
                             throw new ApiError(400, error.message);
