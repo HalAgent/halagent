@@ -1,4 +1,4 @@
-import { ICacheManager } from "@elizaos/core";
+import { ICacheManager, settings } from "@elizaos/core";
 import { TW_KOL_1 } from "./social";
 
 interface WatchItem {
@@ -14,6 +14,7 @@ export interface UserProfile {
     agentname: string;
     bio?: string | string[];
     walletAddress?: string;
+    wallets?: Record<string, string>;
     level: number;
     experience: number;
     nextLevelExp: number;
@@ -143,9 +144,11 @@ export class UserManager implements UserManageInterface {
 
     async getAllWatchList(): Promise<string[]> {
         let watchList = new Set<string>();
-        for (const kol of TW_KOL_1) {
+        const defaultList = JSON.parse(settings.TW_KOL_LIST) || TW_KOL_1;
+        for (const kol of defaultList) {
             watchList.add(kol);
         }
+        const avoidList = JSON.parse(settings.TW_WATCHER_AVOID_LIST) || [];
         // Get All ids
         let idsStr = (await this.getCachedData(
             UserManager.ALL_USER_IDS
@@ -157,6 +160,9 @@ export class UserManager implements UserManageInterface {
             );
             if (userProfile && userProfile.twitterWatchList) {
                 for (const watchItem of userProfile.twitterWatchList) {
+                    if (avoidList.includes(watchItem.username)) {
+                        continue; // skip avoid
+                    }
                     watchList.add(watchItem.username);
                 }
             }
