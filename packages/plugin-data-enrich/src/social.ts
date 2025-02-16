@@ -139,7 +139,7 @@ export class twitterDataProvider {
             for await (const tweet of tweets) {
                 posts.push(tweet);
             }
-
+            
             const prompt =`
                 The biography of ${username} is ${userBio}.\n
                 Here are some posts of ${username}:

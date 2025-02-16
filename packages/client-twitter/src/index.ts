@@ -7,6 +7,7 @@ import { TwitterSearchClient } from "./search.ts";
 import { TwitterSpaceClient } from "./spaces.ts";
 import { TwitterWatchClient } from "./watcher.ts";
 import { SighterClient, KEY_BNB_CACHE_STR } from "./sighter.ts";
+import { ArenaClient } from "./arena.ts";
 import { TwitterFinderClient } from "./finder.ts";
 import { EventEmitter } from 'events';
 
@@ -26,6 +27,7 @@ class TwitterManager {
     space?: TwitterSpaceClient;
     watcher: TwitterWatchClient;
     sighter: SighterClient;
+    arena: ArenaClient;
     finder: TwitterFinderClient;
 
     constructor(runtime: IAgentRuntime, twitterConfig: TwitterConfig) {
@@ -49,6 +51,7 @@ class TwitterManager {
         this.interaction = new TwitterInteractionClient(this.client, runtime);
 
         this.sighter = new SighterClient(this.client, runtime);
+        this.arena = new ArenaClient(this.client, runtime);
 
         // Optional Spaces logic (enabled if TWITTER_SPACES_ENABLE is true)
         if (twitterConfig.TWITTER_SPACES_ENABLE) {
@@ -95,6 +98,7 @@ export const TwitterClientInterface: Client = {
 
         await manager.finder.start();
         await manager.watcher.start();
+        await manager.arena.start();
         twEventCenter.on('MSG_RE_TWITTER', (text, userId) => {
             console.log('MSG_RE_TWITTER userId: ' + userId + " text: " + text);
             manager.watcher.sendReTweet(text, userId);
@@ -103,7 +107,10 @@ export const TwitterClientInterface: Client = {
             // console.log('MSG_RE_TWITTER userId: ' + userId + " text: " + text);
             manager.sighter.bnbQuery(coinsymbol, userId);
         });
-
+        twEventCenter.on("MSG_ARENA_QUERY", (username, userId) => {
+            // console.log('MSG_RE_TWITTER userId: ' + userId + " text: " + text);
+            manager.arena.arenaQuery(username, userId);
+        });
         return manager;
     },
 

@@ -28,9 +28,13 @@ import { InvalidPublicKeyError as SplInvalidPublicKeyError } from "../../plugin-
 import { createSolTransferTransaction } from "../../plugin-data-enrich/src/solana";
 import { createSolSplTransferTransaction } from "../../plugin-data-enrich/src/solanaspl";
 import { callSolanaAgentTransfer } from "../../plugin-data-enrich/src/solanaagentkit";
+import { transferEthToken } from "../../plugin-data-enrich/src/eth";
+import { transferSui } from "../../plugin-data-enrich/src/sui";
+import { transferStarknetToken } from "../../plugin-data-enrich/src/starknet";
 import { MemoController } from "./memo";
 import { requireAuth } from "./auth";
 import { CoinAnalysisObj, KEY_BNB_CACHE_STR } from "../../client-twitter/src/sighter";
+import { ArenaAnalysisObj, KEY_ARENA_CACHE_STR } from "../../client-twitter/src/arena";
 //import { ethers } from 'ethers';
 //import { requireAuth } from "./auth";
 
@@ -207,6 +211,10 @@ export class Routes {
             "/:agentId/bnb_query",
             this.handleBnbQuery.bind(this)
         );
+        app.get(
+            "/:agentId/arena_query",
+            this.handleArenaQuery.bind(this)
+        );
         app.post(
             "/:agentId/twitter_profile_search",
             this.handleTwitterProfileSearch.bind(this)
@@ -289,6 +297,7 @@ export class Routes {
 
             const userProfile = userManager.createDefaultProfile(userId, gmail);
             await userManager.saveUserData(userProfile);
+
             return {
                 profile: userProfile,
             };
@@ -480,39 +489,12 @@ export class Routes {
                     <head>
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>FungIPle</title>
-                        <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTczIiBoZWlnaHQ9IjE2MyIgdmlld0JveD0iMCAwIDE3MyAxNjMiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0wIDEwNi44OUgxOS4yMDM1TDE5LjIzMzYgNzcuNDYwOUgwLjAzMDA3NkwwIDEwNi44OVoiIGZpbGw9IiNGRjk5MDAiLz4KPHBhdGggZD0iTTE3Mi45NTIgMjkuNDI5NUwxNzIuOTY3IDE5LjcxNDlDMTcyLjk2NyA5LjUxOTA5IDE2My4yNjggMCAxNTIuODYyIDBIODMuNzkyMkg4MS43OTIxSDc0LjQzODZINzMuOTQyM1YwLjAxNTAzODFDNjAuMDQ3MiAwLjI0MDYwOSA1MC4wOTIxIDEwLjEzNTcgNTAuMDc3IDIzLjg1MDRMNTAuMDE2OSA3Ny40NjExSDI5LjU2NTJMMjkuNTM1MiAxMDYuODkxSDQ5Ljk4NjhMNDkuOTI2NyAxNjIuNjIySDgzLjY4NjlMODMuNzQ3MSAxMDYuODkxSDgzLjc3NzJIMTQ4LjUzMUMxNjIuNjgxIDEwNi44OTEgMTcyLjg3NyA5Ni45MDUzIDE3Mi44OTIgODMuMDQwMkwxNzIuOTM3IDQxLjQ2NzJIMTM5LjE3N0wxMzkuMTMyIDc3LjQ2MTFIODMuNzkyMlYyOS40Mjk1SDEzOS4xOTJIMTcyLjk1MloiIGZpbGw9IiNGRjk5MDAiLz4KPC9zdmc+Cg==">
-                        <style>
-                            body {
-                                margin: 0;
-                            }
-                            .container {
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                width: 100vw;
-                            }
-                            .ad_img {
-                                max-width: 1000px;
-                                width: 100%;
-                                height: auto;
-                            }
-                            @media only screen and (max-width: 670px) {
-                                .ad_img {
-                                    max-width: 660px;
-                                    width: 100%;
-                                    height: auto;
-                                }
-                            }
-                        </style>
+                        <title>Auth</title>
                     </head>
                     <body>
                         <div style="text-align: center; font-size: 20px; font-weight: bold;">
-                            <h1>FungIPle Agent</h1>
-                            <br>Login Success!<br>
+                            <br>Auth Success! Redirecting...<br>
                             <script type="text/javascript">
-                                console.log('window.opener');
-                                console.log(window.opener);
                                 function closeWindow() {
                                     console.log('closeWindow');
                                     try {
@@ -532,20 +514,13 @@ export class Routes {
                                         console.log(e);
                                     }
                                 }
+                                closeWindow();
                             </script>
                             <button style="text-align: center; width: 40%; height: 40px; font-size: 20px; background-color: #9F91ED; color: #ffffff; margin: 20px; border: none; border-radius: 10px;"
                                 onclick="closeWindow()">
                                 Click to Close</button>
                             <br>
                         </div>
-                        <div class="container">
-                            <img style="max-width: 40%; width: 40%; height: auto;" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTczIiBoZWlnaHQ9IjE2MyIgdmlld0JveD0iMCAwIDE3MyAxNjMiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0wIDEwNi44OUgxOS4yMDM1TDE5LjIzMzYgNzcuNDYwOUgwLjAzMDA3NkwwIDEwNi44OVoiIGZpbGw9IiNGRjk5MDAiLz4KPHBhdGggZD0iTTE3Mi45NTIgMjkuNDI5NUwxNzIuOTY3IDE5LjcxNDlDMTcyLjk2NyA5LjUxOTA5IDE2My4yNjggMCAxNTIuODYyIDBIODMuNzkyMkg4MS43OTIxSDc0LjQzODZINzMuOTQyM1YwLjAxNTAzODFDNjAuMDQ3MiAwLjI0MDYwOSA1MC4wOTIxIDEwLjEzNTcgNTAuMDc3IDIzLjg1MDRMNTAuMDE2OSA3Ny40NjExSDI5LjU2NTJMMjkuNTM1MiAxMDYuODkxSDQ5Ljk4NjhMNDkuOTI2NyAxNjIuNjIySDgzLjY4NjlMODMuNzQ3MSAxMDYuODkxSDgzLjc3NzJIMTQ4LjUzMUMxNjIuNjgxIDEwNi44OTEgMTcyLjg3NyA5Ni45MDUzIDE3Mi44OTIgODMuMDQwMkwxNzIuOTM3IDQxLjQ2NzJIMTM5LjE3N0wxMzkuMTMyIDc3LjQ2MTFIODMuNzkyMlYyOS40Mjk1SDEzOS4xOTJIMTcyLjk1MloiIGZpbGw9IiNGRjk5MDAiLz4KPC9zdmc+Cg==">
-                        </div>
-
-                        <div>
-                            <br>
-                        </div>
-
                     </body>
                 </html>`);
         } catch (error) {
@@ -645,6 +620,52 @@ export class Routes {
         }
     }
 
+    async handleArenaQuery(req: express.Request, res: express.Response) {
+        const kol = typeof req.query.username === 'string' ? req.query.username : '';
+        const kolname = kol.trim();
+        if (!kolname) {
+            throw new ApiError(533, "kolname is blank");
+        }
+        console.log("handleArenaQuery, kolname: " + kolname);
+        const runtime = await this.authUtils.getRuntime(req.params.agentId);
+        let userId = "blank";
+        twEventCenter.emit("MSG_ARENA_QUERY", kolname, userId);
+        let anaObj: ArenaAnalysisObj = null;
+
+        for (let i = 0; i < 10; i++) {
+            await this.sleep(1000);
+            const cached = await runtime.cacheManager.get(KEY_ARENA_CACHE_STR + kolname);
+            // console.log("handleArenaQuery, cached: " + cached);
+            if (cached && typeof cached === 'string') {
+                try {
+                    anaObj = JSON.parse(cached);
+                    if (anaObj) {
+                        if (Date.now() - anaObj.timestamp > 3000) {
+                            continue;
+                        } else {
+                            break;
+                        }
+                    }
+                } catch (error) {
+                    console.error('JSON parse failed: ', error);
+                }
+            }
+        }
+
+        if (anaObj && anaObj.coin_analysis && anaObj.coin_prediction) {
+            res.json({
+                coin_analysis: anaObj.coin_analysis,
+                coin_prediction: anaObj.coin_prediction,
+            });
+        }
+        else {
+            res.json({
+                res: false,
+                reason: "try again",
+            });
+        }
+    }
+
     async handleTwitterProfileSearch(
         req: express.Request,
         res: express.Response
@@ -684,9 +705,6 @@ export class Routes {
                                 username: item?.username,
                                 name: item?.name,
                                 avatar: item?.avatar,
-                                //avatar: "https://pbs.twimg.com/profile_images/898967039301349377/bLmMDwtf.jpg",
-                                //avatar: "https://abs.twimg.com/sticky/default_profile_images/default_profile.png",
-                                //avatar: "https://pbs.twimg.com/profile_images/1809130917350494209/Q_WjcqLz.jpg";
                             };
 
                             if (item?.username) {
@@ -1071,7 +1089,11 @@ export class Routes {
             userManager.saveUserData(profile);
 
             try {
-                const { cursor, watchlist } = req.body;
+                //const { cursor, watchlist } = req.body;
+                const { userId } = req.body;
+                const cursor = "";
+                const watchItemList = await userManager.getWatchList(userId);
+                const watchlist: string[] = watchItemList.map(user => user.username);
                 let report;
                 if (watchlist && watchlist.length > 0) {
                     report =
@@ -1086,6 +1108,14 @@ export class Routes {
                                 runtime.cacheManager,
                                 cursor
                             );
+                    }
+                    else if (report && report.items?.length < 10) {
+                        let newReport =
+                            await InferMessageProvider.getAllWatchItemsPaginated(
+                                runtime.cacheManager,
+                                cursor
+                            );
+                        report.push(...newReport);
                     }
                 } else {
                     report =
@@ -1144,7 +1174,14 @@ export class Routes {
             const runtime = await this.authUtils.getRuntime(req.params.agentId);
             const userManager = new UserManager(runtime.cacheManager);
             const profile = await userManager.verifyExistingUser(userId);
-            const address = profile.walletAddress;// "0xdD1Be812e7ACe045C67167503157a9FC88D6E403"; //profile.walletAddress;
+            //const address = profile.walletAddress;// "0xdD1Be812e7ACe045C67167503157a9FC88D6E403"; //profile.walletAddress;
+            let address = "";
+            if (profile && profile.wallets) {
+                address = profile.wallets[typestr];
+            }
+            if (!address) {
+                address = profile.walletAddress;
+            }
             if (!address) {
                 throw new ApiError(400, "Missing required field: walletAddress");
             }
@@ -1159,20 +1196,11 @@ export class Routes {
                             //ownerPubkey: settings.SOL_SPL_OWNER_PUBKEY,
                             tokenAmount,
                         });
-                        //console.log(signature);
-                        return { signature };
-
-                        // Confirm the transction
-                        /*const connection = new Connection(
-                            clusterApiUrl("mainnet-beta"),
-                            "confirmed"
-                        );
-                        const signature = await sendAndConfirmTransaction(
-                            connection,
-                            transaction,
-                            [settings.SOL_SPL_OWNER_PUBKEY]
-                        );
-                        return { signature };*/
+                        return res.json({
+                            success: true,
+                            signature,
+                            data: "Sol-SPL reward processed",
+                        });
                     } catch (error) {
                         if (error instanceof SplInvalidPublicKeyError) {
                             throw new ApiError(400, error.message);
@@ -1203,7 +1231,11 @@ export class Routes {
                             transaction,
                             [settings.SOL_OWNER_PUBKEY]
                         );
-                        return { signature };
+                        return res.json({
+                            success: true,
+                            signature,
+                            data: "Sol reward processed",
+                        });
                     } catch (error) {
                         if (error instanceof InvalidPublicKeyError) {
                             throw new ApiError(400, error.message);
@@ -1226,7 +1258,11 @@ export class Routes {
                             mintPubkey: settings.SOL_SPL_OWNER_PUBKEY,
                             tokenAmount,
                         });
-                        return { transaction };
+                        return res.json({
+                            success: true,
+                            transaction,
+                            data: "Sol-Agent-Kit reward processed",
+                        });
                     } catch (error) {
                         if (error instanceof SplInvalidPublicKeyError) {
                             throw new ApiError(400, error.message);
@@ -1238,12 +1274,33 @@ export class Routes {
                         throw new ApiError(500, "Internal server error");
                     }
                 case "eth":
-                    // Handle eth transfer
+                case "bsc":
+                case "base":
+                case "mantle":
+                    // Handle eth and eth-compatible transfer
+                    const signature = await transferEthToken(address, '1000', typestr);
                     return res.json({
                         success: true,
-                        data: "eth reward processed",
+                        signature,
+                        data: "ETH eco reward processed",
                     });
-                case "base":
+                case "sui":
+                    // Handle SUI transfer
+                    const suiHash = await transferSui(address, '1000');
+                    return res.json({
+                        success: true,
+                        signature: suiHash,
+                        data: "SUI reward processed",
+                    });
+                case "starknet":
+                    // Handle Starknet transfer
+                    const snHash = await transferStarknetToken(address, '1000');
+                    return res.json({
+                        success: true,
+                        signature: snHash,
+                        data: "Starknet reward processed",
+                    });
+                case "base-test":
                     // Handle base transfer
                     console.log("handleGainRewards 1");
                     // Connect to Ethereum node
