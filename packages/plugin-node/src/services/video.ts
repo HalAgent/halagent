@@ -12,7 +12,7 @@ import ffmpeg from "fluent-ffmpeg";
 import fs from "fs";
 import { tmpdir } from "os";
 import path from "path";
-// import youtubeDl from "youtube-dl-exec";
+import youtubeDl from "youtube-dl-exec";
 
 export class VideoService extends Service implements IVideoService {
     static serviceType: ServiceType = ServiceType.VIDEO;
@@ -57,11 +57,11 @@ export class VideoService extends Service implements IVideoService {
         }
 
         try {
-            // await youtubeDl(url, {
-            //     verbose: true,
-            //     output: outputFile,
-            //     writeInfoJson: true,
-            // });
+            await youtubeDl(url, {
+                verbose: true,
+                output: outputFile,
+                writeInfoJson: true,
+            });
             return outputFile;
         } catch (error) {
             elizaLogger.log("Error downloading media:", error);
@@ -79,12 +79,12 @@ export class VideoService extends Service implements IVideoService {
         }
 
         try {
-            // await youtubeDl(videoInfo.webpage_url, {
-            //     verbose: true,
-            //     output: outputFile,
-            //     format: "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
-            //     writeInfoJson: true,
-            // });
+            await youtubeDl(videoInfo.webpage_url, {
+                verbose: true,
+                output: outputFile,
+                format: "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
+                writeInfoJson: true,
+            });
             return outputFile;
         } catch (error) {
             elizaLogger.log("Error downloading video:", error);
@@ -196,20 +196,19 @@ export class VideoService extends Service implements IVideoService {
         }
 
         try {
-            // const result = await youtubeDl(url, {
-            //     dumpJson: true,
-            //     verbose: true,
-            //     callHome: false,
-            //     noCheckCertificates: true,
-            //     preferFreeFormats: true,
-            //     youtubeSkipDashManifest: true,
-            //     writeSub: true,
-            //     writeAutoSub: true,
-            //     subLang: "en",
-            //     skipDownload: true,
-            // });
-            // return result;
-            return null;
+            const result = await youtubeDl(url, {
+                dumpJson: true,
+                verbose: true,
+                callHome: false,
+                noCheckCertificates: true,
+                preferFreeFormats: true,
+                youtubeSkipDashManifest: true,
+                writeSub: true,
+                writeAutoSub: true,
+                subLang: "en",
+                skipDownload: true,
+            });
+            return result;
         } catch (error) {
             elizaLogger.log("Error fetching video info:", error);
             throw new Error("Failed to fetch video information");
@@ -422,13 +421,13 @@ export class VideoService extends Service implements IVideoService {
                 elizaLogger.log(
                     "YouTube video detected, downloading audio with youtube-dl"
                 );
-                // await youtubeDl(url, {
-                //     verbose: true,
-                //     extractAudio: true,
-                //     audioFormat: "mp3",
-                //     output: outputFile,
-                //     writeInfoJson: true,
-                // });
+                await youtubeDl(url, {
+                    verbose: true,
+                    extractAudio: true,
+                    audioFormat: "mp3",
+                    output: outputFile,
+                    writeInfoJson: true,
+                });
             }
             return outputFile;
         } catch (error) {

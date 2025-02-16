@@ -34,6 +34,7 @@ import { transferStarknetToken } from "../../plugin-data-enrich/src/starknet";
 import { MemoController } from "./memo";
 import { requireAuth } from "./auth";
 import { CoinAnalysisObj, KEY_BNB_CACHE_STR } from "../../client-twitter/src/sighter";
+import { ArenaAnalysisObj, KEY_ARENA_CACHE_STR } from "../../client-twitter/src/arena";
 //import { ethers } from 'ethers';
 //import { requireAuth } from "./auth";
 
@@ -210,6 +211,10 @@ export class Routes {
             "/:agentId/bnb_query",
             this.handleBnbQuery.bind(this)
         );
+        app.get(
+            "/:agentId/arena_query",
+            this.handleArenaQuery.bind(this)
+        );
         app.post(
             "/:agentId/twitter_profile_search",
             this.handleTwitterProfileSearch.bind(this)
@@ -292,6 +297,7 @@ export class Routes {
 
             const userProfile = userManager.createDefaultProfile(userId, gmail);
             await userManager.saveUserData(userProfile);
+
             return {
                 profile: userProfile,
             };
@@ -487,7 +493,7 @@ export class Routes {
                     </head>
                     <body>
                         <div style="text-align: center; font-size: 20px; font-weight: bold;">
-                            <br>Login Success! Redirecting...<br>
+                            <br>Auth Success! Redirecting...<br>
                             <script type="text/javascript">
                                 function closeWindow() {
                                     console.log('closeWindow');
@@ -614,6 +620,52 @@ export class Routes {
         }
     }
 
+    async handleArenaQuery(req: express.Request, res: express.Response) {
+        const kol = typeof req.query.username === 'string' ? req.query.username : '';
+        const kolname = kol.trim();
+        if (!kolname) {
+            throw new ApiError(533, "kolname is blank");
+        }
+        console.log("handleArenaQuery, kolname: " + kolname);
+        const runtime = await this.authUtils.getRuntime(req.params.agentId);
+        let userId = "blank";
+        twEventCenter.emit("MSG_ARENA_QUERY", kolname, userId);
+        let anaObj: ArenaAnalysisObj = null;
+
+        for (let i = 0; i < 10; i++) {
+            await this.sleep(1000);
+            const cached = await runtime.cacheManager.get(KEY_ARENA_CACHE_STR + kolname);
+            // console.log("handleArenaQuery, cached: " + cached);
+            if (cached && typeof cached === 'string') {
+                try {
+                    anaObj = JSON.parse(cached);
+                    if (anaObj) {
+                        if (Date.now() - anaObj.timestamp > 3000) {
+                            continue;
+                        } else {
+                            break;
+                        }
+                    }
+                } catch (error) {
+                    console.error('JSON parse failed: ', error);
+                }
+            }
+        }
+
+        if (anaObj && anaObj.coin_analysis && anaObj.coin_prediction) {
+            res.json({
+                coin_analysis: anaObj.coin_analysis,
+                coin_prediction: anaObj.coin_prediction,
+            });
+        }
+        else {
+            res.json({
+                res: false,
+                reason: "try again",
+            });
+        }
+    }
+
     async handleTwitterProfileSearch(
         req: express.Request,
         res: express.Response
@@ -653,9 +705,6 @@ export class Routes {
                                 username: item?.username,
                                 name: item?.name,
                                 avatar: item?.avatar,
-                                //avatar: "https://pbs.twimg.com/profile_images/898967039301349377/bLmMDwtf.jpg",
-                                //avatar: "https://abs.twimg.com/sticky/default_profile_images/default_profile.png",
-                                //avatar: "https://pbs.twimg.com/profile_images/1809130917350494209/Q_WjcqLz.jpg";
                             };
 
                             if (item?.username) {
@@ -1152,6 +1201,18 @@ export class Routes {
                             signature,
                             data: "Sol-SPL reward processed",
                         });
+                        
+                        // Confirm the transction
+                        /*const connection = new Connection(
+                            clusterApiUrl("mainnet-beta"),
+                            "confirmed"
+                        );
+                        const signature = await sendAndConfirmTransaction(
+                            connection,
+                            transaction,
+                            [settings.SOL_SPL_OWNER_PUBKEY]
+                        );
+                        return { signature };*/
                     } catch (error) {
                         if (error instanceof SplInvalidPublicKeyError) {
                             throw new ApiError(400, error.message);
@@ -1182,11 +1243,7 @@ export class Routes {
                             transaction,
                             [settings.SOL_OWNER_PUBKEY]
                         );
-                        return res.json({
-                            success: true,
-                            signature,
-                            data: "Sol reward processed",
-                        });
+                        return { signature };
                     } catch (error) {
                         if (error instanceof InvalidPublicKeyError) {
                             throw new ApiError(400, error.message);
@@ -1209,11 +1266,7 @@ export class Routes {
                             mintPubkey: settings.SOL_SPL_OWNER_PUBKEY,
                             tokenAmount,
                         });
-                        return res.json({
-                            success: true,
-                            transaction,
-                            data: "Sol-Agent-Kit reward processed",
-                        });
+                        return { transaction };
                     } catch (error) {
                         if (error instanceof SplInvalidPublicKeyError) {
                             throw new ApiError(400, error.message);
