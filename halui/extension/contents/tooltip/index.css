@@ -1,0 +1,23 @@
+.hal-tooltip-container {
+  display: flex;
+  height: 34px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: white;
+}
+
+.hal-tooltip-container .hal-tooltip-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 50px;
+  cursor: pointer;
+  font-size: 12px;
+  background: white;
+  transition: all 0.2s;
+}
+
+.hal-tooltip-item:hover {
+  background: #f5f5f5;
+}
