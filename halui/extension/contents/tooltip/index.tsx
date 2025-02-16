@@ -20,22 +20,19 @@ export const getStyle = () => {
   return style
 }
 
-// 缓存样式避免重复插入
-let styleElement: HTMLStyleElement | null = null
-
 const TextSelectionPopup = () => {
   const [selectedText, setSelectedText] = useState("")
   const [isPopupVisible, setIsPopupVisible] = useState(false)
-  const popupRef = useRef<HTMLDivElement>(null) // 新增 ref
+  const popupRef = useRef<HTMLDivElement>(null) // Add ref
 
-  // Floating UI 配置
+  // Floating UI configuration
   const { x, y, refs, strategy } = useFloating({
     placement: "bottom",
     whileElementsMounted: autoUpdate,
     middleware: [offset(10), flip(), shift()]
   })
 
-  // 处理复制操作（使用 useCallback 优化）
+  // Handle copy operation (optimized using useCallback)
   const handleCopy = useCallback(
     async (event: React.MouseEvent) => {
       event.stopPropagation()
@@ -43,7 +40,7 @@ const TextSelectionPopup = () => {
         await navigator.clipboard.writeText(selectedText)
         alert(`Copied: ${selectedText}`)
       } catch {
-        // 兼容旧版浏览器
+        // Fallback for older browsers
         const textArea = document.createElement("textarea")
         textArea.value = selectedText
         document.body.appendChild(textArea)
@@ -57,10 +54,9 @@ const TextSelectionPopup = () => {
     [selectedText]
   )
 
-  // 处理鼠标事件（核心修复）
+  // Handle mouse events (core fix)
   const handleMouseUp = useCallback(
     (event: MouseEvent) => {
-      // 如果点击的是弹窗本身或内部元素，直接返回
       if (popupRef.current?.contains(event.target as Node)) {
         return
       }
@@ -83,7 +79,7 @@ const TextSelectionPopup = () => {
     [refs]
   )
 
-  // 事件监听和样式注入
+  // Event listeners and style injection
   useEffect(() => {
     document.addEventListener("mouseup", handleMouseUp)
     return () => document.removeEventListener("mouseup", handleMouseUp)
@@ -95,7 +91,7 @@ const TextSelectionPopup = () => {
     <div
       className="hal-tooltip-container"
       ref={(el) => {
-        popupRef.current = el // 绑定 ref
+        popupRef.current = el // Bind ref
         refs.setFloating(el)
       }}
       style={{
@@ -104,7 +100,7 @@ const TextSelectionPopup = () => {
         left: x ?? 0,
         zIndex: 9999
       }}
-      // 阻止所有内部事件冒泡
+      // Prevent all internal events from bubbling
       onMouseUp={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}>
       <div className="hal-tooltip-item" onClick={handleCopy}>
