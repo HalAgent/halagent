@@ -8,13 +8,20 @@ import {
 } from "@elizaos/plugin-data-enrich";
 import { ClientBase } from "./base";
 import { twEventCenter } from "./index";
-
+import fs from 'fs';
+import path from 'path';
 
 const TW_PROFILE_PREFIX: string = "FINDER_KEY_TW_PROFILE_PREFIX_";
+interface KolItem {
+    kolname: string;
+    kollabel: string;
+    kollabel_en: string;
+};
 
 export class TwitterFinderClient {
     client: ClientBase;
     runtime: IAgentRuntime;
+    kolList: KolItem[];
     twitterKolUsers: string[] = [
         '0xRodney',
         'Buddy',
@@ -179,6 +186,13 @@ export class TwitterFinderClient {
             twEventCenter.emit('MSG_SEARCH_TWITTER_PROFILE_RESP', profiles);
         });
 
+        twEventCenter.on('MSG_TWITTER_LABELS', async (data) => {
+            // console.log('Received message:', data);
+            const xuserlables = await this.getlabels(data?.xuserlist);
+            // Send back
+            twEventCenter.emit('MSG_TWITTER_LABELS_RESP', xuserlables);
+        });
+
         twEventCenter.on('MSG_KOLS_TWITTER_PROFILE', async () => {
             // console.log('Received message userkols:', JSON.stringify(data.kols));
             let searchResult = [];
@@ -199,6 +213,41 @@ export class TwitterFinderClient {
     async getRandomUsers(users: string[], count: number): Promise<string[]> {
         const shuffled = [...users].sort(() => 0.5 - Math.random());
         return shuffled.slice(0, count);
+    }
+    
+    async getlabels(xnamelist: string[]) {
+        try {
+            if (!this.kolList) {
+                const rawData =  fs.readFileSync(path.join('xuserlabels.json'), 'utf8');
+                this.kolList = JSON.parse(rawData);
+            }
+
+            // this.kolList.forEach((kol, index) => {
+            //     console.log(`KOL ${index + 1}:`);
+            //     console.log(`Name: ${kol.kolname}`);
+            //     console.log(`Label (CN): ${kol.kollabel}`);
+            //     console.log(`Label (EN): ${kol.kollabel_en}\n`);
+            // });
+
+            const kolDict = this.kolList.reduce((acc, kol) => {
+                acc[kol.kolname] = kol;
+                return acc;
+            }, {});
+
+            const result = {};
+
+            for (const name of xnamelist) {
+                if (Object.prototype.hasOwnProperty.call(kolDict, name)) {
+                    result[name] = kolDict[name];
+                } else {
+                    result[name] = {"kolname": name, "kollabel": name, "kollabel_en": name};
+                }
+            }
+            return result;
+        } catch (err) {
+            console.error('getlabels:', err.message);
+        }
+        return null;
     }
     async searchProfileKols(username: string, count: number) {
         let searchResult = [];
