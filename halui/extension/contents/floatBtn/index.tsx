@@ -2,7 +2,7 @@ import cssText from "data-text:~/contents/floatBtn/index.css"
 import DocumentImg from "raw:~/assets/Document.svg"
 import HAlphaImg from "raw:~/assets/HAlpha.svg"
 import LogoImg from "raw:~/assets/icon.png"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 export const config: PlasmoCSConfig = {
   matches: ["<all_urls>"]

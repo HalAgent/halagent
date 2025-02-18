@@ -22,3 +22,71 @@
 .hal-tooltip-item:hover {
   background: #f5f5f5;
 }
+
+.hal-tooltip-modal {
+  position: fixed;
+  max-height: 453px;
+  width: 416px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  border: 1px solid #eaebec;
+  background: #fff;
+}
+
+.hal-tooltip-modal-header {
+  cursor: move;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  height: 42px;
+  border-bottom: 1px solid #eaebec;
+}
+.hal-tooltip-modal-header-title {
+  margin: 0 10px;
+  flex: 1;
+  color: #111;
+  font-family: Geologica;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+.hal-tooltip-modal-header-icon {
+  width: 18px;
+  height: 18px;
+  margin-left: 10px;
+  cursor: pointer;
+  user-select: none;
+  color: #b9b9b9;
+}
+
+.hal-tooltip-modal-header-icon:hover{
+    color: #222;
+}
+.hal-tooltip-modal-header-icon:first-of-type {
+  margin-left: 0;
+}
+
+.hal-tooltip-modal-content {
+  padding: 20px;
+  max-height: 453px;
+  overflow-y: scroll;
+  color: #2b2b2b;
+  font-family: Geologica;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 300;
+  line-height: 20px;
+  overflow: auto;
+  border-bottom: 1px solid #eaebec;
+}
+
+.hal-tooltip-modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.hal-tooltip-modal-footer {
+  cursor: default;
+  justify-content: flex-end;
+}
