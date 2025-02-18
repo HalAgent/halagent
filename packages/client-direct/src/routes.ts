@@ -220,6 +220,10 @@ export class Routes {
             this.handleTwitterProfileSearch.bind(this)
         );
         app.post(
+            "/:agentId/twitter_labels",
+            this.handleTwitterLabels.bind(this)
+        );
+        app.post(
             "/:agentId/twitter_profile_kols",
             this.handleTwitterProfileKols.bind(this)
         );
@@ -754,6 +758,45 @@ export class Routes {
         });
     }
 
+    async handleTwitterLabels(
+        req: express.Request,
+        res: express.Response
+    ) {
+        return this.authUtils.withErrorHandling(req, res, async () => {
+            console.log("handleTwitterLabels");
+            if (!Array.isArray(req.body.xnamelist)) {
+                return res.status(400).json({ error: 'param not a array' });
+            }
+            const receivedStrings = req.body.xnamelist;
+
+            // receivedStrings.forEach((str, index) => {
+            //     console.log(`getlabels string:  ${index + 1}: ${str}`);
+            // });
+
+            // const runtime = await this.authUtils.getRuntime(req.params.agentId);
+
+            try {
+                let profilesOutput = [];
+                const promise = new Promise((resolve, reject) => {
+                    // Listen
+                    twEventCenter.on('MSG_TWITTER_LABELS_RESP', (data) => {
+                        //console.log('Received Resp message:', data);
+                        resolve(data);
+                    });
+
+                    twEventCenter.emit('MSG_TWITTER_LABELS', { xuserlist: receivedStrings });
+                });
+
+                // wait for result
+                profilesOutput = await promise;
+                return profilesOutput;
+            } catch (error) {
+                console.error("handleTwitterLabels error:", error);
+                return [];
+            }
+        });
+    }
+
     async handleTwitterProfileKols(
         req: express.Request,
         res: express.Response
@@ -1201,6 +1244,18 @@ export class Routes {
                             signature,
                             data: "Sol-SPL reward processed",
                         });
+                        
+                        // Confirm the transction
+                        /*const connection = new Connection(
+                            clusterApiUrl("mainnet-beta"),
+                            "confirmed"
+                        );
+                        const signature = await sendAndConfirmTransaction(
+                            connection,
+                            transaction,
+                            [settings.SOL_SPL_OWNER_PUBKEY]
+                        );
+                        return { signature };*/
                     } catch (error) {
                         if (error instanceof SplInvalidPublicKeyError) {
                             throw new ApiError(400, error.message);
@@ -1231,11 +1286,7 @@ export class Routes {
                             transaction,
                             [settings.SOL_OWNER_PUBKEY]
                         );
-                        return res.json({
-                            success: true,
-                            signature,
-                            data: "Sol reward processed",
-                        });
+                        return { signature };
                     } catch (error) {
                         if (error instanceof InvalidPublicKeyError) {
                             throw new ApiError(400, error.message);
@@ -1258,11 +1309,7 @@ export class Routes {
                             mintPubkey: settings.SOL_SPL_OWNER_PUBKEY,
                             tokenAmount,
                         });
-                        return res.json({
-                            success: true,
-                            transaction,
-                            data: "Sol-Agent-Kit reward processed",
-                        });
+                        return { transaction };
                     } catch (error) {
                         if (error instanceof SplInvalidPublicKeyError) {
                             throw new ApiError(400, error.message);
