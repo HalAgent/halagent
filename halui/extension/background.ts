@@ -8,10 +8,23 @@ chrome.action.onClicked.addListener((sender) => {
   openSidePanel(sender.windowId)
 })
 
-// 接收消息切换状态
 chrome.runtime.onMessage.addListener((message, sender) => {
+  console.warn(message)
   if (message.action === "open_side_panel") {
     openSidePanel(sender.tab.windowId)
+  } else if (message.action === "to_chat_form_content") {
+    if (!sidePanelOpen) {
+      openSidePanel(sender.tab.windowId)
+      setTimeout(() => {
+        chrome.runtime.sendMessage({
+          action: "to_chat_form_background"
+        })
+      }, 1000)
+    } else {
+      chrome.runtime.sendMessage({
+        action: "to_chat_form_background"
+      })
+    }
   }
 })
 

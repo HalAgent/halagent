@@ -83,6 +83,10 @@ const FloatBtn = () => {
       )
     } else {
       // to chat
+      chrome.runtime.sendMessage({
+        action: "to_chat_form_content",
+        data: null
+      })
     }
   }
   return (

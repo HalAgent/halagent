@@ -14,6 +14,7 @@ import ImgChat from '@/assets/images/tab/chat.svg';
 import AppPriviyProvider from './privy';
 import { ToastContainer } from 'react-toastify';
 import { useUserStore } from '@/stores/useUserStore';
+import UseExtension from '@/hooks/useExtension';
 
 const isMobile = CheckIsMobile();
 const TabPage = [
@@ -25,6 +26,7 @@ const TabPage = [
 ];
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
+  UseExtension();
   const { userProfile } = useUserStore();
   const [showTab, setShowTab] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
