@@ -52,23 +52,46 @@ const Hosting = () => {
     e?.preventDefault();
     setIsModalOpen(false);
   };
+  async function set_agent_cfg(enabled: boolean, interval: string, imitate: string) {
+    try {
+      const userId = useUserStore.getState().getUserId();
+      if (!userId) {
+        throw new Error('User not logged in');
+      }
 
+      const profileUpd = {
+        agentCfg: { enabled, interval, imitate },
+      };
+
+      if (UserProfile.userProfile) {
+        const oldP = UserProfile.userProfile; // JSON.parse(userProfile);
+        const updatedProfile = { ...oldP, ...profileUpd };
+        await authService.updateProfile(userId, updatedProfile);
+      }
+    } catch (err) {
+      console.log(err instanceof Error ? err.message : 'Failed to update profile');
+    }
+  }
   const handleSelectionChange = (event: React.MouseEvent<HTMLDivElement>, type: 'interval' | 'character') => {
     const target = event.target as HTMLElement;
     const value = target.innerText;
     if (type === 'interval') {
       setIntervalValue(value);
+      set_agent_cfg(enabled, value, character);
     } else if (type === 'character') {
       if (CHARACTER_OPTIONS.findIndex(item => item.text === value && !item.disabled) !== -1) {
         setCharacter(value);
+        set_agent_cfg(enabled, intervalValue, value);
       }
     }
   };
   const enabledChange = () => {
     if (enabled) {
       handleTwitterAuthRevoke();
+      set_agent_cfg(false, '', '');
     } else {
       handleTwitterAuth();
+      set_agent_cfg(true, intervalValue, character);
     }
   };
 
