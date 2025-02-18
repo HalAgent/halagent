@@ -220,4 +220,35 @@ import {
 
         {/* Text selection popup */}
         {isPopupVisible && (
+          <div
+            className="hal-tooltip-container"
+            ref={(el) => {
+              popupRef.current = el
+              refs.setFloating(el)
+            }}
+            style={{
+              position: strategy,
+              top: y ?? 0,
+              left: x ?? 0,
+              zIndex: 9999
+            }}
+            // Prevent event bubbling inside the popup
+            onMouseUp={(e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}>
+            <div className="hal-tooltip-item" onClick={handleKol}>
+              Kol
+            </div>
+            <div
+              className="hal-tooltip-item"
+              onClick={handleCopy}
+              role="button"
+              tabIndex={0}>
+              Copy
+            </div>
+          </div>
+        )}
+      </>
+    )
+  }
 
+  export default TextSelectionPopup
