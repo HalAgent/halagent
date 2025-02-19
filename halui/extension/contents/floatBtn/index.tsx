@@ -2,7 +2,7 @@ import cssText from "data-text:~/contents/floatBtn/index.css"
 import DocumentImg from "raw:~/assets/Document.svg"
 import HAlphaImg from "raw:~/assets/HAlpha.svg"
 import LogoImg from "raw:~/assets/icon.png"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export const config: PlasmoCSConfig = {
   matches: ["<all_urls>"]
@@ -57,13 +57,15 @@ const FloatBtn = () => {
       document.removeEventListener("mouseup", handleMouseUp)
       document.body.style.cursor = "default"
 
-      setButtons((prev) =>
-        prev.map((btn) => ({
+      setButtons((prev) => {
+        const btns = prev.map((btn) => ({
           ...btn,
           isDragging: false,
           isLocked: true
         }))
-      )
+        chrome.storage.local.set({ "float-btn": JSON.stringify(btns) })
+        return btns
+      })
     }
 
     document.addEventListener("mousemove", handleMouseMove)
@@ -75,7 +77,6 @@ const FloatBtn = () => {
   }
 
   const handlerClick = (index: number) => {
-    console.warn(index)
     if (index === 0) {
       chrome.runtime.sendMessage({ action: "open_side_panel" })
       setButtons((prev) =>
@@ -89,6 +90,14 @@ const FloatBtn = () => {
       })
     }
   }
+
+  useEffect(() => {
+    chrome.storage.local.get("float-btn").then((res) => {
+      const data = JSON.parse(res["float-btn"]) || initDat
+      setButtons(data)
+    })
+  }, [])
+  
   return (
     <div>
       {buttons.map((button, index) => (
@@ -98,7 +107,9 @@ const FloatBtn = () => {
           style={{
             bottom: `${button.bottom}px`,
             right: button.isDragging ? "0" : "-44px",
-            transition: button.isDragging ? "none" : "all 0.3s"
+            transition: buttons.find((button) => button.isDragging)
+              ? "none"
+              : "all 0.3s"
           }}
           onMouseDown={(e) => handleMouseDown(e, index)}
           onClick={() => {

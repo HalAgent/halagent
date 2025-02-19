@@ -9,7 +9,6 @@ chrome.action.onClicked.addListener((sender) => {
 })
 
 chrome.runtime.onMessage.addListener((message, sender) => {
-  console.warn(message)
   if (message.action === "open_side_panel") {
     openSidePanel(sender.tab.windowId)
   } else if (message.action === "to_chat_form_content") {
@@ -31,7 +30,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
 //
 
 const openSidePanel = (windowId: number) => {
-  if (sidePanelOpen) {
+  if (sidePanelOpen) { // close
     chrome.sidePanel
       .setOptions({
         enabled: false,
@@ -42,7 +41,7 @@ const openSidePanel = (windowId: number) => {
           .setOptions({ enabled: true, path: "sidepanel.html" })
           .then(() => {})
       })
-  } else {
+  } else { // open
     chrome.sidePanel.open({ windowId }).then(() => {
       console.log("Side panel opened")
     })

@@ -56,7 +56,7 @@ function IndexSidePanel() {
         iframeRef.current?.contentWindow?.postMessage(message, "*")
       })
 
-      messageQueue.current = [] 
+      messageQueue.current = []
       setTimeout(() => {
         setLoading(false)
       }, 500)
@@ -70,7 +70,7 @@ function IndexSidePanel() {
           <div className="hal-page-loading-spinner" />
         </div>
       )}
-      <iframe ref={iframeRef} src="http://localhost:5173/"></iframe>
+      <iframe ref={iframeRef} src="https://halpha.halagent.org"></iframe>
     </div>
   )
 }

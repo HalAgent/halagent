@@ -9,10 +9,34 @@ export const config: PlasmoCSConfig = {
 const XKolList = () => {
   const [container, setContainer] = useState<HTMLElement | null>(null)
   const [path, setPath] = useState<string>(window.location.pathname)
+  const [kolList, setKolList] = useState<string[]>([])
 
   useEffect(() => {
     console.warn("XKolList 当前路径:", path)
-
+    if (path) {
+      fetch(
+        "https://host.halagent.org/dev/91edd400-9c4a-0eb5-80ce-9d32973f2c49/twitter_labels",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            xnamelist: [
+              window.location.pathname.substring(
+                1,
+                window.location.pathname.length
+              )
+            ]
+          })
+        }
+      ).then((res) => {
+        res.json().then((data) => {
+          console.warn(data)
+          setKolList(data.kolList)
+        })
+      })
+    }
     const findContainer = () => {
       const dom = document.querySelector(
         '[data-testid="UserName"]'
@@ -97,7 +121,7 @@ const XKolList = () => {
         <div className="hal-kol">
           <div className="hal-kol-header">Follow KOLs (592).</div>
           <div className="hal-kol-content">
-            {[...Array(4)].map((_, index) => (
+            {kolList.map((_, index) => (
               <div key={index} className="hal-kol-content-item">
                 <div className="hal-kol-content-item-avatar"></div>
                 <div className="hal-kol-content-item-name">SOL</div>
