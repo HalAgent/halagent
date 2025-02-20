@@ -87,11 +87,10 @@ const Hosting = () => {
   };
   const enabledChange = () => {
     if (enabled) {
-      handleTwitterAuthRevoke();
+    //   handleTwitterAuthRevoke();
       set_agent_cfg(false, '', '');
     } else {
       handleTwitterAuth();
-      set_agent_cfg(true, intervalValue, character);
     }
   };
 
@@ -107,6 +106,7 @@ const Hosting = () => {
         authService.twitterOAuth.createAuthWindow(url);
         // 4. Wait for auth result
         await authService.twitterOAuth.listenForAuthMessage();
+        set_agent_cfg(true, intervalValue, character);
         const userId = useUserStore.getState().getUserId();
         if (userId) {
           await authService.getProfile(userId);
@@ -139,7 +139,7 @@ const Hosting = () => {
 
   useEffect(() => {
     console.warn('UserProfile', UserProfile);
-    if (UserProfile.userProfile?.tweetProfile?.accessToken) {
+    if (UserProfile.userProfile?.agentCfg?.enabled) {
       setEnabled(true);
     } else {
       setEnabled(false);
