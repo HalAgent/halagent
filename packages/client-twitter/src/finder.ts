@@ -226,7 +226,6 @@ export class TwitterFinderClient {
             //     console.log(`KOL ${index + 1}:`);
             //     console.log(`Name: ${kol.kolname}`);
             //     console.log(`Label (CN): ${kol.kollabel}`);
-            //     console.log(`Label (EN): ${kol.kollabel_en}\n`);
             // });
 
             const kolDict = this.kolList.reduce((acc, kol) => {
@@ -240,7 +239,7 @@ export class TwitterFinderClient {
                 if (Object.prototype.hasOwnProperty.call(kolDict, name)) {
                     result[name] = kolDict[name];
                 } else {
-                    result[name] = {"kolname": name, "kollabel": name, "kollabel_en": name};
+                    result[name] = {"kolname": name, "kollabel": name};
                 }
             }
             return result;
