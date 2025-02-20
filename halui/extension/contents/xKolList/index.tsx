@@ -33,7 +33,14 @@ const XKolList = () => {
       ).then((res) => {
         res.json().then((data) => {
           console.warn(data)
-          setKolList(data.kolList)
+          setKolList([
+            data.data[
+              window.location.pathname.substring(
+                1,
+                window.location.pathname.length
+              )
+            ].kollabel
+          ])
         })
       })
     }
@@ -119,12 +126,12 @@ const XKolList = () => {
   return container
     ? createPortal(
         <div className="hal-kol">
-          <div className="hal-kol-header">Follow KOLs (592).</div>
+          <div className="hal-kol-header">Follow KOLs ({kolList.length}).</div>
           <div className="hal-kol-content">
             {kolList.map((_, index) => (
               <div key={index} className="hal-kol-content-item">
                 <div className="hal-kol-content-item-avatar"></div>
-                <div className="hal-kol-content-item-name">SOL</div>
+                <div className="hal-kol-content-item-name">{_}</div>
               </div>
             ))}
           </div>

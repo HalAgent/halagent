@@ -31,6 +31,16 @@
     "permissions": [
       "scripting",
       "storage"
+    ],
+    "web_accessible_resources": [
+      {
+        "resources": [
+          "assets/*.ttf"
+        ],
+        "matches": [
+          "<all_urls>"
+        ]
+      }
     ]
   }
 }

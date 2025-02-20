@@ -1,3 +1,4 @@
+import { text } from "stream/consumers"
 import {
   autoUpdate,
   flip,
@@ -12,10 +13,15 @@ import CloseImg from "raw:~/assets/Close.svg"
 import CopyImg from "raw:~/assets/Copy.svg"
 import FixedImg from "raw:~/assets/Fixed.svg"
 import LogoImg from "raw:~/assets/icon.png"
-import RefreshImg from "raw:~/assets/refresh.svg"
+// import RefreshImg from "raw:~/assets/refresh.svg"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 import type { PlasmoCSConfig } from "~node_modules/plasmo/dist/type"
+
+const GeologicaLightUrl = chrome.runtime.getURL("assets/Geologica-Light.ttf")
+const GeologicaRegularUrl = chrome.runtime.getURL(
+  "assets/Geologica-Regular.ttf"
+)
 
 export const config: PlasmoCSConfig = {
   matches: ["<all_urls>"]
@@ -31,6 +37,11 @@ const TextSelectionPopup = () => {
   const [selectedText, setSelectedText] = useState("")
   const [isPopupVisible, setIsPopupVisible] = useState(false)
   const [kolModal, setKolModal] = useState(false)
+  const [kolModalLoading, setKolModalLoading] = useState(false)
+  const [kolModalData, setKolModalData] = useState({
+    title: "",
+    text: ""
+  })
   // Used to track modal position and its positioning style
   const [kolModalMap, setKolModalMap] = useState<{
     position: "absolute" | "fixed"
@@ -74,13 +85,35 @@ const TextSelectionPopup = () => {
 
   // Display modal and set the current popup position as the initial position
   const handleKol = () => {
-    setIsPopupVisible(false)
-    setKolModalMap({
-      position: "absolute", // Initial positioning style, can toggle to Fixed
-      x: x ?? 0,
-      y: y ?? 0
-    })
-    setKolModal(true)
+    if (kolModalLoading) return
+    setKolModalLoading(true)
+    fetch(
+      "https://host.halagent.org/dev/91edd400-9c4a-0eb5-80ce-9d32973f2c49/bnb_query?coinsymbol=" +
+        selectedText,
+      {
+        method: "get"
+      }
+    )
+      .then(async (res) => {
+        const result = await res.json()
+        setKolModalData({
+          title: `${selectedText} Analysis`,
+          text: `${result.coin_analysis}\n\n${selectedText} Prediction\n${result.coin_prediction}`
+        })
+        console.warn(result)
+        setIsPopupVisible(false)
+        setKolModalMap({
+          position: "absolute", // Initial positioning style, can toggle to Fixed
+          x: x ?? 0,
+          y: y ?? 0
+        })
+        setKolModal(true)
+        setKolModalLoading(false)
+      })
+      .catch((err) => {
+        console.warn(err)
+        setKolModalLoading(false)
+      })
   }
 
   // Listen to mouseup event and show popup when text is selected
@@ -143,6 +176,25 @@ const TextSelectionPopup = () => {
     document.addEventListener("mouseup", handleDragEnd)
   }
 
+  useEffect(() => {
+    const style = document.createElement("style")
+    style.innerHTML = `
+      @font-face {
+        font-family: 'GeologicaRegular';
+        src: url('${GeologicaRegularUrl}') format('woff2');
+        font-weight: normal;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: 'Geologica';
+        src: url('${GeologicaLightUrl}') format('woff2');
+        font-weight: 300;
+        font-style: normal;
+      }
+    `
+    document.head.appendChild(style)
+  }, [])
+
   return (
     <>
       {/* Modal window */}
@@ -166,7 +218,9 @@ const TextSelectionPopup = () => {
               className="hal-tooltip-modal-header-icon"
               style={{ color: "#222" }}
             />
-            <div className="hal-tooltip-modal-header-title">Token Analysis</div>
+            <div className="hal-tooltip-modal-header-title">
+              {kolModalData.title}
+            </div>
             <img
               src={FixedImg}
               className="hal-tooltip-modal-header-icon"
@@ -190,21 +244,7 @@ const TextSelectionPopup = () => {
           </div>
 
           {/* Modal content */}
-          <div className="hal-tooltip-modal-content">
-            SHIB Analysis – The current price trend of SHIB reflects a
-            combination of meme-driven speculation and community sentiment.
-            Recent tweets indicate a strong belief in SHIB's potential to
-            revolutionize the meme coin market. However, Kline data shows
-            fluctuating trading volumes and price ranges, suggesting volatility.
-            Despite low engagement metrics on Twitter, the community remains
-            optimistic, hinting at potential upward momentum as new catalysts
-            emerge. SHIB Prediction – Looking ahead, SHIB may experience a
-            bullish trend if community enthusiasm translates into increased
-            trading activity. If the price maintains above key support levels,
-            we could see a gradual rise. However, caution is advised due to
-            inherent market volatility, and investors should monitor broader
-            market trends and sentiment closely.
-          </div>
+          <div className="hal-tooltip-modal-content">{kolModalData.text}</div>
 
           {/* Modal footer with action buttons */}
           <div className="hal-tooltip-modal-footer hal-tooltip-modal-header">
@@ -213,7 +253,7 @@ const TextSelectionPopup = () => {
               className="hal-tooltip-modal-header-icon"
               onClick={handleCopy}
             />
-            <img src={RefreshImg} className="hal-tooltip-modal-header-icon" />
+            {/* <img src={RefreshImg} className="hal-tooltip-modal-header-icon" /> */}
             <img src={BookmarkImg} className="hal-tooltip-modal-header-icon" />
           </div>
         </div>
@@ -237,7 +277,7 @@ const TextSelectionPopup = () => {
           onMouseUp={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}>
           <div className="hal-tooltip-item" onClick={handleKol}>
-            Token Analysis
+            Token Analysis {kolModalLoading && '...'}
           </div>
           <img
             className="hal-tooltip-item-img"

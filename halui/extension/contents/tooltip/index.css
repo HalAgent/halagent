@@ -1,3 +1,14 @@
+@font-face {
+  font-family: "GeologicaRegular";
+  src: url("../../assets/Geologica-Regular.ttf")
+    format("ttf");
+}
+@font-face {
+  font-family: "Geologica";
+  src: url("../../assets/Geologica-Light.ttf")
+    format("ttf");
+}
+
 .hal-tooltip-container {
   display: flex;
   align-items: center;
@@ -6,34 +17,33 @@
   padding: 0 9px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  background-color: #FFF;
+  background-color: #fff;
 }
 
 .hal-tooltip-container .hal-tooltip-item {
-    position: relative;
+  position: relative;
   min-width: 50px;
   font-size: 12px;
   color: #222;
   white-space: nowrap;
 }
 .hal-tooltip-container .hal-tooltip-item::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    right: -6px;
-    transform: translateY(-50%);
-    height: 14px;
-    width: 1px;
-    background: #E5E5E5;
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -6px;
+  transform: translateY(-50%);
+  height: 14px;
+  width: 1px;
+  background: #e5e5e5;
 }
 
 .hal-tooltip-item-img {
-    margin-left: 13px;
+  margin-left: 13px;
   flex-shrink: 0;
   width: 18px;
   height: 18px;
 }
-
 
 .hal-tooltip-modal {
   position: fixed;
@@ -58,7 +68,7 @@
   margin: 0 10px;
   flex: 1;
   color: #111;
-  font-family: Geologica;
+  font-family: "GeologicaRegular";
   font-size: 13px;
   font-style: normal;
   font-weight: 400;
@@ -85,7 +95,7 @@
   max-height: 453px;
   overflow-y: scroll;
   color: #2b2b2b;
-  font-family: Geologica;
+  font-family: "Geologica";
   font-size: 12px;
   font-style: normal;
   font-weight: 300;
