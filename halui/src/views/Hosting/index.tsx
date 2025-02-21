@@ -87,7 +87,7 @@ const Hosting = () => {
   };
   const enabledChange = () => {
     if (enabled) {
-    //   handleTwitterAuthRevoke();
+      //   handleTwitterAuthRevoke();
       set_agent_cfg(false, '', '');
     } else {
       handleTwitterAuth();
@@ -106,10 +106,10 @@ const Hosting = () => {
         authService.twitterOAuth.createAuthWindow(url);
         // 4. Wait for auth result
         await authService.twitterOAuth.listenForAuthMessage();
-        set_agent_cfg(true, intervalValue, character);
         const userId = useUserStore.getState().getUserId();
         if (userId) {
           await authService.getProfile(userId);
+          set_agent_cfg(true, intervalValue, character);
         }
       } catch (err) {
         console.error('Twitter auth error:', err);

@@ -73,7 +73,7 @@ const Search = () => {
                   });
                 }}
               >
-                UnFollow
+                UnWatch
               </div>
             </div>
           );
@@ -103,7 +103,7 @@ const Search = () => {
                     handleClick(e, item);
                   }}
                 >
-                  {item.isWatched ? 'UnFollow' : 'Follow'}
+                  {item.isWatched ? 'UnWatch' : 'Watch'}
                 </div>
               </div>
             ))
