@@ -290,7 +290,13 @@ export class InferMessageProvider {
         }
 
         // settings.TW_KOL_LIST
-        const settingsList = JSON.parse(settings.TW_KOL_LIST);
+        let settingsList = [];
+        try {
+            settingsList = JSON.parse(settings.TW_KOL_LIST || '[]');
+        }
+        catch (error) {
+            console.log(error);
+        }
         if (Array.isArray(settingsList) && settingsList.length > 0) {
             return settingsList;
         }
