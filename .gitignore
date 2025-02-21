@@ -67,6 +67,8 @@ coverage
 .eslintcache
 
 agent/content
+agent/xuserlabels.json
+packages/plugin-data-enrich/data
 
 eliza.manifest
 eliza.manifest.sgx
