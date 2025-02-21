@@ -64,8 +64,10 @@ const Hosting = () => {
       };
 
       if (UserProfile.userProfile) {
-        const oldP = UserProfile.userProfile; // JSON.parse(userProfile);
+        const oldP = useUserStore.getState().userProfile; // JSON.parse(userProfile);
         const updatedProfile = { ...oldP, ...profileUpd };
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         await authService.updateProfile(userId, updatedProfile);
       }
     } catch (err) {
