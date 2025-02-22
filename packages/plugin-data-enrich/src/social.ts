@@ -89,9 +89,10 @@ export const socialProvider: Provider = {
 }
 
 const ABSTRACTOR_INSTRUCTION = `
-    Please summary the user information by the provided biography and post tweets.
+    Please summary the twitter account information by the provided biography and post tweets.
     The total words count should be between 20 and 30.
-    If the user is not related to web3 or crypto, just return "The user is not related to Web3".`;
+    The summary result should not contain the words 'user'/'account', use their original names instead.
+    If the account is not related to web3 or crypto, just return "The item is not related to Web3".`;
 
 const TW_ABSTRACTOR_PREFIX: string = "ABSTRACTOR_KEY_TW_PROFILE_PREFIX_";
 const TW_ABSTRACTOR_POST_COUNT = 20;
@@ -139,7 +140,7 @@ export class twitterDataProvider {
             for await (const tweet of tweets) {
                 posts.push(tweet);
             }
-            
+
             const prompt =`
                 The biography of ${username} is ${userBio}.\n
                 Here are some posts of ${username}:
@@ -159,7 +160,7 @@ export class twitterDataProvider {
             });
             //console.log(response);
             summary = response;
-            if (response && response.includes("The user is not related to Web3")) {
+            if (response && response.includes("The item is not related to Web3")) {
                 summary = "";
             }
         } catch (error) {

@@ -144,28 +144,44 @@ export class UserManager implements UserManageInterface {
 
     async getAllWatchList(): Promise<string[]> {
         let watchList = new Set<string>();
-        const defaultList = JSON.parse(settings.TW_KOL_LIST) || TW_KOL_1;
-        for (const kol of defaultList) {
-            watchList.add(kol);
-        }
-        const avoidList = JSON.parse(settings.TW_WATCHER_AVOID_LIST) || [];
-        // Get All ids
-        let idsStr = (await this.getCachedData(
-            UserManager.ALL_USER_IDS
-        )) as string;
-        let ids = new Set(JSON.parse(idsStr));
-        for (const userid of ids.keys()) {
-            let userProfile = await this.getCachedData<UserProfile>(
-                userid as string
-            );
-            if (userProfile && userProfile.twitterWatchList) {
-                for (const watchItem of userProfile.twitterWatchList) {
-                    if (avoidList.includes(watchItem.username)) {
-                        continue; // skip avoid
+        try {
+            let defaultList = [];
+            try {
+                defaultList = JSON.parse(settings.TW_KOL_LIST || '[]') || TW_KOL_1;
+            }
+            catch (error) {
+                console.log(error);
+            }
+            for (const kol of defaultList) {
+                watchList.add(kol);
+            }
+            let avoidList = [];
+            try {
+                avoidList = JSON.parse(settings.TW_WATCHER_AVOID_LIST || '[]') || [];
+            }
+            catch (error) {
+                console.log(error);
+            }
+            // Get All ids
+            let idsStr = (await this.getCachedData(
+                UserManager.ALL_USER_IDS
+            )) as string;
+            let ids = new Set(JSON.parse(idsStr));
+            for (const userid of ids.keys()) {
+                let userProfile = await this.getCachedData<UserProfile>(
+                    userid as string
+                );
+                if (userProfile && userProfile.twitterWatchList) {
+                    for (const watchItem of userProfile.twitterWatchList) {
+                        if (avoidList.includes(watchItem.username)) {
+                            continue; // skip avoid
+                        }
+                        watchList.add(watchItem.username);
                     }
-                    watchList.add(watchItem.username);
                 }
             }
+        } catch (error) {
+            console.error(error);
         }
         console.log(watchList);
         return Array.from(watchList);
