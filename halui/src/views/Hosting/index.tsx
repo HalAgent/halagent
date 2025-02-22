@@ -96,9 +96,11 @@ const Hosting = () => {
     }
   };
 
-  const handleTwitterAuth = () => {
+  const handleTwitterAuth = async () => {
     if (enabled) return;
-    setTimeout(async () => {
+    if (UserProfile.userProfile?.tweetProfile?.username) {
+      set_agent_cfg(true, intervalValue, character);
+    } else {
       try {
         // 1. Get URL
         const { url, state } = await authService.twitterOAuth.getAuthUrl();
@@ -116,19 +118,19 @@ const Hosting = () => {
       } catch (err) {
         console.error('Twitter auth error:', err);
       }
-    }, 500);
-  };
-  const handleTwitterAuthRevoke = async (e?: React.MouseEvent) => {
-    e?.preventDefault();
-    try {
-      UserProfile.updateProfile({
-        ...UserProfile.userProfile,
-        tweetProfile: undefined,
-      });
-    } catch (err) {
-      console.error('Twitter revoke error:', err);
     }
   };
+//   const handleTwitterAuthRevoke = async (e?: React.MouseEvent) => {
+//     e?.preventDefault();
+//     try {
+//       UserProfile.updateProfile({
+//         ...UserProfile.userProfile,
+//         tweetProfile: undefined,
+//       });
+//     } catch (err) {
+//       console.error('Twitter revoke error:', err);
+//     }
+//   };
   useEffect(() => {
     const timer = setInterval(() => {
       setMessage(MessageList[Math.floor(Math.random() * MessageList.length)]);
