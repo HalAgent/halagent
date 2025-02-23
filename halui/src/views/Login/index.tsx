@@ -1,11 +1,9 @@
 import './index.less';
 import Role from '@/assets/images/login/role.gif';
-import LoginGoogle from '@/assets/images/login/login-google.svg';
 import LoginGuest from '@/assets/images/login/login-guest.svg';
 import Twitter from '@/assets/icons/Twitter.png';
 import Website from '@/assets/icons/Website.png';
 import DexScreener from '@/assets/icons/DexScreener.png';
-import { useLogin, usePrivy } from '@privy-io/react-auth';
 import { authService } from '@/services/auth';
 import { useNavigate } from 'react-router-dom';
 import { storage } from '@/utils/storage';
@@ -16,21 +14,8 @@ import GoogleLoginComponent from './GoogleLoginComponent';
 const Login = () => {
   const navigate = useNavigate();
   const { setUserProfile } = useUserStore();
-  const { getAccessToken } = usePrivy();
 
-  const { login } = useLogin({
-    onComplete: async params => {
-      console.warn(params);
-      if (params?.user?.id) {
-        const token = await getAccessToken();
-        if (token) {
-          storage.setToken(token);
-        }
-        await authService.login(params.user.id, params.user?.google?.email as string);
-        navigate('/pick');
-      }
-    },
-  });
+
   function generateGuestName() {
     const timestamp = Date.now();
     const randomNum = Math.floor(Math.random() * 10000);
@@ -45,14 +30,6 @@ const Login = () => {
     const response = await authService.guestLogin(credentials);
     console.log('guest auth, res: ' + response);
     navigate('/pick');
-  };
-
-  const loginClick = () => {
-    if (window.top !== window.self) {
-      window.open(`/popup-login`, 'popup', 'width=600,height=600,status=yes,scrollbars=yes');
-    } else {
-      login();
-    }
   };
 
   // popup login handler
@@ -96,7 +73,6 @@ const Login = () => {
       <div className="login-title">
         YOUR DATA,<br></br> YOUR AGENTS, <br></br>YOUR POWER.
       </div>
-      {/* <img className="login-google" src={LoginGoogle} onClick={loginClick}></img> */}
       <GoogleLoginComponent />
 
       <div className="login-or">or</div>
