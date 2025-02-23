@@ -32,7 +32,6 @@ import { transferEthToken } from "../../plugin-data-enrich/src/eth";
 import { transferSui } from "../../plugin-data-enrich/src/sui";
 import { transferStarknetToken } from "../../plugin-data-enrich/src/starknet";
 import { MemoController } from "./memo";
-import { requireAuth } from "./auth";
 import { CoinAnalysisObj, KEY_BNB_CACHE_STR } from "../../client-twitter/src/sighter";
 import { ArenaAnalysisObj, KEY_ARENA_CACHE_STR } from "../../client-twitter/src/arena";
 //import { ethers } from 'ethers';
@@ -244,18 +243,18 @@ export class Routes {
         app.post("/:agentId/chat", this.handleChat.bind(this));
         const memoController = new MemoController(this.client);
         app.get(
-            "/:agentId/memo",
-            requireAuth,
+            "/:agentId/memo_get",
+            // requireAuth,
             memoController.handleGetMemoList.bind(memoController)
         );
         app.post(
-            "/:agentId/memo",
-            requireAuth,
+            "/:agentId/memo_add",
+            // requireAuth,
             memoController.handleAddMemo.bind(memoController)
         );
-        app.delete(
-            "/:agentId/memo",
-            requireAuth,
+        app.post(
+            "/:agentId/memo_delete",
+            // requireAuth,
             memoController.handleDeleteMomo.bind(memoController)
         );
         app.post("/:agentId/gain_rewards", this.handleGainRewards.bind(this));
@@ -980,7 +979,7 @@ export class Routes {
             await userManager.updateProfile(updatedProfile);
 
             if (needSending) {
-                twEventCenter.emit("MSG_TWITTER_ENABLE_AUTO_SEND");                
+                twEventCenter.emit("MSG_TWITTER_ENABLE_AUTO_SEND");
             }
 
             return res.json({
@@ -1249,7 +1248,7 @@ export class Routes {
                             signature,
                             data: "Sol-SPL reward processed",
                         });
-                        
+
                         // Confirm the transction
                         /*const connection = new Connection(
                             clusterApiUrl("mainnet-beta"),
