@@ -3,6 +3,8 @@ import Layout from './layout';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import 'virtual:uno.css';
 import { Suspense, lazy } from 'react';
+import GoogleLoginComponent from './views/Login/GoogleLoginComponent';
+
 const Hosting = lazy(() => import('./views/Hosting'));
 const Login = lazy(() => import('./views/Login'));
 const Pick = lazy(() => import('./views/Pick'));
@@ -27,6 +29,7 @@ function App() {
             <Route path="/search" element={<Search />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/popup-login" element={<LoginPopup />} />
+            <Route path="/oauth2callback" element={<GoogleLoginComponent />} />
           </Routes>
         </Suspense>
       </Layout>

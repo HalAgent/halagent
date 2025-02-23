@@ -1,3 +1,4 @@
+import { useUserStore } from '@/stores/useUserStore';
 import { Memo } from '../types/memo';
 import api from './axios';
 
@@ -23,7 +24,10 @@ class MemoApi {
     }
 
     try {
-      const response = await api.get(`/memo`);
+      const userId = useUserStore.getState().getUserId();
+      const response = await api.get(`/memo_get`,{
+        params: { userId }
+      });
 
       const data: Memo[] = response.data;
 
@@ -41,7 +45,8 @@ class MemoApi {
    */
   async addMemo(content: string) {
     try {
-      const response = await api.post(`/memo`, { content });
+      const userId = useUserStore.getState().getUserId();
+      const response = await api.post(`/memo_add`, { content, userId });
       return response.data;
     } catch (error) {
       console.error('Add Memo error:', error);
@@ -51,7 +56,8 @@ class MemoApi {
 
   async deleteMomo(ids: string[]): Promise<string> {
     try {
-      const response = await api.delete(`/memo`, { data: ids });
+      const userId = useUserStore.getState().getUserId();
+      const response = await api.post(`/memo_delete`, {ids, userId});
       return response.data;
     } catch (error) {
       console.error('Delete Memo error:', error);

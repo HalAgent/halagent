@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { storage } from '@/utils/storage';
 import { useEffect } from 'react';
 import { useUserStore } from '@/stores/useUserStore';
+import GoogleLoginComponent from './GoogleLoginComponent';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -95,7 +96,9 @@ const Login = () => {
       <div className="login-title">
         YOUR DATA,<br></br> YOUR AGENTS, <br></br>YOUR POWER.
       </div>
-      <img className="login-google" src={LoginGoogle} onClick={loginClick}></img>
+      {/* <img className="login-google" src={LoginGoogle} onClick={loginClick}></img> */}
+      <GoogleLoginComponent />
+
       <div className="login-or">or</div>
       <img className="login-guest" src={LoginGuest} onClick={guestLogin}></img>
       <div className="hosting-content-popup-main-footer login-footer">
