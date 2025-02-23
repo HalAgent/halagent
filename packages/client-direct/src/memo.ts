@@ -5,7 +5,7 @@ export class MemoController {
     constructor(private client: DirectClient) {}
 
     async handleGetMemoList(req: express.Request, res: express.Response) {
-        const userId = res.locals.user.userId;
+        const userId = req.query.userId
         const runtime = this.getAgentId(req, res);
         if (runtime) {
             const memos =
@@ -15,25 +15,23 @@ export class MemoController {
     }
 
     async handleAddMemo(req: express.Request, res: express.Response) {
-        const userId = res.locals.user.userId;
         const runtime = this.getAgentId(req, res);
         if (runtime) {
-            const memos: any =
-                (await runtime.cacheManager.get(`${userId}-memos`)) ?? [];
             const memo = req.body;
-            memo.userId = userId;
+            const memos: any =
+                (await runtime.cacheManager.get(`${memo.userId}-memos`)) ?? [];
             memo.id = new Date().getTime();
             memos.push(memo);
-            await runtime.cacheManager.set(`${userId}-memos`, memos);
+            await runtime.cacheManager.set(`${memo.userId}-memos`, memos);
             res.status(200).json(memo);
         }
     }
 
     async handleDeleteMomo(req: express.Request, res: express.Response) {
-        const userId = res.locals.user.userId;
+        const userId = req.body.userId
         const runtime = this.getAgentId(req, res);
         if (runtime) {
-            const ids = req.body;
+            const ids = req.body.ids;
             if (!ids.length) {
                 return res.status(400).json({ error: "Missing memo ids" });
             }
