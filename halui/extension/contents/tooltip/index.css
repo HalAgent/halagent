@@ -1,12 +1,10 @@
 @font-face {
   font-family: "GeologicaRegular";
-  src: url("../../assets/Geologica-Regular.ttf")
-    format("ttf");
+  src: url("../../assets/Geologica-Regular.ttf") format("ttf");
 }
 @font-face {
   font-family: "Geologica";
-  src: url("../../assets/Geologica-Light.ttf")
-    format("ttf");
+  src: url("../../assets/Geologica-Light.ttf") format("ttf");
 }
 
 .hal-tooltip-container {
@@ -112,4 +110,15 @@
   cursor: default;
   justify-content: flex-end;
   border-bottom: 0;
+}
+
+.hal-tooltip-item-close {
+  position: absolute;
+  right: 0;
+  top: -9px;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  overflow: hidden;
+  border-radius: 50%;
 }

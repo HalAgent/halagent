@@ -76,10 +76,10 @@ const Login = () => {
       <GoogleLoginComponent />
 
       <div className="login-or">or</div>
-      <img className="login-guest" src={LoginGuest} onClick={guestLogin}></img>
+      <img className="login-guest btn-scale" src={LoginGuest} onClick={guestLogin}></img>
       <div className="hosting-content-popup-main-footer login-footer">
         <div
-          className="hosting-content-popup-main-footer-item"
+          className="hosting-content-popup-main-footer-item btn-scale"
           onClick={() => {
             window.location.href = 'https://halagent.org/';
           }}
@@ -88,7 +88,7 @@ const Login = () => {
           <div className="hosting-content-popup-main-footer-item-text">Website</div>
         </div>
         <div
-          className="hosting-content-popup-main-footer-item"
+          className="hosting-content-popup-main-footer-item btn-scale"
           onClick={() => {
             window.location.href = 'https://x.com/HALAI_SOL';
           }}
@@ -97,7 +97,7 @@ const Login = () => {
           <div className="hosting-content-popup-main-footer-item-text">Twitter</div>
         </div>
         <div
-          className="hosting-content-popup-main-footer-item"
+          className="hosting-content-popup-main-footer-item btn-scale"
           onClick={() => {
             window.location.href = 'https://dexscreener.com/solana/6pcybkvfmopvbtsfy8fqatzolqq5s325b6st2sf7yzbw';
           }}

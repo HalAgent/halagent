@@ -13,6 +13,7 @@ import CloseImg from "raw:~/assets/Close.svg"
 import CopyImg from "raw:~/assets/Copy.svg"
 import FixedImg from "raw:~/assets/Fixed.svg"
 import LogoImg from "raw:~/assets/icon.png"
+import SubtractImg from "raw:~/assets/Subtract.svg"
 // import RefreshImg from "raw:~/assets/refresh.svg"
 import { useCallback, useEffect, useRef, useState } from "react"
 
@@ -34,6 +35,7 @@ export const getStyle = () => {
 }
 
 const TextSelectionPopup = () => {
+  const [hide, setHide] = useState(false)
   const [selectedText, setSelectedText] = useState("")
   const [isPopupVisible, setIsPopupVisible] = useState(false)
   const [kolModal, setKolModal] = useState(false)
@@ -260,7 +262,7 @@ const TextSelectionPopup = () => {
       )}
 
       {/* Text selection popup */}
-      {isPopupVisible && (
+      {isPopupVisible && !hide && (
         <div
           className="hal-tooltip-container"
           ref={(el) => {
@@ -277,12 +279,20 @@ const TextSelectionPopup = () => {
           onMouseUp={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}>
           <div className="hal-tooltip-item" onClick={handleKol}>
-            Token Analysis {kolModalLoading && '...'}
+            Token Analysis {kolModalLoading && "..."}
           </div>
           <img
             className="hal-tooltip-item-img"
             src={LogoImg}
             onClick={handleKol}
+          />
+          <img
+            src={SubtractImg}
+            className="hal-tooltip-item-close"
+            onClick={(e) => {
+              e.preventDefault()
+              setHide(true)
+            }}
           />
         </div>
       )}

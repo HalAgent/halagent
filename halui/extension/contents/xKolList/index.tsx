@@ -126,7 +126,9 @@ const XKolList = () => {
   return container
     ? createPortal(
         <div className="hal-kol">
-          <div className="hal-kol-header">Followed by {path.substring(1)} Top Influencers</div>
+          <div className="hal-kol-header">
+            Followed by {path.substring(1)} Top Influencers
+          </div>
           <div className="hal-kol-content">
             {kolList.map((_, index) => (
               <div key={index} className="hal-kol-content-item">

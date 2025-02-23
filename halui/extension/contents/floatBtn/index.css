@@ -29,7 +29,9 @@
 .hal-float-btn:hover {
   background: #fff4ef;
 }
-
+.hal-float-btn:hover .hal-float-btn-close {
+  display: block;
+}
 .hal-float-btn:last-of-type:hover {
   right: 0 !important;
 }
@@ -46,8 +48,23 @@
 
 .hal-float-btn-text {
   margin-left: 5px;
-  width: 43px;
-  height: 15px;
   opacity: 0;
   transition: all 0.5s;
+  color: #000;
+  font-family: "GeologicaRegular";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+.hal-float-btn-close {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: -9px;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  overflow: hidden;
+  border-radius: 50%;
 }

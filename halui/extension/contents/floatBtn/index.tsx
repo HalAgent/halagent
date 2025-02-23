@@ -1,7 +1,7 @@
 import cssText from "data-text:~/contents/floatBtn/index.css"
 import DocumentImg from "raw:~/assets/Document.svg"
-import HAlphaImg from "raw:~/assets/HAlpha.svg"
 import LogoImg from "raw:~/assets/icon.png"
+import SubtractImg from "raw:~/assets/Subtract.svg"
 import { useEffect, useState } from "react"
 
 export const config: PlasmoCSConfig = {
@@ -97,7 +97,7 @@ const FloatBtn = () => {
       setButtons(data)
     })
   }, [])
-  
+
   return (
     <div>
       {buttons.map((button, index) => (
@@ -112,7 +112,9 @@ const FloatBtn = () => {
               : "all 0.3s"
           }}
           onMouseDown={(e) => handleMouseDown(e, index)}
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
             handlerClick(index)
           }}>
           {index === 0 ? (
@@ -120,11 +122,21 @@ const FloatBtn = () => {
           ) : (
             <>
               <img src={LogoImg} className="hal-float-btn-icon" />
+              <span className="hal-float-btn-text">HAlpha</span>
               <img
+                src={SubtractImg}
+                className="hal-float-btn-close"
+                onClick={(e) => {
+                  e.preventDefault()
+                  setButtons([])
+                }}
+              />
+
+              {/* <img
                 src={HAlphaImg}
                 className="hal-float-btn-text"
                 style={button.isDragging ? { opacity: 1 } : {}}
-              />
+              /> */}
             </>
           )}
         </div>

@@ -1,6 +1,10 @@
 .pick {
+  box-sizing: border-box;
   padding-top: 88px;
   padding-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   .pick-title {
     margin: 0 auto;
     width: 180px;
@@ -13,11 +17,15 @@
     line-height: 30px;
   }
   .pick-content {
-    margin: 41px auto 0;
+    box-sizing: border-box;
+    flex: 1;
+    padding-top: 20px;
+    margin: 21px auto 0;
     width: 310px;
     display: grid;
     grid-template-columns: 90px 90px 90px;
     grid-gap: 20px;
+    overflow: auto;
     .pick-content-item {
       display: flex;
       flex-direction: column;
@@ -58,7 +66,6 @@
         line-height: normal;
         overflow: hidden;
         text-align: center;
-
       }
     }
   }

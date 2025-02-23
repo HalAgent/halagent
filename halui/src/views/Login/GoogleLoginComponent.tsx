@@ -35,7 +35,7 @@ const GoogleLoginComponent: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <img className="login-google" src={LoginGoogle} onClick={() => login()} alt="Google Login" />
+      <img className="login-google btn-scale" src={LoginGoogle} onClick={() => login()} alt="Google Login" />
     </div>
   );
 };
