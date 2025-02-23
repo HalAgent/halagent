@@ -103,6 +103,10 @@ export const TwitterClientInterface: Client = {
             console.log('MSG_RE_TWITTER userId: ' + userId + " text: " + text);
             manager.watcher.sendReTweet(text, userId);
         });
+        twEventCenter.on('MSG_TWITTER_ENABLE_AUTO_SEND', () => {
+            console.log('MSG_TWITTER_ENABLE_AUTO_SEND');
+            manager.watcher.runTask();
+        });
         twEventCenter.on("MSG_BNB_QUERY", (coinsymbol, userId) => {
             // console.log('MSG_RE_TWITTER userId: ' + userId + " text: " + text);
             manager.sighter.bnbQuery(coinsymbol, userId);

@@ -268,7 +268,7 @@ export class UserManager implements UserManageInterface {
             tweetFrequency: {
                 dailyLimit: 10,
                 currentCount: 0,
-                lastTweetTime: Date.now(),
+                lastTweetTime: 0, // Date.now(),
             },
             stats: {
                 totalTweets: 0,

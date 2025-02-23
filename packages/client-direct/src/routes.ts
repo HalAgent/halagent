@@ -956,12 +956,13 @@ export class Routes {
             //     existingProfile?.agentCfg?.enabled
             // );
             // console.log("growth experience: new: ", profile?.agentCfg?.enabled);
-
+            let needSending = false;
             if (
                 profile?.agentCfg?.enabled &&
                 !existingProfile?.agentCfg?.enabled
             ) {
                 this.handleGrowthExperience(20, profile, "enable agent.");
+                needSending = true;
             }
             if (
                 (profile?.twitterWatchList?.length ?? 0) >
@@ -977,6 +978,10 @@ export class Routes {
             const updatedProfile = { ...existingProfile, ...profile };
             const userManager = new UserManager(runtime.cacheManager);
             await userManager.updateProfile(updatedProfile);
+
+            if (needSending) {
+                twEventCenter.emit("MSG_TWITTER_ENABLE_AUTO_SEND");                
+            }
 
             return res.json({
                 success: true,

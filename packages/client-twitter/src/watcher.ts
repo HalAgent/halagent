@@ -161,28 +161,34 @@ export class TwitterWatchClient {
         return prompt;
     }
     async runTask() {
+        console.log("sendTweet in loop, enter loop");
         if (this.sendingTwitterInLooping) {
+            console.log("sendTweet in loop, is looping, skip this time");
             return;
         }
         this.sendingTwitterInLooping = true;
-        elizaLogger.log("Twitter Sender task loop");
         // const userManager = new UserManager(this.runtime.cacheManager);
         const userProfiles = await this.userManager.getAllUserProfiles();
+        console.log("sendTweet in loop, enter loop, len: " + userProfiles.length);
+
         for (let i = 0; i < userProfiles.length; i++) {
             let userProfile = userProfiles[i];
+            console.log("sendTweet in loop, enter loop, userprofile: " , userProfile);
             if (
                 !userProfile.agentCfg ||
                 !userProfile.agentCfg.interval ||
                 !userProfile.agentCfg.imitate
             ) {
+                console.log("sendTweet in loop, agent cfg is illegality");
                 continue;
             }
             const { enabled, interval, imitate } = userProfile.agentCfg;
             if (!enabled) {
+                console.log("sendTweet in loop, agent cfg is not enable");
                 continue;
             }
             if(!(userProfile?.tweetProfile?.accessToken)) {
-                console.error("sendTweet in Loop Twitter Access token not found");
+                console.log("sendTweet in Loop Twitter Access token not found");
                 continue;
                 //throw new Error("Send Twitter in Loop Twitter Access token not found");
             }
@@ -202,6 +208,7 @@ export class TwitterWatchClient {
                     if (tweet) {
                         let len = tweet?.items.length;
                         if (len <= 0) {
+                            console.log("sendTweet in Loop, tweet is empyt");
                             continue;
                         }
 
@@ -250,13 +257,15 @@ export class TwitterWatchClient {
                             JSON.stringify(userProfile)
                         );
                     } else {
-                        elizaLogger.log(
+                        console.log(
                             "sendTweet in loop msg is null, skip this time"
                         );
                     }
                 } catch (error) {
                     console.error("sendTweet in loop Sender task: ", error);
                 }
+            } else {
+                console.log("sendTweet in loop, too frequent, skip this time");
             }
         }
         this.sendingTwitterInLooping = false;
