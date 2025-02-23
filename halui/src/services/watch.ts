@@ -83,11 +83,13 @@ class WatchApi {
       this.hasMore = data.hasMore;
 
       // set for each item
-      return data.items.map(item => ({
-        ...item,
-        user: 'agent' as const,
-        action: 'NONE' as const,
-      }));
+      return data.items
+        .map(item => ({
+          ...item,
+          user: 'agent' as const,
+          action: 'NONE' as const,
+        }))
+        .sort((a, b) => parseInt(b.updatedAt) - parseInt(a.updatedAt));
     } catch (error) {
       console.error('Error fetching watch list:', error);
       return [];
@@ -131,7 +133,7 @@ class WatchApi {
   async translateText(text: string): Promise<string> {
     try {
       //console.log('translateText: 000 ', text);
-      const response = await api.post(`/translate_text`, { text,languagecode:navigator.language.split('-')[0] });
+      const response = await api.post(`/translate_text`, { text, languagecode: navigator.language.split('-')[0] });
       //console.log('translateText: 111 ', response.data.data.result);
       return response.data.data.result;
     } catch (error) {
