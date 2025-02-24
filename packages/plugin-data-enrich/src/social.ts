@@ -8,6 +8,13 @@ import {
     settings
 } from "@elizaos/core";
 import { Scraper } from "agent-twitter-client";
+import { createOpenAI } from "@ai-sdk/openai";
+import {
+    generateText as aiGenerateText
+} from "ai";
+import {
+    ModelClass
+} from "../../core/src/types.ts";
 
 // Pre Defined Twitter KOL
 export const TW_KOL_1 = [
@@ -158,6 +165,7 @@ export class twitterDataProvider {
                 context: prompt,
                 modelClass: ModelClass.LARGE,
             });
+            //let response = await this.generateByGrok(prompt);
             //console.log(response);
             summary = response;
             if (response && response.includes("The item is not related to Web3")) {
@@ -230,4 +238,47 @@ export class twitterDataProvider {
         return `The twitter fans of ${username} is unknown`;
     }
 
+    async generateByGrok(prompt: string): Promise<string> {
+        try {
+            console.log("Init Grok model.");
+            const GROK_ENDPOINT: string = "https://api.x.ai/v1";
+            //maxInputTokens: 128000,
+            const maxOutputTokens = 8192; //max_response_length
+            const frequency_penalty =  0.4;
+            const presence_penalty =  0.4;
+            const temperature = 0.7;
+
+            //const grokConfig = models[ModelProviderName.GROK];
+            //const model = grokConfig.model[ModelClass.LARGE];
+
+            const grok = createOpenAI({
+                apiKey: settings.GROK_API_KEY,
+                baseURL: GROK_ENDPOINT, //grokConfig.endpoint,
+                fetch: null,
+            });
+
+            const { text: grokResponse } = await aiGenerateText({
+                model: grok.languageModel("large", {
+                    parallelToolCalls: false,
+                }),
+                prompt: prompt,
+                system: "",
+                tools: {},
+                onStepFinish: undefined,
+                maxSteps: 1,
+                temperature: temperature,
+                maxTokens: maxOutputTokens, //max_response_length,
+                frequencyPenalty: frequency_penalty,
+                presencePenalty: presence_penalty,
+                experimental_telemetry: {},
+            });
+            console.log("Received response from Grok model.");
+            console.log(grokResponse);
+            return grokResponse;
+        }
+        catch (error) {
+            console.log(`generateByGrok error: ${error.message}`);
+        }
+        return "";
+    }
 };

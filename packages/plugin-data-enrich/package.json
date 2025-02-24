@@ -10,6 +10,8 @@
         "@solana/spl-token": "^0.4.9",
         "@elysiajs/swagger": "^1.2.0",
         "@mysten/sui": "^1.21.1",
+        "@ai-sdk/openai": "1.0.5",
+        "ai": "3.4.33",
         "agent-twitter-client": "0.0.18",
         "bs58": "^6.0.0",
         "elysia": "^1.2.12",
