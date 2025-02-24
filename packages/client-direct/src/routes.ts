@@ -1162,7 +1162,9 @@ export class Routes {
                                 runtime.cacheManager,
                                 cursor
                             );
-                        report.push(...newReport);
+                        if (newReport && newReport.items) {
+                            report.items.push(...newReport.items);
+                        }
                     }
                 } else {
                     report =
@@ -1173,7 +1175,7 @@ export class Routes {
                 }
                 return { watchlist: report, profile };
             } catch (error) {
-                console.error("Error fetching token data:", error);
+                console.error("Error fetching watch text:", error);
                 return { report: "Watcher is in working, please wait." };
             }
         });
