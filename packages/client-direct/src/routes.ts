@@ -975,6 +975,16 @@ export class Routes {
             }
 
             const updatedProfile = { ...existingProfile, ...profile };
+
+            // Remove duplicates by key username of twitterWatchList
+           const uniqueTwitterWatchList = updatedProfile.twitterWatchList.reduce((acc, item) => {
+                if (!acc.has(item.username)) {
+                    acc.set(item.username, item);
+                }
+                return acc;
+            }, new Map<string, any>()).values();
+            // console.log(Array.from(uniqueTwitterWatchList));
+            updatedProfile.twitterWatchList = Array.from(uniqueTwitterWatchList);
             const userManager = new UserManager(runtime.cacheManager);
             await userManager.updateProfile(updatedProfile);
 
