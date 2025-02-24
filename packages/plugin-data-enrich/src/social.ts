@@ -12,9 +12,6 @@ import { createOpenAI } from "@ai-sdk/openai";
 import {
     generateText as aiGenerateText
 } from "ai";
-import {
-    ModelClass
-} from "../../core/src/types.ts";
 
 // Pre Defined Twitter KOL
 export const TW_KOL_1 = [
