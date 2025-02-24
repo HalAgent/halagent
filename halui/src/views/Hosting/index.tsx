@@ -16,7 +16,14 @@ import PixModal from '@/components/common/PixModal';
 import ShortButton from '@/components/common/ShortButton';
 import { useNavigate } from 'react-router-dom';
 import { CheckIsMobile } from '@/utils/common';
-const INTERVAL_OPTIONS = ['30 minutes', '1 hours', '2 hours', '4 hours', '8 hours', '12 hours'];
+const INTERVAL_OPTIONS = [
+  { text: '30 minutes', disabled: true },
+  { text: '1 hours', disabled: true },
+  { text: '2 hours', disabled: true },
+  { text: '4 hours', disabled: true },
+  { text: '8 hours', disabled: true },
+  { text: '12 hours', disabled: false },
+];
 
 const CHARACTER_OPTIONS = [
   { text: 'Crypto Investment', disabled: false },
@@ -42,7 +49,7 @@ const isMobile = CheckIsMobile();
 const Hosting = () => {
   const [enabled, setEnabled] = useState(false);
   const [character, setCharacter] = useState('Crypto Investment');
-  const [intervalValue, setIntervalValue] = useState('2h');
+  const [intervalValue, setIntervalValue] = useState('12 hours');
   const [message, setMessage] = useState(MessageList[0]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -78,8 +85,10 @@ const Hosting = () => {
     const target = event.target as HTMLElement;
     const value = target.innerText;
     if (type === 'interval') {
-      setIntervalValue(value);
-      set_agent_cfg(enabled, value, character);
+      if (INTERVAL_OPTIONS.findIndex(item => item.text === value && !item.disabled) !== -1) {
+        setIntervalValue(value);
+        set_agent_cfg(enabled, value, character);
+      }
     } else if (type === 'character') {
       if (CHARACTER_OPTIONS.findIndex(item => item.text === value && !item.disabled) !== -1) {
         setCharacter(value);
@@ -120,17 +129,17 @@ const Hosting = () => {
       }
     }
   };
-//   const handleTwitterAuthRevoke = async (e?: React.MouseEvent) => {
-//     e?.preventDefault();
-//     try {
-//       UserProfile.updateProfile({
-//         ...UserProfile.userProfile,
-//         tweetProfile: undefined,
-//       });
-//     } catch (err) {
-//       console.error('Twitter revoke error:', err);
-//     }
-//   };
+  //   const handleTwitterAuthRevoke = async (e?: React.MouseEvent) => {
+  //     e?.preventDefault();
+  //     try {
+  //       UserProfile.updateProfile({
+  //         ...UserProfile.userProfile,
+  //         tweetProfile: undefined,
+  //       });
+  //     } catch (err) {
+  //       console.error('Twitter revoke error:', err);
+  //     }
+  //   };
   useEffect(() => {
     const timer = setInterval(() => {
       setMessage(MessageList[Math.floor(Math.random() * MessageList.length)]);
@@ -145,6 +154,7 @@ const Hosting = () => {
     console.warn('UserProfile', UserProfile);
     if (UserProfile.userProfile?.agentCfg?.enabled) {
       setEnabled(true);
+      setIntervalValue(UserProfile.userProfile?.agentCfg?.interval);
     } else {
       setEnabled(false);
     }
@@ -228,15 +238,16 @@ const Hosting = () => {
                     anchor="bottom"
                     style={{
                       boxShadow: '0 2px 14px rgb(0 0 0 / 10%)',
-                      width: `calc(${isMobile ? '100vw' : '375px'} - 72px)`,
+                      width: `calc(${isMobile ? '100vw' : '375px'} - 70px)`,
+                      boxSizing:'border-box'
                     }}
                     className="z-10 bg-[#fff] mt-[6px] origin-top-right rounded-xl p-1 text-sm/6  transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
                     onMouseUp={event => handleSelectionChange(event, 'interval')}
                   >
                     {INTERVAL_OPTIONS.map(option => (
-                      <MenuItem key={option}>
-                        <div className="Geologica box-border p-x-[4px] radius-[4px] h-[32px] line-height-[32px] color-[#656565] text-[13px] data-[focus]:bg-[#E3E3E3] hover:bg-[#E3E3E3]">
-                          {option}
+                      <MenuItem key={option.text} disabled={option.disabled}>
+                        <div className="data-[disabled]:opacity-50 Geologica box-border p-x-[4px] radius-[4px] h-[32px] line-height-[32px] color-[#656565] text-[13px] data-[focus]:bg-[#E3E3E3] hover:bg-[#E3E3E3]">
+                          {option.text}
                         </div>
                       </MenuItem>
                     ))}
@@ -256,7 +267,8 @@ const Hosting = () => {
                     anchor="bottom"
                     style={{
                       boxShadow: '0 2px 14px rgb(0 0 0 / 10%)',
-                      width: `calc(${isMobile ? '100vw' : '375px'} - 72px)`,
+                      width: `calc(${isMobile ? '100vw' : '375px'} - 70px)`,
+                      boxSizing:'border-box'
                     }}
                     className="z-10 bg-[#fff] mt-[6px] box-border p-y-[4px] origin-top-right rounded-xl p-1 text-sm/6  transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
                     onMouseUp={event => handleSelectionChange(event, 'character')}
