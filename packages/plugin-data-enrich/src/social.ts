@@ -235,7 +235,7 @@ export class twitterDataProvider {
         return `The twitter fans of ${username} is unknown`;
     }
 
-    async generateByGrok(prompt: string): Promise<string> {
+    /*async generateByGrok(prompt: string): Promise<string> {
         try {
             console.log("Init Grok model.");
             const GROK_ENDPOINT: string = "https://api.x.ai/v1";
@@ -277,5 +277,5 @@ export class twitterDataProvider {
             console.log(`generateByGrok error: ${error.message}`);
         }
         return "";
-    }
+    }*/
 };

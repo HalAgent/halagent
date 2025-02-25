@@ -1,5 +1,5 @@
 {
-    "name": "pod",
+    "name": "Daisy9000",
     "clients": ["twitter"],
     "modelProvider": "redpill",
     "settings": {
