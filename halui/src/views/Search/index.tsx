@@ -3,12 +3,13 @@ import PixLoading from '@/components/common/PixLoading';
 
 import './index.less';
 import { ReactSVG } from 'react-svg';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { CheckIsMobile } from '@/utils/common';
 import { useGetXList } from './useGetXList';
 import { WatchItem } from '@/types/auth';
 import { useUserStore } from '@/stores/useUserStore';
+import { authService } from '@/services/auth';
 const isMobile = CheckIsMobile();
 
 const Search = () => {
@@ -32,6 +33,13 @@ const Search = () => {
     e.stopPropagation();
     onFollow(account);
   };
+
+  useEffect(() => {
+    const userId = useUserStore.getState().getUserId();
+    if (userId) {
+       authService.getProfile(userId)
+    }
+  }, []);
 
   return (
     <div className="search-page">

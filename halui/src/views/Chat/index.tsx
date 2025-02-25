@@ -265,7 +265,7 @@ const Chat = () => {
         <div className="chat-page-input">
           <textarea
             ref={textareaRef}
-            placeholder="Chat with me..."
+            placeholder="Search CA or Ticker"
             value={text}
             onInput={onInput}
             onKeyDown={handleKeyDown}

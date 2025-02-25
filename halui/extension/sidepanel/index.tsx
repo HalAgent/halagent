@@ -48,16 +48,26 @@ function IndexSidePanel() {
 
   useEffect(() => {
     if (!iframeRef.current) return
+    const iframeMessageHandler = (event: MessageEvent) => {
+      const message = event.data
+      console.warn(message)
+      if (message.action === "user_info") {
+        if (message.data) {
+          chrome.storage.local.set({ userInfo: JSON.stringify(message.data) })
+        } else {
+          chrome.storage.local.remove("userInfo")
+        }
+      }
+    }
 
     iframeRef.current.onload = () => {
       messageQueue.current.forEach((message) => {
         console.warn(message)
-
         iframeRef.current?.contentWindow?.postMessage(message, "*")
       })
-
       messageQueue.current = []
       setTimeout(() => {
+        window.addEventListener("message", iframeMessageHandler)
         setLoading(false)
       }, 500)
     }
@@ -70,6 +80,7 @@ function IndexSidePanel() {
           <div className="hal-page-loading-spinner" />
         </div>
       )}
+
       <iframe ref={iframeRef} src="https://halpha.halagent.org"></iframe>
     </div>
   )

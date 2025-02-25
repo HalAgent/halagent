@@ -28,12 +28,21 @@ export const useUserStore = create<UserState>()(
         set({
           userProfile,
         });
+        console.warn(window.top !== window.self)
+        if(window.top !== window.self) {
+            console.warn( window.top);
+
+            window.top?.postMessage({ action: 'user_info', data: userProfile }, '*');
+        }
       },
 
       logout: () => {
         set({
           userProfile: null,
         });
+        if(window.top !== window.self) {
+            window.top?.postMessage({ action: 'user_info', data: null }, '*');
+        }
       },
 
       updateProfile: profile => {

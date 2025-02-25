@@ -12,7 +12,6 @@ const XKolList = () => {
   const [kolList, setKolList] = useState<string[]>([])
 
   useEffect(() => {
-    console.warn("XKolList 当前路径:", path)
     if (path) {
       fetch(
         "https://host.halagent.org/dev/91edd400-9c4a-0eb5-80ce-9d32973f2c49/twitter_labels",
@@ -49,7 +48,6 @@ const XKolList = () => {
         '[data-testid="UserName"]'
       ) as HTMLElement | null
       if (dom) {
-        console.warn("找到目标 DOM:", dom)
         setContainer(dom.parentElement)
         return true
       }
@@ -72,7 +70,6 @@ const XKolList = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       if (window.location.pathname !== path) {
-        console.warn("路径变化:", window.location.pathname)
         setPath(window.location.pathname)
       }
     }, 500)
@@ -81,7 +78,6 @@ const XKolList = () => {
   }, [path])
 
   useEffect(() => {
-    // 创建 <style> 标签
     const style = document.createElement("style")
     style.textContent = `
       .hal-kol {
@@ -114,6 +110,7 @@ const XKolList = () => {
       .hal-kol-content-item-name {
         color: rgb(0, 0, 0);
         font-size: 12px;
+        font-family: 'GeologicaRegular';
       }
     `
     document.head.appendChild(style)
