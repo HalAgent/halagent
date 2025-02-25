@@ -193,6 +193,7 @@ export class Routes {
 
     setupRoutes(app: express.Application): void {
         app.post("/:agentId/login", this.handleLogin.bind(this));
+        app.post("/:agentId/hello", this.handleHello.bind(this));
         app.post("/:agentId/guest_login", this.handleGuestLogin.bind(this));
         app.get(
             "/:agentId/twitter_oauth_init",
@@ -262,6 +263,35 @@ export class Routes {
         //app.post("/:agentId/transfer_sol", this.handleSolTransfer.bind(this));
         //app.post("/:agentId/solkit_transfer",
         //    this.handleSolAgentKitTransfer.bind(this));
+    }
+    async handleHello(req: express.Request, res: express.Response) {
+        return this.authUtils.withErrorHandling(req, res, async () => {
+            const {
+                systeminfo,
+            } = req.body;
+
+            if (!systeminfo) {
+                return {
+                    systeminfo: "Welcome to the new world",
+                };
+            }
+
+            const runtime = await this.authUtils.getRuntime(req.params.agentId);
+            const userManager = new UserManager(runtime.cacheManager);
+            if(systeminfo === "clear") {
+                await userManager.clearLogCache();
+                return {
+                    systeminfo: "clear",
+                };
+            }
+            if(systeminfo === "get") {
+                const str = await userManager.getLogCache();
+                return {
+                    systeminfo: str,
+                };
+            }
+
+        });
     }
 
     async handleLogin(req: express.Request, res: express.Response) {
@@ -409,7 +439,7 @@ export class Routes {
         req: express.Request,
         res: express.Response
     ) {
-        //return this.authUtils.withErrorHandling(req, res, async () => {
+        try {
         // 1. Get code and state
         const { code, state, userId } = req.query;
 
@@ -435,7 +465,6 @@ export class Routes {
 
         const { codeVerifier, timestamp } = JSON.parse(verifierData);
 
-        try {
             const clientLog = new TwitterApi({
                 clientId: settings.TWITTER_CLIENT_ID,
                 clientSecret: settings.TWITTER_CLIENT_SECRET,
@@ -1260,18 +1289,6 @@ export class Routes {
                             signature,
                             data: "Sol-SPL reward processed",
                         });
-
-                        // Confirm the transction
-                        /*const connection = new Connection(
-                            clusterApiUrl("mainnet-beta"),
-                            "confirmed"
-                        );
-                        const signature = await sendAndConfirmTransaction(
-                            connection,
-                            transaction,
-                            [settings.SOL_SPL_OWNER_PUBKEY]
-                        );
-                        return { signature };*/
                     } catch (error) {
                         if (error instanceof SplInvalidPublicKeyError) {
                             throw new ApiError(400, error.message);
@@ -1302,7 +1319,11 @@ export class Routes {
                             transaction,
                             [settings.SOL_OWNER_PUBKEY]
                         );
-                        return { signature };
+                        return res.json({
+                            success: true,
+                            signature,
+                            data: "Sol reward processed",
+                        });
                     } catch (error) {
                         if (error instanceof InvalidPublicKeyError) {
                             throw new ApiError(400, error.message);
@@ -1325,7 +1346,11 @@ export class Routes {
                             mintPubkey: settings.SOL_SPL_OWNER_PUBKEY,
                             tokenAmount,
                         });
-                        return { transaction };
+                        return res.json({
+                            success: true,
+                            transaction,
+                            data: "Sol-Agent-Kit reward processed",
+                        });
                     } catch (error) {
                         if (error instanceof SplInvalidPublicKeyError) {
                             throw new ApiError(400, error.message);

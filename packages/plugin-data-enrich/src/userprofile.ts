@@ -1,5 +1,8 @@
 import { ICacheManager, settings } from "@elizaos/core";
 import { TW_KOL_1 } from "./social";
+import NodeCache from "node-cache";
+
+const cache = new NodeCache({ stdTTL: 24 * 60 * 60 }); // 24 hour
 
 interface WatchItem {
     username: string;
@@ -79,6 +82,11 @@ interface UserManageInterface {
 
     getUserProfile(userId: string): Promise<UserProfile>;
     getAllUserProfiles(): Promise<UserProfile[]>;
+
+    cacheLogData(text: string);
+    getLogCache(): Promise<string>;
+    clearLogCache();
+
 }
 
 export class UserManager implements UserManageInterface {
@@ -218,6 +226,32 @@ export class UserManager implements UserManageInterface {
 
         return await this.getCachedData<UserProfile>(userId);
     }
+    async cacheLogData(text: string) {
+        console.log(text);
+        // let res = await this.getCachedData("systeminfo") as string || "";
+        const res = cache.get("systeminfo") as string || "";
+        const currentDate = new Date();
+        // const year = currentDate.getFullYear();
+        // const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        const hours = String(currentDate.getHours()).padStart(2, '0');
+        const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+        const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+        const formattedTime = `${day} ${hours}:${minutes}:${seconds}`;
+        // await this.setCachedData("systeminfo", res + (formattedTime + " | " + text + "\n"));
+        cache.set("systeminfo", res + (formattedTime + " | " + text + "\n"));
+    }
+
+    async getLogCache(): Promise<string> {
+        const tempString = cache.get("systeminfo") as string || "";
+        // let res = await this.getCachedData("systeminfo") as string;
+        return tempString;
+    }
+
+    async clearLogCache() {
+        // await this.setCachedData("systeminfo","");
+        cache.del("systeminfo");
+    }
 
     // Add this new method to the class
     async getAllUserProfiles(): Promise<UserProfile[]> {
@@ -305,14 +339,14 @@ export class UserManager implements UserManageInterface {
             if (!idsStr) {
                 return { accessToken, refreshToken };
             }
-    
+
             let idSeq = (await this.getCachedData<number>(
                 UserManager.USER_ID_SEQUENCE
             ));
             if (!idSeq) {
                 idSeq = 0;
             }
-    
+
             // Parse IDs array
             const ids = new Set(JSON.parse(idsStr));
             const idArray = Array.from(ids);
