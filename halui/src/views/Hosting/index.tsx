@@ -54,6 +54,21 @@ const Hosting = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const UserProfile = useUserStore();
+  const [pageWidth,setPageWidth] = useState(375);
+
+  useEffect(() => {
+
+    const handleResize = () => {
+        if(window.innerWidth <= 375) {
+            setPageWidth(window.innerWidth);
+        }
+    };
+    handleResize()
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const closeModal = (e?: React.MouseEvent) => {
     e?.preventDefault();
@@ -238,7 +253,7 @@ const Hosting = () => {
                     anchor="bottom"
                     style={{
                       boxShadow: '0 2px 14px rgb(0 0 0 / 10%)',
-                      width: `calc(${isMobile ? '100vw' : '375px'} - 70px)`,
+                      width: `calc(${isMobile ? '100vw' : (pageWidth + 'px')} - 70px)`,
                       boxSizing:'border-box'
                     }}
                     className="z-10 bg-[#fff] mt-[6px] origin-top-right rounded-xl p-1 text-sm/6  transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
@@ -267,8 +282,8 @@ const Hosting = () => {
                     anchor="bottom"
                     style={{
                       boxShadow: '0 2px 14px rgb(0 0 0 / 10%)',
-                      width: `calc(${isMobile ? '100vw' : '375px'} - 70px)`,
-                      boxSizing:'border-box'
+                      width: `calc(${isMobile ? '100vw' : (pageWidth + 'px')} - 70px)`,
+                      boxSizing:'border-box',
                     }}
                     className="z-10 bg-[#fff] mt-[6px] box-border p-y-[4px] origin-top-right rounded-xl p-1 text-sm/6  transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
                     onMouseUp={event => handleSelectionChange(event, 'character')}
