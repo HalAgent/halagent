@@ -3,6 +3,7 @@ import { ResponseData } from '@/types/auth';
 import api from './axios';
 import { useUserStore } from '@/stores/useUserStore';
 import { XUserProfile } from '@/types/account';
+import { Message } from '@/types/chat';
 
 export interface WatchResponse {
   items: {
@@ -17,6 +18,7 @@ export interface WatchResponse {
   hasMore: boolean;
 }
 
+const LOCALSTORAGE_ITEM_WATCHLIST = '_halpha_watchlist_msgs_';
 class WatchApi {
   private cursor: string = '';
   private hasMore: boolean = true;
@@ -65,8 +67,10 @@ class WatchApi {
     if (!this.hasMore) {
       return [];
     }
-    const watchlist = useUserStore.getState().getWatchlist();
+    const watchlist = useUserStore.getState().getWatchlist(); // kol list.
     const uID = useUserStore.getState().getUserId();
+    const cachedMsgsObj = localStorage.getItem(LOCALSTORAGE_ITEM_WATCHLIST);
+    const cachedMsgs = cachedMsgsObj ? JSON.parse(cachedMsgsObj) : [];
 
     try {
       const response = await api.post(`/watch`, {
@@ -82,14 +86,20 @@ class WatchApi {
       this.cursor = data.cursor;
       this.hasMore = data.hasMore;
 
-      // set for each item
-      return data.items
-        .map(item => ({
-          ...item,
-          user: 'agent' as const,
-          action: 'NONE' as const,
-        }))
-        .sort((a, b) => parseInt(b.updatedAt) - parseInt(a.updatedAt));
+      // Use the 'msg. updatedAt + msg.title' field as the key to remove duplicates
+      const existingMessageIdsSet = new Set(cachedMsgs.map((msg: Message) => (msg.updatedAt ?? '') + msg.title));
+      data.items.forEach(msg => {
+        if (!existingMessageIdsSet.has((msg.updatedAt ?? '') + msg.title)) {
+          cachedMsgs.push(msg);
+        }
+      });
+
+      cachedMsgs.sort((a: Message, b: Message) => parseInt(a.updatedAt ?? '0') - parseInt(b.updatedAt ?? '0'));
+
+      const len = cachedMsgs.length;
+      const msgsToSave = len > 30 ? cachedMsgs.slice(len - 30, len) : cachedMsgs;
+      localStorage.setItem(LOCALSTORAGE_ITEM_WATCHLIST, JSON.stringify(msgsToSave));
+      return msgsToSave;
     } catch (error) {
       console.error('Error fetching watch list:', error);
       return [];

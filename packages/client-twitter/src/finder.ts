@@ -88,7 +88,7 @@ export class TwitterFinderClient {
         '0xHustlepedia',
         'drakeondigital',
         'GarlamWON',
-        'HouseOfCrypto3',
+        'HouseOfCrypto3_',
         'kyle_chasse',
         'MarioNawfal',
         'gafoorkhann',
@@ -97,40 +97,9 @@ export class TwitterFinderClient {
         'bebetoo_cuk',
         'gametheorizing',
         '0RYKER',
-        'hebi555',
-        'zyclw',
-        'Phyrex_Ni',
-        'hellosuoha',
-        'Web3Nina',
-        '0xjuu_17',
-        'visionofviii',
-        'MetaHunter168',
-        'vikingdao2022',
-        'xiaoxin_bit',
-        '0xSunNFT',
-        '0xKillTheWolf',
-        'Mumu_yay',
-        'laoxue_eth',
-        'jianshubiji',
-        'cryp_orange',
         'zeroblocks',
-        'luge517',
-        'SEFATUBA3',
-        'hhyjylabs',
-        '0xKevin00',
-        'tyw1984',
-        '0xzhaozhao',
-        'pipizhu_eth',
-        'Elizabethofyou',
-        'connectfarm1',
-        '0xcryptowizard',
-        'CoinHuSays',
-        '0xmina_',
-        'cherlyn0105',
-        'Unipioneer',
         'kimyg002',
         'ROKMCFIREANT',
-        'akiii345',
         'lucianlampdefi',
         'BigcoinVN',
         'SimonTran1111',
@@ -140,7 +109,7 @@ export class TwitterFinderClient {
         'LisaFlorentina8',
         'danhtran68',
         'bachkhoabnb',
-        'Kan_0xGemi',
+        'kan0xgemi',
         'XDeGods',
         'auksorn_'
     ];
@@ -214,7 +183,7 @@ export class TwitterFinderClient {
         const shuffled = [...users].sort(() => 0.5 - Math.random());
         return shuffled.slice(0, count);
     }
-    
+
     async getlabels(xnamelist: string[]) {
         try {
             if (!this.kolList) {
