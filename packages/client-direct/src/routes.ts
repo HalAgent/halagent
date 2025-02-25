@@ -439,7 +439,7 @@ export class Routes {
         req: express.Request,
         res: express.Response
     ) {
-        //return this.authUtils.withErrorHandling(req, res, async () => {
+        try {
         // 1. Get code and state
         const { code, state, userId } = req.query;
 
@@ -465,7 +465,6 @@ export class Routes {
 
         const { codeVerifier, timestamp } = JSON.parse(verifierData);
 
-        try {
             const clientLog = new TwitterApi({
                 clientId: settings.TWITTER_CLIENT_ID,
                 clientSecret: settings.TWITTER_CLIENT_SECRET,
