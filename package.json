@@ -77,6 +77,7 @@
     "bs58": "4.0.0",
     "csv-parse": "5.6.0",
     "langdetect": "^0.2.1",
+    "node-cache": "^5.1.2",
     "ollama-ai-provider": "0.16.1",
     "optional": "0.1.4",
     "pnpm": "9.15.0",

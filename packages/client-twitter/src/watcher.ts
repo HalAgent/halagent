@@ -161,34 +161,34 @@ export class TwitterWatchClient {
         return prompt;
     }
     async runTask() {
-        console.log("sendTweet in loop, enter loop");
+        this.userManager.cacheLogData("sendTweet in loop, enter loop");
         if (this.sendingTwitterInLooping) {
-            console.log("sendTweet in loop, is looping, skip this time");
+            this.userManager.cacheLogData("sendTweet in loop, is looping, skip this time");
             return;
         }
         this.sendingTwitterInLooping = true;
         // const userManager = new UserManager(this.runtime.cacheManager);
         const userProfiles = await this.userManager.getAllUserProfiles();
-        console.log("sendTweet in loop, enter loop, len: " + userProfiles.length);
+        this.userManager.cacheLogData("sendTweet in loop, enter loop, users num: " + userProfiles.length);
 
         for (let i = 0; i < userProfiles.length; i++) {
             let userProfile = userProfiles[i];
-            console.log("sendTweet in loop, enter loop, userprofile: " , userProfile);
+            this.userManager.cacheLogData("sendTweet in loop, enter loop, userprofile: " + JSON.stringify(userProfile));
             if (
                 !userProfile.agentCfg ||
                 !userProfile.agentCfg.interval ||
                 !userProfile.agentCfg.imitate
             ) {
-                console.log("sendTweet in loop, agent cfg is illegality");
+                this.userManager.cacheLogData("sendTweet in loop, agent cfg is illegality");
                 continue;
             }
             const { enabled, interval, imitate } = userProfile.agentCfg;
             if (!enabled) {
-                console.log("sendTweet in loop, agent cfg is not enable");
+                this.userManager.cacheLogData("sendTweet in loop, agent cfg is not enable");
                 continue;
             }
             if(!(userProfile?.tweetProfile?.accessToken)) {
-                console.log("sendTweet in Loop Twitter Access token not found");
+                this.userManager.cacheLogData("sendTweet in Loop Twitter Access token not found");
                 continue;
                 //throw new Error("Send Twitter in Loop Twitter Access token not found");
             }
@@ -208,7 +208,7 @@ export class TwitterWatchClient {
                     if (tweet) {
                         let len = tweet?.items.length;
                         if (len <= 0) {
-                            console.log("sendTweet in Loop, tweet is empyt");
+                            this.userManager.cacheLogData("sendTweet in Loop, tweet is empyt");
                             continue;
                         }
 
@@ -247,25 +247,20 @@ export class TwitterWatchClient {
                         );
                         let responseObj = JSON.parse(responseStr);
                         const { resultText } = responseObj;
-                        console.log(
-                            "sendTweet in loop Part 5: response: ",
-                            resultText
-                        );
+                        this.userManager.cacheLogData("sendTweet in loop Part 5: response: " + resultText.slice(30));
 
                         await this.sendTweet(
                             resultText,
                             JSON.stringify(userProfile)
                         );
                     } else {
-                        console.log(
-                            "sendTweet in loop msg is null, skip this time"
-                        );
+                        this.userManager.cacheLogData("sendTweet in loop msg is null, skip this time");
                     }
                 } catch (error) {
-                    console.error("sendTweet in loop Sender task: ", error);
+                    this.userManager.cacheLogData("sendTweet in loop Sender task: " + error.stack);
                 }
             } else {
-                console.log("sendTweet in loop, too frequent, skip this time");
+                this.userManager.cacheLogData("sendTweet in loop, too frequent, skip this time");
             }
         }
         this.sendingTwitterInLooping = false;
@@ -548,7 +543,8 @@ export class TwitterWatchClient {
             // );
             // console.log("Watcher sendTweet v1 result:", result);
         } catch (error) {
-            console.error("sendTweet in sending error: ", error);
+            // console.error("sendTweet in sending error: ", error);
+            this.userManager.cacheLogData("sendTweet in sending error: " + error.stack);
         }
     }
 
@@ -566,8 +562,9 @@ export class TwitterWatchClient {
                 me = await twitterClient.v2.me();
                 console.log("sendTweet in sending v2 auth Success: ", me.data);
             } catch (err) {
-                console.log(err);
-                console.log(err.code);
+                // console.log(err);
+                // console.log(err.code);
+                this.userManager.cacheLogData("sendTweet getTwitterClinet err: " + err.stack);
                 //refesh token
                 const clientRefresh = new TwitterApi({
                     clientId: settings.TWITTER_CLIENT_ID,
@@ -587,7 +584,8 @@ export class TwitterWatchClient {
                 return twitterClient;
             }
         } catch (error) {
-            console.error("getTwitterClinet error: ", error);
+            // console.error("getTwitterClinet error: ", error);
+            this.userManager.cacheLogData("sendTweet getTwitterClinet error: " + error.stack);
         }
         return null;
     }
