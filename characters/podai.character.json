@@ -1,4 +1,5 @@
 {
+    "id": "91edd400-9c4a-0eb5-80ce-9d32973f2c49",
     "name": "Daisy9000",
     "clients": ["twitter"],
     "modelProvider": "redpill",
