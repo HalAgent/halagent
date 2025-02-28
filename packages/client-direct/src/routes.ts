@@ -8,6 +8,7 @@ import {
     generateText,
     ModelClass,
     stringToUuid,
+    elizaLogger,
 } from "@elizaos/core";
 import { twEventCenter } from "@elizaos/client-twitter";
 import { AgentConfig } from "../../../agent/src";
@@ -792,10 +793,10 @@ export class Routes {
     ) {
         return this.authUtils.withErrorHandling(req, res, async () => {
             console.log("handleTwitterLabels");
-            if (!Array.isArray(req.body.xnamelist)) {
-                return res.status(400).json({ error: 'param not a array' });
+            if (!req.body.xusername) {
+                return { error: 'param is missing' };
             }
-            const receivedStrings = req.body.xnamelist;
+            const receivedString = req.body.xusername;
 
             // receivedStrings.forEach((str, index) => {
             //     console.log(`getlabels string:  ${index + 1}: ${str}`);
@@ -806,13 +807,18 @@ export class Routes {
             try {
                 let profilesOutput = [];
                 const promise = new Promise((resolve, reject) => {
-                    // Listen
-                    twEventCenter.on('MSG_TWITTER_LABELS_RESP', (data) => {
-                        //console.log('Received Resp message:', data);
-                        resolve(data);
-                    });
+                    const timeoutId = setTimeout(() => {
+                        reject(new Error('Request timeout'));
+                        twEventCenter.off('MSG_TWITTER_LABELS_RESP', handler);
+                    }, 50000); // timeout after 50 seconds
 
-                    twEventCenter.emit('MSG_TWITTER_LABELS', { xuserlist: receivedStrings });
+                    const handler = (data) => {
+                        clearTimeout(timeoutId);
+                        resolve(data);
+                    };
+
+                    twEventCenter.on('MSG_TWITTER_LABELS_RESP', handler);
+                    twEventCenter.emit('MSG_TWITTER_LABELS', { xusername: receivedString });
                 });
 
                 // wait for result

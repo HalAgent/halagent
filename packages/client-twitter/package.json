@@ -27,6 +27,7 @@
 		"agent-twitter-client": "0.0.18",
 		"discord.js": "14.16.3",
 		"glob": "11.0.0",
+		"level": "^9.0.0",
 		"zod": "3.23.8"
 	},
 	"devDependencies": {

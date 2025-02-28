@@ -68,6 +68,8 @@ coverage
 
 agent/content
 agent/xuserlabels.json
+agent/mydb_kol_profile_following/
+agent/mydb_kol_profile_list/
 packages/plugin-data-enrich/data
 
 eliza.manifest

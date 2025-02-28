@@ -10,18 +10,17 @@ import { ClientBase } from "./base";
 import { twEventCenter } from "./index";
 import fs from 'fs';
 import path from 'path';
+import {Level} from 'level';
 
 const TW_PROFILE_PREFIX: string = "FINDER_KEY_TW_PROFILE_PREFIX_";
-interface KolItem {
-    kolname: string;
-    kollabel: string;
-    kollabel_en: string;
-};
+const db_kol_following = new Level('./mydb_kol_profile_following');
+const db_kol_profile_list = new Level('./mydb_kol_profile_list');
 
 export class TwitterFinderClient {
     client: ClientBase;
     runtime: IAgentRuntime;
-    kolList: KolItem[];
+    kolNameLabelDic: Map<string, string> = new Map();
+    kolToFollowingSet: Set<string> = new Set();
     twitterKolUsers: string[] = [
         '0xRodney',
         'Buddy',
@@ -156,8 +155,8 @@ export class TwitterFinderClient {
         });
 
         twEventCenter.on('MSG_TWITTER_LABELS', async (data) => {
-            // console.log('Received message:', data);
-            const xuserlables = await this.getlabels(data?.xuserlist);
+            console.log('Received message:', data);
+            const xuserlables = await this.getlabels(data?.xusername);
             // Send back
             twEventCenter.emit('MSG_TWITTER_LABELS_RESP', xuserlables);
         });
@@ -184,38 +183,78 @@ export class TwitterFinderClient {
         return shuffled.slice(0, count);
     }
 
-    async getlabels(xnamelist: string[]) {
+    async getlabels(xusername: string) {
+        const result = [];
         try {
-            if (!this.kolList) {
-                const rawData =  fs.readFileSync(path.join('xuserlabels.json'), 'utf8');
-                this.kolList = JSON.parse(rawData);
+            if (!this.kolNameLabelDic || this.kolNameLabelDic.size === 0) {
+                /**
+                 * xuserlabels.json format:
+                [{
+                    "kolname": "cassshih",
+                    "kollabel": "D1 Ventures Managing Director"
+                },]
+                **/
+                const rawData = fs.readFileSync(
+                    path.join("xuserlabels.json"),
+                    "utf8"
+                );
+                const kolList = JSON.parse(rawData);
+                kolList.forEach((kol) => {
+                    this.kolNameLabelDic.set(kol.kolname, kol.kollabel);
+                });
             }
+            console.log("kolNameLabelDic size: " + this.kolNameLabelDic.size);
+            let time = Date.now();
+            if (!this.kolToFollowingSet || this.kolToFollowingSet.size === 0) {
+                for await (const [key, value] of db_kol_following.iterator()) {
+                    if (value) {
+                        this.kolToFollowingSet.add(key);
+                    }
+                }
+            }
+            console.log(
+                "traverse kolToFollowingSet took: " +
+                    (Date.now() - time) +
+                    " kolToFollowingSet size: " +
+                    this.kolToFollowingSet.size
+            );
 
-            // this.kolList.forEach((kol, index) => {
-            //     console.log(`KOL ${index + 1}:`);
-            //     console.log(`Name: ${kol.kolname}`);
-            //     console.log(`Label (CN): ${kol.kollabel}`);
-            // });
+            const following = xusername;
+            let numKolStats = 0; // num of the KOLs that return.
 
-            const kolDict = this.kolList.reduce((acc, kol) => {
-                acc[kol.kolname] = kol;
-                return acc;
-            }, {});
+            /**
+             * 1. Iterate through all KOLs
+             * 2. First, check if the relationship from KOL to following exists.
+             * 3. If it exists, then query the label and the current KOL's profile.
+             * 4. Add the label to the profile and return together
+            */
 
-            const result = {};
+            for (const [kol, label] of this.kolNameLabelDic) {
+                const kolToFollowString = kol + "#" + following;
+                // console.log('kolToFollowString: ', kolToFollowString);
 
-            for (const name of xnamelist) {
-                if (Object.prototype.hasOwnProperty.call(kolDict, name)) {
-                    result[name] = kolDict[name];
-                } else {
-                    result[name] = {"kolname": name, "kollabel": name};
+                if (this.kolToFollowingSet.has(kolToFollowString)) {
+                    const profileStr = await db_kol_profile_list.get(kol);
+                    const profile = JSON.parse(profileStr);
+                    console.log("kol: " + kol + " -> label: ", label);
+
+                    profile.label = label || profile.name;
+                    result.push(profile);
+                    console.log("kol: " + kol + " -> profile: ",
+                        profile
+                    );
+
+                    numKolStats++;
+                    if(numKolStats >= 7){
+                         break;
+                    }
                 }
             }
             return result;
         } catch (err) {
-            console.error('getlabels:', err.message);
+            console.error("getlabels: ", err.message);
         }
-        return null;
+        return result;
     }
     async searchProfileKols(username: string, count: number) {
         let searchResult = [];
